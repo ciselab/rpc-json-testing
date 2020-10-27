@@ -40,6 +40,19 @@
             <artifactId>spotbugs-annotations</artifactId>
             <version>${spotbugs.annotations.version}</version>
         </dependency>
+
+        <!--Connection stuff-->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20140107</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.3.0</version>
+        </dependency>
     </dependencies>
 
     <build>
