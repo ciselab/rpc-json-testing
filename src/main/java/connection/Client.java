@@ -1,68 +1,56 @@
 package connection;
 
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.drafts.Draft_17;
-import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-public class Client extends WebSocketClient {
+/**
+ * Client that makes connection to a JSON-RPC API.
+ */
+public class Client {
+    private URL serverURI;
 
-    public boolean connected = false;
-
-    private Map<Integer, CompletableFuture<JSONObject>> futures;
-
-    public Client(URI serverURI) {
-        super(serverURI, new Draft_17());
-
-        this.futures = new HashMap<>();
+    public Client(URL serverURI) throws IOException {
+        this.serverURI  = serverURI;
     }
 
-    public CompletableFuture<JSONObject> sendRequest(int id, JSONObject jsonObject) {
-        CompletableFuture<JSONObject> future = new CompletableFuture<>();
+    // Based on https://www.twilio.com/blog/5-ways-to-make-http-requests-in-java
+    public int createRequest(String method, JSONObject request) throws IOException {
+        // Open a connection on the URL and cast the response
+        HttpURLConnection con = (HttpURLConnection) serverURI.openConnection();
 
-        futures.put(id, future);
+        con.setRequestProperty("Content-Type", "application/json; utf-8");
 
-        this.send(jsonObject.toString());
+        con.setDoOutput(true);
 
-        return future;
-    }
+        con.setRequestMethod(method);
 
-    @Override
-    public void onMessage(String message) {
-        JSONObject response = new JSONObject(message);
-
-        // TODO check if response has id
-        // als id niet er is, wat te doen met response? connecten met random iets??
-        // altijd timeout setten en ook opvangen (wat als server eruit ligt? iets mee doen)
-
-        Integer id = (Integer) response.get("id");
-
-        if (futures.containsKey(id)) {
-            futures.get(id).complete(response);
-            futures.remove(id);
+        String jsonInputString = request.toString();
+        try (OutputStream os = con.getOutputStream()) {
+            byte[] input = jsonInputString.getBytes("utf-8");
+            os.write(input, 0, input.length);
         }
-        // handle otherwise
-    }
 
-    @Override
-    public void onOpen(ServerHandshake handshakedata) {
-        this.connected = true;
-    }
+        String jsonOutputString = "";
 
-    @Override
-    public void onClose(int code, String reason, boolean remote) {
-//        System.out.println(code);
-//        System.out.println(reason);
-//        System.out.println(remote);
-    }
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine = null;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            jsonOutputString = response.toString();
+        }
 
-    @Override
-    public void onError(Exception ex) {
-        ex.printStackTrace();
+        // Print the response
+        System.out.println(new JSONObject(jsonOutputString));
+
+        return con.getResponseCode();
     }
+    
 }

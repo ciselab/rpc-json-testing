@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * JSONObjectGene represents the parameters (keys and corresponding values) of a method.
+ */
 public class JSONObjectGene extends NestedGene<JSONObject> {
 
     private Map<StringGene, Gene> children;
