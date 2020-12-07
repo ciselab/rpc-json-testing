@@ -3,11 +3,15 @@ package search.genes;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class NestedGene<T> implements Gene<T> {
+/**
+ * NestedGene represents multiple genes (can be ArrayGene or JSONObjectGene).
+ * @param <T>
+ */
+public abstract class NestedGene<T> extends Gene<T> {
 
-    public NestedGene() {
+    public NestedGene(String key) {
+        super(key);
     }
-
 
     public abstract boolean hasChildren();
 

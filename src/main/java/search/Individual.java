@@ -2,38 +2,60 @@ package search;
 
 import org.json.JSONObject;
 import search.genes.ArrayGene;
-import search.genes.JSONObjectGene;
-import search.genes.StringGene;
+import search.openRPC.Specification;
+
+import static util.RandomSingleton.getRandom;
 
 public class Individual {
+    private String httpMethod;
     private String method;
     private ArrayGene genes;
+    private double fitness;
 
-    public Individual() {
-        // TODO: sample random individuals, for now use these hardcoded genes
-        ArrayGene paramGenes = new ArrayGene();
-        JSONObjectGene request_content = new JSONObjectGene();
-        paramGenes.addChild(request_content);
-        StringGene param_key1 = new StringGene("account");
-        StringGene param_value1 = new StringGene("r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59");
-        StringGene param_key2 = new StringGene("ledger_index");
-        StringGene param_value2 = new StringGene("validated");
-        request_content.addChild(param_key1, param_value1);
-        request_content.addChild(param_key2, param_value2);
-
-        method = "account_info";
-        genes = paramGenes;
-    }
-
-    public Individual(String method, ArrayGene genes) {
+    public Individual(String httpMethod, String method, ArrayGene genes) {
+        this.httpMethod = httpMethod;
         this.method = method;
         this.genes = genes;
     }
 
-    public JSONObject toReguest() {
+    public JSONObject toRequest() {
         JSONObject request = new JSONObject();
         request.put("method", method);
         request.put("params", genes.toJSON());
         return request;
+    }
+    
+    public Individual mutate(Specification specification) {
+        if (getRandom().nextDouble() < 0.01) {
+            // mutate http method
+            return new Individual(specification.getGenerator().generateHTTPMethod(), method, genes.copy());
+        } else if (getRandom().nextDouble() < 0.1) {
+            // mutate method
+            ArrayGene method = (ArrayGene) specification.getRandomOption();
+            return new Individual(specification.getGenerator().generateHTTPMethod(), method.getKey(), method);
+        } else {
+            //TODO fix bug
+            System.out.println(genes.toJSON().toString());
+            System.out.println("MUTATE PARAMS");
+            ArrayGene newGenes = genes.mutate(specification);
+//            System.out.println(specification.getChildren().get(method).getChildren());
+            System.out.println(newGenes.getKey());
+            System.out.println(newGenes.toJSON().toString());
+
+            // mutate params
+            return new Individual(httpMethod, method, newGenes);
+        }
+    }
+
+    public String getHTTPMethod() {
+        return httpMethod;
+    }
+
+    public double getFitness() {
+        return fitness;
+    }
+
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
     }
 }

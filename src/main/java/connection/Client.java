@@ -48,9 +48,19 @@ public class Client {
         }
 
         // Print the response
-        System.out.println(new JSONObject(jsonOutputString));
+//        System.out.println(new JSONObject(jsonOutputString));
 
         return con.getResponseCode();
     }
-    
+
+//    public CompletableFuture<JSONObject> sendRequest(int id, JSONObject jsonObject) {
+//        CompletableFuture<JSONObject> future = new CompletableFuture<>();
+//
+//        futures.put(id, future);
+//
+//        this.send(jsonObject.toString());
+//
+//        return future;
+//    }
+
 }

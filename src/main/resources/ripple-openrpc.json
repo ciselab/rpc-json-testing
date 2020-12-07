@@ -1,0 +1,299 @@
+{
+  "openrpc": "1.0.0-rc1",
+  "info": {
+    "version": "1.0.0",
+    "title": "Ripple JSON-RPC",
+    "description": "This API lets you interact with a rippled server via JSON-RPC"
+  },
+  "servers": [
+    {
+      "name": "Ripple testnet",
+      "url": "https://s.devnet.rippletest.net"
+    }
+  ],
+  "methods": [
+    {
+      "name": "account_channels",
+      "description": "The account_channels method returns information about an account's Payment Channels. This includes only channels where the specified account is the channel's source, not the destination. (A channel's 'source' and 'owner' are the same.) All information retrieved is relative to a particular version of the ledger.",
+      "params": [
+        {
+          "$ref": "#/components/contentDescriptors/Account"
+        },
+        {
+          "name": "destination_account",
+          "description": "The unique identifier of an account, typically the account's Address. If provided, filter results to payment channels whose destination is this account.",
+          "schema": {
+            "$ref": "#/components/schemas/Address"
+          }
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerHash"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerIndex"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Limit"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Marker"
+        }
+      ],
+      "result": {
+        "name": "account_channels_result",
+        "description": "Information about an account's Payment Channels where the specified account is the channel's source.",
+        "schema": {
+          "title": "account_channels_result",
+          "type": "object"
+        }
+      }
+    },
+    {
+      "name": "account_currencies",
+      "description": "The account_currencies command retrieves a list of currencies that an account can send or receive, based on its trust lines. (This is not a thoroughly confirmed list, but it can be used to populate user interfaces.)",
+      "params": [
+        {
+          "$ref": "#/components/contentDescriptors/Account"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerHash"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerIndex"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Strict"
+        }
+      ],
+      "result": {
+        "name": "account_currencies_result",
+        "description": "A list of currencies that an account can send or receive.",
+        "schema": {
+          "title": "account_currencies_result",
+          "type": "object"
+        }
+      }
+    },
+    {
+      "name": "account_info",
+      "description": "The account_info command retrieves information about an account, its activity, and its XRP balance. All information retrieved is relative to a particular version of the ledger.",
+      "params": [
+        {
+          "$ref": "#/components/contentDescriptors/Account"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerHash"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerIndex"
+        },
+        {
+          "name": "queue",
+          "description": "If true, and the FeeEscalation amendment is enabled, also returns stats about queued transactions associated with this account. Can only be used when querying for the data from the current open ledger.",
+          "schema": {
+            "title": "queue",
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "signer_lists",
+          "description": "If true, and the MultiSign amendment is enabled, also returns any SignerList objects associated with this account.",
+          "schema": {
+            "title": "signer_lists",
+            "type": "boolean"
+          }
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Strict"
+        }
+      ],
+      "result": {
+        "name": "account_info_result",
+        "description": "The requested account, its data, and a ledger to which it applies.",
+        "schema": {
+          "title": "account_info_result",
+          "type": "object"
+        }
+      }
+    },
+    {
+      "name": "account_lines",
+      "description": "The account_lines method returns information about an account's trust lines, including balances in all non-XRP currencies and assets. All information retrieved is relative to a particular version of the ledger.",
+      "params": [
+        {
+          "$ref": "#/components/contentDescriptors/Account"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerHash"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerIndex"
+        },
+        {
+          "name": "peer",
+          "description": "The Address of a second account. If provided, show only lines of trust connecting the two accounts.",
+          "schema": {
+            "$ref": "#/components/schemas/Address"
+          }
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Limit"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Marker"
+        }
+      ],
+      "result": {
+        "name": "account_lines_result",
+        "description": "The address of the account and an array of trust line objects.",
+        "schema": {
+          "title": "account_lines_result",
+          "type": "object"
+        }
+      }
+    },
+    {
+      "name": "account_objects",
+      "description": "The account_objects command returns the raw ledger format for all objects owned by an account. For a higher-level view of an account's trust lines and balances, see the account_lines method instead.",
+      "params": [
+        {
+          "$ref": "#/components/contentDescriptors/Account"
+        },
+        {
+          "name": "type",
+          "description": "If included, filter results to include only this type of ledger object. The valid types are: check, deposit_preauth, escrow, offer, payment_channel, signer_list, ticket, and state (trust line).",
+          "schema": {
+            "title": "type",
+            "type": "string",
+            "enum": ["check", "deposit_preauth", "escrow", "offer", "payment_channel", "signer_list", "ticket", "state"]
+          }
+        },
+        {
+          "name": "deletion_blockers_only",
+          "description": "If true, the response only includes objects that would block this account from being deleted. The default is false.",
+          "schema": {
+            "title": "deletion_blockers_only",
+            "type": "boolean"
+          }
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerHash"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerIndex"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Limit"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Marker"
+        }
+      ],
+      "result": {
+        "name": "account_objects_result",
+        "description": "The raw ledger format for all objects owned by an account.",
+        "schema": {
+          "title": "account_objects_result",
+          "type": "object"
+        }
+      }
+    },
+    {
+      "name": "account_offers",
+      "description": "The account_offers method retrieves a list of offers made by a given account that are outstanding as of a particular ledger version.",
+      "params": [
+        {
+          "$ref": "#/components/contentDescriptors/Account"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerHash"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerIndex"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Limit"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Marker"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Strict"
+        }
+      ],
+      "result": {
+        "name": "account_offers_result",
+        "description": "A list of offers made by a given account that are outstanding as of a particular ledger version.",
+        "schema": {
+          "title": "account_offers_result",
+          "type": "object"
+        }
+      }
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Address": {
+        "title": "address",
+        "type": "string",
+        "pattern": "^[0-9a-zA-Z]{24,34}$"
+      }
+    },
+    "contentDescriptors": {
+      "Account": {
+        "name": "account",
+        "description": "The unique identifier of an account, typically the account's Address",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Address"
+        }
+      },
+      "LedgerHash": {
+        "name": "ledger_hash",
+        "description": "A 20-byte hex string for the ledger version to use.",
+        "schema": {
+          "title": "ledger_hash",
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        }
+      },
+      "LedgerIndex": {
+        "name": "ledger_index",
+        "description": "The ledger index of the ledger to use, or a shortcut string ('current', 'closed', or 'validated') to choose a ledger automatically.",
+        "schema": {
+          "title": "ledger_index",
+          "anyOf": [
+            { "type": "integer", "minimum": 0, "maximum": 4294967296 },
+            { "type": "string", "enum": ["validated", "closed", "current"] }
+          ]
+        }
+      },
+      "Strict": {
+        "name": "strict",
+        "description": "If true, then the account field only accepts a public key or XRP Ledger address. Otherwise, account can be a secret or passphrase (not recommended). The default is false.",
+        "schema": {
+          "title": "strict",
+          "type": "boolean"
+        }
+      },
+      "Limit": {
+        "name": "limit",
+        "description": "Limit the number of transactions to retrieve. Cannot be less than 10 or more than 400. The default is 200.",
+        "schema": {
+          "title": "limit",
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 400
+        }
+      },
+      "Marker": {
+        "name": "marker",
+        "description": "Value from a previous paginated response. Resume retrieving data where that response left off.",
+        "schema": {
+          "title": "marker",
+          "type": "object"
+        }
+      }
+    }
+  }
+}

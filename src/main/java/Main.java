@@ -1,43 +1,57 @@
 import connection.Client;
 import org.json.JSONObject;
+import search.BasicEA;
+import search.Generator;
 import search.Individual;
-import search.genes.ArrayGene;
-import search.genes.JSONObjectGene;
-import search.genes.StringGene;
+import search.objective.RandomFitness;
+import search.openRPC.Specification;
+import util.IO;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 public class Main {
 
     public static void main (String args[]) {
 
-        // TODO: find other APIs to connect to
-        // The url for the Ripple JSON-RPC API ledger (testnet)
-        String url_ripple = "https://s.devnet.rippletest.net:51234/";
+        ClassLoader classLoader = Main.class.getClassLoader();
+
+        String filepath = classLoader.getResource("ripple-openrpc.json").getFile();
+        Specification specification = null;
+
+        Generator generator = new Generator();
+        try {
+            String data = IO.readFile(filepath);
+            specification = new Specification("root", new JSONObject(data), new JSONObject(data), generator);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
 
         try {
+            // TODO (later): find other APIs to connect to
+            // The url for the Ripple JSON-RPC API ledger (testnet)
+            String url_ripple = "https://s.altnet.rippletest.net:51234";
             URL url = new URL(url_ripple);
             Client client = new Client(url);
 
-            // TODO: start the tool to do multiple passes of EA
+            RandomFitness randomFitness = new RandomFitness(client);
 
-            // For now, this is an example of an individual (a request)
-            Individual ind = new Individual();
+            BasicEA ea = new BasicEA(randomFitness, specification);
+            List<Individual> population = ea.generatePopulation(1);
 
-            int responseCode = client.createRequest("GET", ind.toReguest());
-
-            // TODO: use output (HTTP response code and response JSON object for fitness)
-
-            // Print the HTTP response code
-            System.out.println(responseCode);
+            for (int i = 0; i < 100; i++) {
+                population = ea.nextGeneration(population);
+            }
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
 
+    }
 }

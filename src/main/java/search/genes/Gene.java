@@ -1,7 +1,22 @@
 package search.genes;
 
-public interface Gene<T> {
+import search.openRPC.Specification;
 
-    T toJSON();
+public abstract class Gene<T> {
 
+    private String key;
+
+    public Gene(String key) {
+        this.key = key;
+    }
+
+    abstract T toJSON();
+
+    abstract Gene mutate(Specification specification);
+
+    abstract Gene<T> copy();
+
+    public String getKey() {
+        return key;
+    }
 }
