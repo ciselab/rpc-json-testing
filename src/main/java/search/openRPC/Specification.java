@@ -13,6 +13,10 @@ import java.util.Map;
 
 import static util.RandomSingleton.getRandom;
 
+/**
+ * Specification.
+ * Uses the OpenRPC specification (a JSONObject) to retrieve required methods and corresponding params.
+ */
 public class Specification {
 
     private String location;
