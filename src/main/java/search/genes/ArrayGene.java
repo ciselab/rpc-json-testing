@@ -18,7 +18,6 @@ public class ArrayGene extends NestedGene<JSONArray> {
     public ArrayGene(String key) {
         super(key);
         this.children = new ArrayList<>();
-
     }
 
     public void addChild(Gene gene) {
@@ -53,6 +52,7 @@ public class ArrayGene extends NestedGene<JSONArray> {
         int index = getRandom().nextInt(clone.children.size());
 
         // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
+
         Gene child = clone.children.get(index);
         clone.children.set(index, child.mutate(specification.getChild(child)));
 

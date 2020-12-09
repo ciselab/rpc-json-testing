@@ -34,14 +34,14 @@ public class Individual {
             ArrayGene method = (ArrayGene) specification.getRandomOption();
             return new Individual(specification.getGenerator().generateHTTPMethod(), method.getKey(), method);
         } else {
+            // mutate parameters
             //TODO fix bug
-            System.out.println(genes.toJSON().toString());
             System.out.println("MUTATE PARAMS");
-            ArrayGene newGenes = genes.mutate(specification);
-//            System.out.println(specification.getChildren().get(method).getChildren());
-            System.out.println(newGenes.getKey());
-            System.out.println(newGenes.toJSON().toString());
 
+            System.out.println(genes.toJSON().toString());
+            ArrayGene newGenes = genes.mutate(specification);
+            System.out.println(newGenes.toJSON().toString());
+            System.out.println();
             // mutate params
             return new Individual(httpMethod, method, newGenes);
         }

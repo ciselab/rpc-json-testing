@@ -19,13 +19,15 @@ import static util.RandomSingleton.getRandom;
  */
 public class Specification {
 
+    private String key;
     private String location;
     private JSONObject object;
     private JSONObject fullSpecification;
     private Map<String, Specification> children;
     private Generator generator;
 
-    public Specification(String location, JSONObject object, JSONObject fullSpecification, Generator generator) {
+    public Specification(String key, String location, JSONObject object, JSONObject fullSpecification, Generator generator) {
+        this.key = key;
         this.location = location;
         this.object = object;
         this.fullSpecification = fullSpecification;
@@ -42,7 +44,7 @@ public class Specification {
 
             // Loop through all the listed methods and add them to the list.
             for (int i = 0; i < allMethods.length(); i++) {
-                children.put(allMethods.getJSONObject(i).getString("name"), new Specification("method", allMethods.getJSONObject(i), this.fullSpecification, this.generator));
+                children.put(allMethods.getJSONObject(i).getString("name"), new Specification(allMethods.getJSONObject(i).getString("name"), "method", allMethods.getJSONObject(i), this.fullSpecification, this.generator));
             }
         } else if (this.location.equals("method")) {
             JSONArray params = object.getJSONArray("params");
@@ -52,7 +54,7 @@ public class Specification {
                 if (param.has("$ref")) {
                     param = resolveRef(param.getString("$ref"));
                 }
-                children.put(param.getString("name"), new Specification("param", param, this.fullSpecification, this.generator));
+                children.put(param.getString("name"), new Specification(param.getString("name"), "param", param, this.fullSpecification, this.generator));
 
             }
         } else if (this.location.equals("param")) {
@@ -60,20 +62,20 @@ public class Specification {
 
             if (schema.has("anyOf")) {
                 for (int i = 0; i < schema.getJSONArray("anyOf").length(); i++) {
-                    children.put("" + i, new Specification("type", schema.getJSONArray("anyOf").getJSONObject(i), this.fullSpecification, this.generator));
+                    children.put("" + i, new Specification("" + i, "type", schema.getJSONArray("anyOf").getJSONObject(i), this.fullSpecification, this.generator));
                 }
             } else if (schema.has("type") && schema.get("type") instanceof JSONArray) {
                 for (int i = 0; i < schema.getJSONArray("type").length(); i++) {
                     JSONObject temp = new JSONObject(schema);
                     temp.put("type", schema.getJSONArray("type").getString(i));
-                    children.put("" + i, new Specification("type", temp, this.fullSpecification, this.generator));
+                    children.put("" + i, new Specification("" + i, "type", temp, this.fullSpecification, this.generator));
                 }
             } else {
                 if (schema.has("$ref")) {
                     schema = resolveRef(schema.getString("$ref"));
                 }
 
-                children.put("0", new Specification("type", schema, this.fullSpecification, this.generator));
+                children.put("0", new Specification("0", "type", schema, this.fullSpecification, this.generator));
             }
         }
     }
@@ -111,7 +113,7 @@ public class Specification {
         Specification specification = children.get(keys.get(index));
 
         // call generator using specification for type
-        return generator.generateFromSpecification(keys.get(index), specification);
+        return generator.generateFromSpecification(key, keys.get(index), specification);
     }
 
     public Specification getChild(Gene child) {
@@ -119,6 +121,11 @@ public class Specification {
         if (location.equals("param")) {
             return this;
         }
+
+        if (!children.containsKey(child.getKey())) {
+            throw new IllegalStateException("Invalid key: " + child.getKey());
+        }
+
         return children.get(child.getKey());
     }
 
@@ -136,5 +143,16 @@ public class Specification {
 
     public Generator getGenerator() {
         return generator;
+    }
+
+    @Override
+    public String toString() {
+        return "Specification{" +
+            "location='" + location + '\'' +
+//            ", object=" + object +
+//            ", fullSpecification=" + fullSpecification +
+            ", children=" + children +
+//            ", generator=" + generator +
+            '}';
     }
 }

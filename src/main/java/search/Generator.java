@@ -24,13 +24,13 @@ public class Generator {
      * @param specification
      * @return String location
      */
-    public Gene generateFromSpecification (String key, Specification specification) {
+    public Gene generateFromSpecification(String key, String childKey, Specification specification) {
         if (specification.getLocation().equals("type")) {
             return generateFromTypeSpecification(key, specification);
         } else if (specification.getLocation().equals("param")) {
             throw new IllegalStateException("Should not happen");
         } else if (specification.getLocation().equals("method")) {
-            return generateFromMethodSpecification(key, specification);
+            return generateFromMethodSpecification(key, childKey, specification);
         } else if (specification.getLocation().equals("root")) {
 
         }
@@ -43,9 +43,9 @@ public class Generator {
      * @param specification
      * @return ArrayGene
      */
-    public Gene generateFromMethodSpecification(String key, Specification specification) {
+    public Gene generateFromMethodSpecification(String key, String childKey, Specification specification) {
         ArrayGene arrayGene = new ArrayGene(key);
-        JSONObjectGene objectGene = new JSONObjectGene("0");
+        JSONObjectGene objectGene = new JSONObjectGene(childKey);
         arrayGene.addChild(objectGene);
 
         for (String param : specification.getChildren().keySet()) {

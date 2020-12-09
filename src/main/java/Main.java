@@ -24,12 +24,10 @@ public class Main {
         Generator generator = new Generator();
         try {
             String data = IO.readFile(filepath);
-            specification = new Specification("root", new JSONObject(data), new JSONObject(data), generator);
+            specification = new Specification("root", "root", new JSONObject(data), new JSONObject(data), generator);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
 
         try {
             // TODO (later): find other APIs to connect to
@@ -41,9 +39,9 @@ public class Main {
             RandomFitness randomFitness = new RandomFitness(client);
 
             BasicEA ea = new BasicEA(randomFitness, specification);
-            List<Individual> population = ea.generatePopulation(1);
+            List<Individual> population = ea.generatePopulation(3);
 
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 5; i++) {
                 population = ea.nextGeneration(population);
             }
 

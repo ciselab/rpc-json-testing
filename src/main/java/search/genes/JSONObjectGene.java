@@ -23,6 +23,10 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
     }
 
     public void addChild(StringGene key, Gene value) {
+        if (value == null) {
+            throw new IllegalStateException("Value cannot be null!!!");
+        }
+
         this.children.put(key, value);
     }
 
@@ -58,9 +62,12 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
         int index = getRandom().nextInt(keys.size());
         StringGene key = keys.get(index);
 
+        // TODO add or remove a gene based on the specification
+
         // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
+
         Gene child = clone.children.get(key);
-        clone.children.put(key, child.mutate(specification.getChild(child)));
+        clone.addChild(key, child.mutate(specification.getChild(child)));
 
         return clone;
     }
@@ -68,8 +75,8 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
     @Override
     public JSONObjectGene copy() {
         JSONObjectGene clonedGene = new JSONObjectGene(this.getKey());
-        for (Gene gene : this.getChildren()) {
-            clonedGene.getChildren().add(gene);
+        for (StringGene gene : this.children.keySet()) {
+            clonedGene.addChild(gene.copy(), this.children.get(gene).copy());
         }
         return clonedGene;
     }

@@ -31,7 +31,7 @@ public class BasicEA {
     }
 
     public List<Individual> nextGeneration(List<Individual> population) {
-        System.out.println("NEW GEN");
+//        System.out.println("NEW GEN");
         // TODO generate offspring (mutation and crossover)
         List<Individual> offspring = new ArrayList<>();
 

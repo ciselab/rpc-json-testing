@@ -9,7 +9,8 @@ public class LongGene extends LeaveGene<Long> {
 
     @Override
     public Gene mutate(Specification specification) {
-        return null;
+        throw new IllegalStateException("UNINPLEMENTED");
+//        return null;
     }
 
     @Override
