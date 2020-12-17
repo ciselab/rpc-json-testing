@@ -25,23 +25,25 @@ public class Individual {
         return request;
     }
     
-    public Individual mutate(Specification specification) {
+    public Individual mutate(Generator generator) {
         if (getRandom().nextDouble() < 0.01) {
+//            System.out.println("HTTP method mutated");
             // mutate http method
-            return new Individual(specification.getGenerator().generateHTTPMethod(), method, genes.copy());
+            return new Individual(generator.generateHTTPMethod(), method, genes.copy());
         } else if (getRandom().nextDouble() < 0.1) {
+//            System.out.println("API method mutated");
             // mutate method
-            ArrayGene method = (ArrayGene) specification.getRandomOption();
-            return new Individual(specification.getGenerator().generateHTTPMethod(), method.getKey(), method);
+            String methodName = generator.getRandomMethod();
+            ArrayGene method = generator.generateMethod(methodName);
+            return new Individual(generator.generateHTTPMethod(), methodName, method);
         } else {
             // mutate parameters
             //TODO fix bug
-            System.out.println("MUTATE PARAMS");
-
-            System.out.println(genes.toJSON().toString());
-            ArrayGene newGenes = genes.mutate(specification);
-            System.out.println(newGenes.toJSON().toString());
-            System.out.println();
+//            System.out.println("Parameters are mutated, before and after:");
+//            System.out.println(genes.toJSON().toString());
+            ArrayGene newGenes = genes.mutate(generator);
+//            System.out.println(newGenes.toJSON().toString());
+//            System.out.println();
             // mutate params
             return new Individual(httpMethod, method, newGenes);
         }

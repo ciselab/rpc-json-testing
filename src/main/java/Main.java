@@ -21,13 +21,14 @@ public class Main {
         String filepath = classLoader.getResource("ripple-openrpc.json").getFile();
         Specification specification = null;
 
-        Generator generator = new Generator();
         try {
             String data = IO.readFile(filepath);
-            specification = new Specification("root", "root", new JSONObject(data), new JSONObject(data), generator);
+            specification = new Specification(new JSONObject(data));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Generator generator = new Generator(specification);
 
         try {
             // TODO (later): find other APIs to connect to
@@ -38,10 +39,10 @@ public class Main {
 
             RandomFitness randomFitness = new RandomFitness(client);
 
-            BasicEA ea = new BasicEA(randomFitness, specification);
-            List<Individual> population = ea.generatePopulation(3);
+            BasicEA ea = new BasicEA(randomFitness, generator);
+            List<Individual> population = ea.generatePopulation(10);
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 10; i++) {
                 population = ea.nextGeneration(population);
             }
 

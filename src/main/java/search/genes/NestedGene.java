@@ -9,10 +9,6 @@ import java.util.List;
  */
 public abstract class NestedGene<T> extends Gene<T> {
 
-    public NestedGene(String key) {
-        super(key);
-    }
-
     public abstract boolean hasChildren();
 
     public abstract List<Gene> getChildren();

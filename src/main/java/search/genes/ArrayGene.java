@@ -1,6 +1,7 @@
 package search.genes;
 
 import org.json.JSONArray;
+import search.Generator;
 import search.openRPC.Specification;
 
 import java.util.ArrayList;
@@ -15,8 +16,7 @@ public class ArrayGene extends NestedGene<JSONArray> {
 
     private List<Gene> children;
 
-    public ArrayGene(String key) {
-        super(key);
+    public ArrayGene() {
         this.children = new ArrayList<>();
     }
 
@@ -46,7 +46,7 @@ public class ArrayGene extends NestedGene<JSONArray> {
     }
 
     @Override
-    public ArrayGene mutate(Specification specification) {
+    public ArrayGene mutate(Generator generator) {
         ArrayGene clone = this.copy();
 
         int index = getRandom().nextInt(clone.children.size());
@@ -54,14 +54,14 @@ public class ArrayGene extends NestedGene<JSONArray> {
         // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
 
         Gene child = clone.children.get(index);
-        clone.children.set(index, child.mutate(specification.getChild(child)));
+        clone.children.set(index, child.mutate(generator));
 
         return clone;
     }
 
     @Override
     public ArrayGene copy() {
-        ArrayGene clone = new ArrayGene(this.getKey());
+        ArrayGene clone = new ArrayGene();
 
         for (Gene child : getChildren()) {
             clone.addChild(child.copy());

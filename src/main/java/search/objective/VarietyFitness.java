@@ -3,24 +3,18 @@ package search.objective;
 import connection.Client;
 import search.Generator;
 import search.Individual;
-import search.openRPC.Specification;
 
 import java.util.List;
 
-import static util.RandomSingleton.getRandom;
-
-/**
- * RandomFitness creates random fitness values for individuals (based on Gaussian distribution).
- */
-public class RandomFitness extends Fitness {
-    public RandomFitness(Client client) {
+public class VarietyFitness extends Fitness {
+    public VarietyFitness(Client client) {
         super(client);
     }
 
     @Override
     public void evaluate(Generator generator, Individual individual) {
         runTest(generator, individual);
-        individual.setFitness(getRandom().nextGaussian());
+        individual.setFitness(0);
     }
 
     @Override

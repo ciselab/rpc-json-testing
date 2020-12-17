@@ -9,32 +9,40 @@ import search.genes.Gene;
 import search.genes.JSONObjectGene;
 import search.genes.LongGene;
 import search.genes.StringGene;
+import search.openRPC.ParamSpecification;
+import search.openRPC.SchemaSpecification;
 import search.openRPC.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static util.RandomSingleton.getRandom;
+import static util.RandomSingleton.getRandomIndex;
 
 public class Generator {
 
-    /**
-     * Finds the gene(s) corresponding to a location in the given (part of a) specification.
-     * @param key
-     * @param specification
-     * @return String location
-     */
-    public Gene generateFromSpecification(String key, String childKey, Specification specification) {
-        if (specification.getLocation().equals("type")) {
-            return generateFromTypeSpecification(key, specification);
-        } else if (specification.getLocation().equals("param")) {
-            throw new IllegalStateException("Should not happen");
-        } else if (specification.getLocation().equals("method")) {
-            return generateFromMethodSpecification(key, childKey, specification);
-        } else if (specification.getLocation().equals("root")) {
+    private Specification specification;
 
+    public Generator(Specification specification) {
+        this.specification = specification;
+    }
+
+    public SchemaSpecification getSchema(String path, String type) {
+        List<SchemaSpecification> schemas = specification.getSchemas().get(path);
+
+        for (SchemaSpecification schema : schemas) {
+            if (schema.getType().equals(type)) {
+                return schema;
+            }
         }
-        throw new IllegalStateException("Undefined specification type");
+
+        throw new IllegalArgumentException("Cannot find schema of type: " + type);
+    }
+
+    public String getRandomMethod() {
+        List<String> methods = new ArrayList<>(specification.getMethods().keySet());
+
+        return methods.get(getRandomIndex(methods));
     }
 
     /**
@@ -43,16 +51,16 @@ public class Generator {
      * @param specification
      * @return ArrayGene
      */
-    public Gene generateFromMethodSpecification(String key, String childKey, Specification specification) {
-        ArrayGene arrayGene = new ArrayGene(key);
-        JSONObjectGene objectGene = new JSONObjectGene(childKey);
+    public ArrayGene generateMethod(String name) {
+        List<ParamSpecification> params = specification.getMethods().get(name);
+
+        ArrayGene arrayGene = new ArrayGene();
+        JSONObjectGene objectGene = new JSONObjectGene();
         arrayGene.addChild(objectGene);
 
-        for (String param : specification.getChildren().keySet()) {
-            if ((specification.getChildren().get(param).getObject().has("required") &&
-                specification.getChildren().get(param).getObject().getBoolean("required")) ||
-                getRandom().nextDouble() < 0.5) {
-                objectGene.addChild(new StringGene("", param), specification.getChildren().get(param).getRandomOption());
+        for (ParamSpecification param : params) {
+            if (param.isRequired() || getRandom().nextDouble() < 0.25) {
+                objectGene.addChild(new StringGene("", param.getName()), generateValueGene(param.getPath()));
             }
         }
 
@@ -65,45 +73,42 @@ public class Generator {
      * @param specification
      * @return Gene
      */
-    public Gene generateFromTypeSpecification(String key, Specification specification) {
-        JSONObject typeSpecification = specification.getObject();
+    public Gene generateValueGene(String specPath) {
+        List<SchemaSpecification> schemaOptions = specification.getSchemas().get(specPath);
 
-        Long minimum = typeSpecification.has("minimum") ? typeSpecification.getLong("minimum") : 0L;
-        Long maximum = typeSpecification.has("maximum") ? typeSpecification.getLong("maximum") : Long.MAX_VALUE;
+        // if there is only one possible schema, this will be the type
+        int index = getRandom().nextInt(schemaOptions.size());
 
-        String type = typeSpecification.has("type") ? typeSpecification.getString("type") : null;
-        String pattern = typeSpecification.has("pattern") ? typeSpecification.getString("pattern") : null;
-        List<String> enumOptions = new ArrayList<>();
+        SchemaSpecification specification = schemaOptions.get(index);
 
-        if (typeSpecification.has("enum")) {
-            JSONArray array = typeSpecification.getJSONArray("enum");
-            for (int i = 0; i < array.length(); i++) {
-                enumOptions.add(array.getString(i));
-            }
-        }
+        Long minimum = specification.getMin();
+        Long maximum = specification.getMax();
+
+        String type = specification.getType();
+        String pattern = specification.getPattern();
+        String[] enumOptions = specification.getEnums();
 
         switch (type) {
             case "object":
                 //TODO: maybe change later (now gives error message response from API)
-                return new JSONObjectGene(key);
+                return new JSONObjectGene();
             case "boolean":
-                return new BooleanGene(key, getRandom().nextBoolean());
+                return new BooleanGene(specPath, getRandom().nextBoolean());
             case "integer":
                 long generatedLong = minimum + (long) (getRandom().nextDouble() * (maximum - minimum));
-
-                return new LongGene(key, generatedLong);
+                return new LongGene(specPath, generatedLong);
             case "string":
             default:
-                if (!enumOptions.isEmpty()) {
+                if (enumOptions != null && enumOptions.length != 0) {
                     // pick a random enum type
-                    return new StringGene(key, enumOptions.get(getRandom().nextInt(enumOptions.size())));
+                    return new StringGene(specPath, enumOptions[getRandom().nextInt(enumOptions.length)]);
                 } else if (pattern != null) {
                     // create a value from the pattern
-                    return new StringGene(key, generateRandomValue(pattern));
+                    return new StringGene(specPath, generateRandomValue(pattern));
                 }
         }
 
-        throw new IllegalArgumentException("Invalid parameter ");
+        throw new IllegalArgumentException("Invalid parameter spec: " + specPath);
     }
 
     /**

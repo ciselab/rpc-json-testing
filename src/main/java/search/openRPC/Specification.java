@@ -1,5 +1,6 @@
 package search.openRPC;
 
+import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,10 +9,12 @@ import search.genes.Gene;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import static util.RandomSingleton.getRandom;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 /**
  * Specification.
@@ -19,65 +22,119 @@ import static util.RandomSingleton.getRandom;
  */
 public class Specification {
 
-    private String key;
-    private String location;
+    private static String separator = "/";
+
+    private Map<String, List<ParamSpecification>> methods;
+    private Map<String, List<SchemaSpecification>> schemas;
     private JSONObject object;
-    private JSONObject fullSpecification;
-    private Map<String, Specification> children;
-    private Generator generator;
 
-    public Specification(String key, String location, JSONObject object, JSONObject fullSpecification, Generator generator) {
-        this.key = key;
-        this.location = location;
+    public Specification(JSONObject object) {
         this.object = object;
-        this.fullSpecification = fullSpecification;
-        this.generator = generator;
-        this.children = new HashMap<>();
 
-        // continue down the tree
+        this.methods = new HashMap<>();
+        this.schemas = new HashMap<>();
+
         this.processChildren();
     }
 
     private void processChildren() {
-        if (this.location.equals("root")) {
-            JSONArray allMethods = object.getJSONArray("methods");
 
-            // Loop through all the listed methods and add them to the list.
-            for (int i = 0; i < allMethods.length(); i++) {
-                children.put(allMethods.getJSONObject(i).getString("name"), new Specification(allMethods.getJSONObject(i).getString("name"), "method", allMethods.getJSONObject(i), this.fullSpecification, this.generator));
+        Queue<Pair<String, JSONObject>> pq = new LinkedList<>();
+
+        pq.add(new Pair<>("#", this.object));
+
+        while (!pq.isEmpty()) {
+            Pair<String, JSONObject> pair = pq.poll();
+            String path = pair.getKey();
+            JSONObject object = pair.getValue();
+
+            for (Iterator it = object.keys(); it.hasNext(); ) {
+                String key = (String) it.next();
+
+                if (key.equals("$ref")) {
+                    JSONObject ref = resolveRef(object.getString("$ref"));
+                    pq.add(new Pair<>(path, ref));
+                } else if (key.equals("schema")) {
+                    // value
+                    this.schemas.put(path + separator + key, extractTypes(object.getJSONObject(key)));
+                } else if (object.get(key) instanceof JSONObject) {
+                    pq.add(new Pair<>(path + separator + key, object.getJSONObject(key)));
+                } else if (object.get(key) instanceof JSONArray) {
+                    JSONArray array = object.getJSONArray(key);
+                    String newPath = path + separator + key + separator;
+
+                    if (key.equals("methods")) {
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject method = array.getJSONObject(i);
+                            List<ParamSpecification> paramSpecifications = getParamInfo(newPath + i, method);
+
+                            methods.put(method.getString("name"), paramSpecifications);
+                        }
+                    }
+
+                    // TODO assumes that all arrays contain objects
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject next = array.getJSONObject(i);
+
+                        pq.add(new Pair<>(newPath + i, next));
+                    }
+
+                    // TODO
+                } else {
+//                    // does not recognize keys, should continue
+                }
+
             }
-        } else if (this.location.equals("method")) {
-            JSONArray params = object.getJSONArray("params");
 
-            for (int i = 0; i < params.length(); i++) {
-                JSONObject param = params.getJSONObject(i);
-                if (param.has("$ref")) {
-                    param = resolveRef(param.getString("$ref"));
-                }
-                children.put(param.getString("name"), new Specification(param.getString("name"), "param", param, this.fullSpecification, this.generator));
-
-            }
-        } else if (this.location.equals("param")) {
-            JSONObject schema = object.getJSONObject("schema");
-
-            if (schema.has("anyOf")) {
-                for (int i = 0; i < schema.getJSONArray("anyOf").length(); i++) {
-                    children.put("" + i, new Specification("" + i, "type", schema.getJSONArray("anyOf").getJSONObject(i), this.fullSpecification, this.generator));
-                }
-            } else if (schema.has("type") && schema.get("type") instanceof JSONArray) {
-                for (int i = 0; i < schema.getJSONArray("type").length(); i++) {
-                    JSONObject temp = new JSONObject(schema);
-                    temp.put("type", schema.getJSONArray("type").getString(i));
-                    children.put("" + i, new Specification("" + i, "type", temp, this.fullSpecification, this.generator));
-                }
-            } else {
-                if (schema.has("$ref")) {
-                    schema = resolveRef(schema.getString("$ref"));
-                }
-
-                children.put("0", new Specification("0", "type", schema, this.fullSpecification, this.generator));
-            }
         }
+
+    }
+
+    private List<ParamSpecification> getParamInfo (String path, JSONObject object) {
+        List<ParamSpecification> paramSpecifications = new ArrayList<>();
+
+        JSONArray params = object.getJSONArray("params");
+
+        path += separator + "params";
+
+        for (int i = 0; i < params.length(); i++) {
+            JSONObject param = params.getJSONObject(i);
+
+            if (param.has("$ref")) {
+                param = resolveRef(param.getString("$ref"));
+            }
+
+            String name = param.getString("name");
+            boolean required = param.has("required") && param.getBoolean("required");
+
+            paramSpecifications.add(new ParamSpecification(name, path + separator + i + separator + "schema", required));
+        }
+
+        return paramSpecifications;
+    }
+
+    private List<SchemaSpecification> extractTypes(JSONObject schema) {
+        List<SchemaSpecification> types = new ArrayList<>();
+
+        if (schema.has("anyOf")) {
+            for (int i = 0; i < schema.getJSONArray("anyOf").length(); i++) {
+                types.add(new SchemaSpecification(this.object, schema.getJSONArray("anyOf").getJSONObject(i)));
+            }
+        } else if (schema.has("type") && schema.get("type") instanceof JSONArray) {
+            for (int i = 0; i < schema.getJSONArray("type").length(); i++) {
+                JSONObject temp = new JSONObject(schema);
+                temp.put("type", schema.getJSONArray("type").getString(i));
+                types.add(new SchemaSpecification(this.object, temp));
+            }
+        } else {
+            if (schema.has("$ref")) {
+                schema = resolveRef(schema.getString("$ref"));
+            }
+
+            types.add(new SchemaSpecification(this.object, schema));
+        }
+
+        return types;
     }
 
     /**
@@ -90,7 +147,7 @@ public class Specification {
         ref = ref.substring(ref.indexOf("#") + 2);
         String[] pathPieces = ref.split("/");
 
-        JSONObject object = this.fullSpecification;
+        JSONObject object = this.object;
         for (String pathPiece : pathPieces) {
             if (object.has(pathPiece)) {
                 object = object.getJSONObject(pathPiece);
@@ -101,58 +158,17 @@ public class Specification {
         return object;
     }
 
-    /**
-     * Get a different option (e.g. from one method to another, or from one type to another)
-     * @return location
-     */
-    public Gene getRandomOption() {
-        List<String> keys = new ArrayList<>(children.keySet());
-
-        int index = getRandom().nextInt(keys.size());
-
-        Specification specification = children.get(keys.get(index));
-
-        // call generator using specification for type
-        return generator.generateFromSpecification(key, keys.get(index), specification);
-    }
-
-    public Specification getChild(Gene child) {
-        // Do not continue further than param (tree ends here)
-        if (location.equals("param")) {
-            return this;
-        }
-
-        if (!children.containsKey(child.getKey())) {
-            throw new IllegalStateException("Invalid key: " + child.getKey());
-        }
-
-        return children.get(child.getKey());
-    }
-
-    public Map<String, Specification> getChildren() {
-        return children;
-    }
-
-    public String getLocation() {
-        return location;
-    }
 
     public JSONObject getObject() {
         return object;
     }
 
-    public Generator getGenerator() {
-        return generator;
+    public Map<String, List<ParamSpecification>> getMethods() {
+        return methods;
     }
 
-    @Override
-    public String toString() {
-        return "Specification{" +
-            "location='" + location + '\'' +
-//            ", object=" + object +
-//            ", fullSpecification=" + fullSpecification +
-            ", children=" + children +
-//            ", generator=" + generator +
-            '}';
+    public Map<String, List<SchemaSpecification>> getSchemas() {
+        return schemas;
     }
 }
+

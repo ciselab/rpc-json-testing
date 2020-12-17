@@ -9,40 +9,42 @@ import java.util.List;
 
 public class BasicEA {
 
-    private Specification specification;
     private Fitness fitness;
+    private Generator generator;
 
     private List<Individual> population;
 
-    public BasicEA(Fitness fitness, Specification specification) {
-        this.specification = specification;
+    public BasicEA(Fitness fitness, Generator generator) {
         this.fitness = fitness;
+        this.generator = generator;
     }
 
     public List<Individual> generatePopulation(int size) {
         List<Individual> population = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            ArrayGene method = (ArrayGene) specification.getRandomOption();
+            String methodName = generator.getRandomMethod();
+            ArrayGene method = generator.generateMethod(methodName);
 
-            Individual individual = new Individual(specification.getGenerator().generateHTTPMethod(), method.getKey(), method);
+            Individual individual = new Individual(generator.generateHTTPMethod(), methodName, method);
             population.add(individual);
         }
         return population;
     }
 
     public List<Individual> nextGeneration(List<Individual> population) {
-//        System.out.println("NEW GEN");
+        System.out.println("---> Next Generation");
+
         // TODO generate offspring (mutation and crossover)
         List<Individual> offspring = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
-            offspring.add(population.get(i).mutate(specification));
+            offspring.add(population.get(i).mutate(generator));
         }
 
         offspring.addAll(population);
 
         // evaluate entire population
-        fitness.evaluate(specification, offspring);
+        fitness.evaluate(generator, offspring);
 
         // Sort
         offspring.sort((o1, o2) -> Double.compare(o2.getFitness(), o1.getFitness()));

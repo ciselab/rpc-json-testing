@@ -1,6 +1,7 @@
 package search.genes;
 
 import org.json.JSONObject;
+import search.Generator;
 import search.openRPC.Specification;
 
 import java.util.ArrayList;
@@ -17,8 +18,7 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
 
     private Map<StringGene, Gene> children;
 
-    public JSONObjectGene(String key) {
-        super(key);
+    public JSONObjectGene() {
         this.children = new HashMap<>();
     }
 
@@ -50,7 +50,7 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
     }
 
     @Override
-    public Gene mutate(Specification specification) {
+    public Gene mutate(Generator generator) {
         JSONObjectGene clone = this.copy();
 
         List<StringGene> keys = new ArrayList<>(clone.children.keySet());
@@ -67,14 +67,14 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
         // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
 
         Gene child = clone.children.get(key);
-        clone.addChild(key, child.mutate(specification.getChild(child)));
+        clone.addChild(key, child.mutate(generator));
 
         return clone;
     }
 
     @Override
     public JSONObjectGene copy() {
-        JSONObjectGene clonedGene = new JSONObjectGene(this.getKey());
+        JSONObjectGene clonedGene = new JSONObjectGene();
         for (StringGene gene : this.children.keySet()) {
             clonedGene.addChild(gene.copy(), this.children.get(gene).copy());
         }

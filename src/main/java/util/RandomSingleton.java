@@ -1,5 +1,6 @@
 package util;
 
+import java.util.List;
 import java.util.Random;
 
 public final class RandomSingleton {
@@ -12,6 +13,10 @@ public final class RandomSingleton {
         }
 
         return random;
+    }
+
+    public static int getRandomIndex(List list) {
+        return getRandom().nextInt(list.size());
     }
 
     public static void setSeed(long seed) {
