@@ -13,7 +13,7 @@ public class BooleanGene extends ValueGene<Boolean> {
     @Override
     public Gene mutate(Generator generator) {
         if (getRandom().nextDouble() < 0.95) {
-            System.out.println("booleanGene: boolean changed from " + this.getValue() + " to " + !this.getValue());
+//            System.out.println("booleanGene: boolean changed from " + this.getValue() + " to " + !this.getValue());
             return new BooleanGene(this.getSpecPath(), !this.getValue());
         } else {
 //            System.out.println("booleanGene: gene type changed");

@@ -29,25 +29,25 @@ public class StringGene extends ValueGene<String> {
             double r = getRandom().nextDouble();
             double limit = (double) 1 / (double) 3;
             if (r < limit) {
-                System.out.println("stringGene: char replaced");
+//                System.out.println("stringGene: char replaced");
                 // replace character at the specified position in char array
                 chars[position] = newChar;
                 // convert the character array back into string
                 mutatedValue = String.valueOf(chars);
             }
             else if (r > 2*limit) {
-                System.out.println("stringGene: char added");
+//                System.out.println("stringGene: char added");
                 // add character
                 String leftSub = getValue().substring(0, position);
                 String rightSub = getValue().substring(position, getValue().length());
                 mutatedValue = leftSub + newChar + rightSub;
             } else {
-                System.out.println("stringGene: char deleted");
+//                System.out.println("stringGene: char deleted");
                 // delete character
                 mutatedValue = getValue().substring(0, position) + getValue().substring(position+1, getValue().length());
             }
 
-            System.out.println("stringGene changed from " + this.getValue() + " to " + mutatedValue);
+//            System.out.println("stringGene changed from " + this.getValue() + " to " + mutatedValue);
 
             return new StringGene(this.getSpecPath(), mutatedValue);
         } else {

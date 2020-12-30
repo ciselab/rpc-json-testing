@@ -62,7 +62,7 @@ public class LongGene extends ValueGene<Long> {
 //            } else if (mutatedValue > maximum) {
 //                mutatedValue = maximum;
 //            }
-            System.out.println("longGene changed from " + this.getValue() + " to " + newValue);
+//            System.out.println("longGene changed from " + this.getValue() + " to " + newValue);
 
             return new LongGene(this.getSpecPath(), newValue);
         } else {

@@ -20,7 +20,7 @@ public class Client {
     }
 
     // Based on https://www.twilio.com/blog/5-ways-to-make-http-requests-in-java
-    public int createRequest(String method, JSONObject request) throws IOException {
+    public ResponseObject createRequest(String method, JSONObject request) throws IOException {
         // Open a connection on the URL and cast the response
         HttpURLConnection con = (HttpURLConnection) serverURI.openConnection();
 
@@ -36,7 +36,7 @@ public class Client {
             os.write(input, 0, input.length);
         }
 
-        String jsonOutputString = "";
+        String jsonOutputString;
 
         try(BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
             StringBuilder response = new StringBuilder();
@@ -48,9 +48,10 @@ public class Client {
         }
 
         // Print the response
-//        System.out.println(new JSONObject(jsonOutputString));
+        System.out.println(con.getResponseCode());
+        System.out.println(new JSONObject(jsonOutputString));
 
-        return con.getResponseCode();
+        return new ResponseObject(con.getResponseCode(), new JSONObject(jsonOutputString));
     }
 
 //    public CompletableFuture<JSONObject> sendRequest(int id, JSONObject jsonObject) {

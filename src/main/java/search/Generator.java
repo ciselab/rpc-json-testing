@@ -1,8 +1,6 @@
 package search;
 
 import com.github.curiousoddman.rgxgen.RgxGen;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import search.genes.ArrayGene;
 import search.genes.BooleanGene;
 import search.genes.Gene;
@@ -69,8 +67,7 @@ public class Generator {
 
     /**
      * Retrieve the Gene from the given specification that corresponds to the type(s) of a param.
-     * @param key
-     * @param specification
+     * @param specPath
      * @return Gene
      */
     public Gene generateValueGene(String specPath) {

@@ -36,8 +36,6 @@ public class SchemaSpecification {
 
         // TODO more options
 
-
-
     }
 
     public String getType() {

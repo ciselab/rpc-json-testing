@@ -4,6 +4,7 @@ import search.BasicEA;
 import search.Generator;
 import search.Individual;
 import search.objective.RandomFitness;
+import search.objective.StatusCodeFitness;
 import search.openRPC.Specification;
 import util.IO;
 
@@ -32,14 +33,15 @@ public class Main {
 
         try {
             // TODO (later): find other APIs to connect to
+
             // The url for the Ripple JSON-RPC API ledger (testnet)
             String url_ripple = "https://s.altnet.rippletest.net:51234";
             URL url = new URL(url_ripple);
             Client client = new Client(url);
 
-            RandomFitness randomFitness = new RandomFitness(client);
+           StatusCodeFitness statusCodeFitness = new StatusCodeFitness(client);
 
-            BasicEA ea = new BasicEA(randomFitness, generator);
+            BasicEA ea = new BasicEA(statusCodeFitness, generator);
             List<Individual> population = ea.generatePopulation(10);
 
             for (int i = 0; i < 10; i++) {
