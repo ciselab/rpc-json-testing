@@ -3,7 +3,6 @@ package search.objective;
 import connection.Client;
 import search.Generator;
 import search.Individual;
-import search.openRPC.Specification;
 
 import java.io.IOException;
 import java.util.List;

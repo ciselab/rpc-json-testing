@@ -38,7 +38,6 @@ public class Individual {
             return new Individual(generator.generateHTTPMethod(), methodName, method);
         } else {
             // mutate parameters
-            //TODO fix bug
 //            System.out.println("Parameters are mutated, before and after:");
 //            System.out.println(genes.toJSON().toString());
             ArrayGene newGenes = genes.mutate(generator);

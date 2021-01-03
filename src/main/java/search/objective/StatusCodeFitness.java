@@ -21,22 +21,13 @@ public class StatusCodeFitness extends Fitness {
 
     @Override
     public void evaluate(Generator generator, Individual individual) throws IOException {
-        // Cannot evaluate one individual in this case. Evaluation based on entire generation.
+        // Cannot evaluate one individual in this case. Evaluation is based on entire generation.
     }
 
     @Override
     public void evaluate(Generator generator, List<Individual> population) {
 
-        List<ResponseObject> responses = new ArrayList<>();
-
-        for (int i = 0; i < population.size(); i++) {
-            Individual individual = population.get(i);
-            try {
-                responses.add(getClient().createRequest(individual.getHTTPMethod(), individual.toRequest()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        List<ResponseObject> responses = getResponses(population);
 
         this.statusFrequencyTable = new HashMap<>();
         for (int i = 0; i < population.size(); i++) {

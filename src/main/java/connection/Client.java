@@ -46,10 +46,15 @@ public class Client {
             }
             jsonOutputString = response.toString();
         }
+        catch(IOException e) {
+//            e.printStackTrace();
+            //TODO: fix this 400 error exception
+            jsonOutputString = "{}";
+        }
 
         // Print the response
-        System.out.println(con.getResponseCode());
-        System.out.println(new JSONObject(jsonOutputString));
+//        System.out.println("Code: " + con.getResponseCode());
+//        System.out.println("JSON: " + new JSONObject(jsonOutputString));
 
         return new ResponseObject(con.getResponseCode(), new JSONObject(jsonOutputString));
     }

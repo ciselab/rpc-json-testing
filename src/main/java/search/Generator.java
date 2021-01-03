@@ -45,8 +45,7 @@ public class Generator {
 
     /**
      * Retrieve the arrayGene from the given specification that corresponds to a method.
-     * @param key
-     * @param specification
+     * @param name
      * @return ArrayGene
      */
     public ArrayGene generateMethod(String name) {
