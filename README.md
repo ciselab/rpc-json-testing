@@ -1,11 +1,11 @@
-# Evolutionary grammer-based fuzzing for JSON RCP APIs
+# Evolutionary grammer-based fuzzing for JSON RPC APIs
 
  - - - -
 
-*Research purpose: create a tool that generates tests using (evolutionary) grammer-based fuzzing for a JSON RCP API (system-level).*
+*Research purpose: create a tool that generates tests using (evolutionary) grammer-based fuzzing for a JSON RPC API (system-level).*
 
 Potential research questions (will be adjusted as the research progresses):
-1. How effective is evolutionary grammer-based fuzzing to achieve test coverage on a JSON RCP API? (possible subquestion: try out different EAs)
+1. How effective is evolutionary grammer-based fuzzing to achieve test coverage on a JSON RPC API? (possible subquestion: try out different EAs)
 2. What test coverage can be obtained with the created tool?
 3. How efficient is the created tool? / How does the tool compare to existing techniques that measure test coverage?
 4. Which kind of attacks (that target certain vulnerabilities) can be most effectively generated?
