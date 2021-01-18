@@ -7,6 +7,7 @@ import search.objective.RandomFitness;
 import search.objective.ResponseStructureFitness;
 import search.objective.StatusCodeFitness;
 import search.openRPC.Specification;
+import test_generation.TestWriter;
 import util.IO;
 
 import java.io.IOException;
@@ -43,11 +44,18 @@ public class Main {
             ResponseStructureFitness fitness = new ResponseStructureFitness(client);
 
             BasicEA ea = new BasicEA(fitness, generator);
-            List<Individual> population = ea.generatePopulation(50);
+            List<Individual> population = ea.generatePopulation(5);
 
             for (int i = 0; i < 10; i++) {
                 System.out.println("Generation: " + i);
                 population = ea.nextGeneration(population);
+            }
+
+            String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
+            TestWriter testWriter = new TestWriter(url_ripple, testDirectory);
+
+            for (int i = 0; i < population.size(); i++) {
+                testWriter.writeTest(population.get(i), "ind" + i + "Test");
             }
 
         } catch (MalformedURLException e) {
