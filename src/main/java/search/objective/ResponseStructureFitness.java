@@ -14,13 +14,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class ResponseStructureFitness extends Fitness {
     private static String STANDARD_STRING = "";
     private static Boolean STANDARD_BOOLEAN = true;
     private static Integer STANDARD_NUMBER = 0;
+
     private Map<String, Integer> structureFrequencyTable;
 
 
@@ -53,7 +53,6 @@ public class ResponseStructureFitness extends Fitness {
 //            System.out.println(structureFrequencyTable.get(stripValues(responses.get(i).getResponseObject()).toString()));
             double fitness = (double) 1 / structureFrequencyTable.get(stripValues(responses.get(i).getResponseObject()).toString());
             population.get(i).setFitness(fitness);
-//            System.out.println("fitness: " + fitness);
         }
 
         System.out.println("Map: " + structureFrequencyTable.keySet().size());
@@ -91,7 +90,7 @@ public class ResponseStructureFitness extends Fitness {
                         } else if (arrayObject instanceof Boolean) {
                             array.put(i, STANDARD_BOOLEAN);
                         }
-                        // TODO assuming no arrays in arrays!!
+                        // TODO currently it is assuming no arrays in arrays
                     }
                 } else if (smallerObject instanceof String) {
                     object.put(key, STANDARD_STRING);
@@ -105,7 +104,6 @@ public class ResponseStructureFitness extends Fitness {
                 }
             }
         }
-
         return structure;
     }
 

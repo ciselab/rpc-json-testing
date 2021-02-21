@@ -4,6 +4,7 @@ import search.BasicEA;
 import search.Generator;
 import search.Individual;
 import search.objective.RandomFitness;
+import search.objective.ResponseFitness;
 import search.objective.ResponseStructureFitness;
 import search.objective.StatusCodeFitness;
 import search.openRPC.Specification;
@@ -41,12 +42,12 @@ public class Main {
             URL url = new URL(url_ripple);
             Client client = new Client(url);
 
-            ResponseStructureFitness fitness = new ResponseStructureFitness(client);
+            ResponseFitness fitness = new ResponseFitness(client);
 
             BasicEA ea = new BasicEA(fitness, generator);
             List<Individual> population = ea.generatePopulation(5);
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 100; i++) {
                 System.out.println("Generation: " + i);
                 population = ea.nextGeneration(population);
             }
