@@ -11,6 +11,7 @@ import search.Individual;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -41,15 +42,18 @@ public class ResponseStructureFitness extends Fitness {
         this.structureFrequencyTable = new HashMap<>();
         for (int i = 0; i < population.size(); i++) {
             String structureString = stripValues(responses.get(i).getResponseObject()).toString();
+//            System.out.println("Ind " + i + ": " + structureString);
             if (!structureFrequencyTable.containsKey(structureString)) {
                 structureFrequencyTable.put(structureString, 0);
             }
-            structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString)+1);
+            structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
         }
 
         for (int i = 0; i < population.size(); i++) {
-            double fitness = 1 / structureFrequencyTable.get(stripValues(responses.get(i).getResponseObject()).toString());
+//            System.out.println(structureFrequencyTable.get(stripValues(responses.get(i).getResponseObject()).toString()));
+            double fitness = (double) 1 / structureFrequencyTable.get(stripValues(responses.get(i).getResponseObject()).toString());
             population.get(i).setFitness(fitness);
+//            System.out.println("fitness: " + fitness);
         }
 
         System.out.println("Map: " + structureFrequencyTable.keySet().size());
@@ -63,7 +67,7 @@ public class ResponseStructureFitness extends Fitness {
     public JSONObject stripValues(JSONObject response) {
         JSONObject structure = new JSONObject(response.toString());
 
-        Queue<JSONObject> queue = new PriorityQueue<>();
+        Queue<JSONObject> queue = new LinkedList<>();
         queue.add(structure);
 
         while(!queue.isEmpty()) {
@@ -82,7 +86,7 @@ public class ResponseStructureFitness extends Fitness {
                             queue.add((JSONObject) arrayObject);
                         } else if (arrayObject instanceof JSONString) {
                             array.put(i, STANDARD_STRING);
-                        } else if (arrayObject instanceof Integer) {
+                        } else if (arrayObject instanceof Number) {
                             array.put(i, STANDARD_NUMBER);
                         } else if (arrayObject instanceof Boolean) {
                             array.put(i, STANDARD_BOOLEAN);
@@ -91,10 +95,13 @@ public class ResponseStructureFitness extends Fitness {
                     }
                 } else if (smallerObject instanceof String) {
                     object.put(key, STANDARD_STRING);
-                } else if (smallerObject instanceof Integer) {
+                } else if (smallerObject instanceof Number) {
                     object.put(key, STANDARD_NUMBER);
                 } else if (smallerObject instanceof Boolean) {
                     object.put(key, STANDARD_BOOLEAN);
+                } else {
+//                    System.out.println(smallerObject.toString());
+//                    System.out.println(smallerObject.getClass());
                 }
             }
         }

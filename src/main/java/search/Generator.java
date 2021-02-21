@@ -56,6 +56,7 @@ public class Generator {
         arrayGene.addChild(objectGene);
 
         for (ParamSpecification param : params) {
+            // TODO this value is rather random and should be specified in some properties/config file
             if (param.isRequired() || getRandom().nextDouble() < 0.25) {
                 objectGene.addChild(new StringGene("", param.getName()), generateValueGene(param.getPath()));
             }
@@ -88,6 +89,9 @@ public class Generator {
             case "object":
                 //TODO: maybe change later (now gives error message response from API)
                 return new JSONObjectGene();
+            case "array":
+                // TODO
+                return new ArrayGene();
             case "boolean":
                 return new BooleanGene(specPath, getRandom().nextBoolean());
             case "integer":
@@ -101,10 +105,10 @@ public class Generator {
                 } else if (pattern != null) {
                     // create a value from the pattern
                     return new StringGene(specPath, generateRandomValue(pattern));
+                } else {
+                    return new StringGene(specPath, generateRandomValue("[a-z]*"));
                 }
         }
-
-        throw new IllegalArgumentException("Invalid parameter spec: " + specPath);
     }
 
     /**

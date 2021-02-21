@@ -49,12 +49,17 @@ public class ArrayGene extends NestedGene<JSONArray> {
     public ArrayGene mutate(Generator generator) {
         ArrayGene clone = this.copy();
 
-        int index = getRandom().nextInt(clone.children.size());
 
-        // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
+        if (clone.children.size() == 0) {
+            // TODO add child by default maybe
+        } else {
+            int index = getRandom().nextInt(clone.children.size());
 
-        Gene child = clone.children.get(index);
-        clone.children.set(index, child.mutate(generator));
+            // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
+
+            Gene child = clone.children.get(index);
+            clone.children.set(index, child.mutate(generator));
+        }
 
         return clone;
     }

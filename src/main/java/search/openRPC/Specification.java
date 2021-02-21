@@ -34,7 +34,51 @@ public class Specification {
         this.methods = new HashMap<>();
         this.schemas = new HashMap<>();
 
+        this.resolveRefs();
+
         this.processChildren();
+    }
+
+    private void resolveRefs() {
+        Queue<Object> pq = new LinkedList<>();
+        pq.add(this.object);
+
+        while (!pq.isEmpty()) {
+            Object x = pq.poll();
+            if (x instanceof JSONObject) {
+                JSONObject object = (JSONObject) x;
+
+                for (Iterator it = object.keys(); it.hasNext();) {
+                    String key = (String) it.next();
+                    if (key.equals("$ref")) {
+                        JSONObject ref = resolveRef(object.getString("$ref"));
+                        object.remove("$ref");
+
+                        copyKeyValuePairToObject(ref, object);
+                    }
+                }
+                for (Iterator it = object.keys(); it.hasNext();) {
+                    String key = (String) it.next();
+
+                    pq.add(object.get(key));
+                }
+            } else if (x instanceof JSONArray) {
+                JSONArray object = (JSONArray) x;
+                for (int i = 0; i < object.length(); i++) {
+                    pq.add(object.get(i));
+                }
+            } else {
+                // skip
+            }
+        }
+
+    }
+
+    private void copyKeyValuePairToObject(JSONObject donor, JSONObject target) {
+        for (Iterator it = donor.keys(); it.hasNext();) {
+            String key = (String) it.next();
+            target.put(key, donor.get(key));
+        }
     }
 
     private void processChildren() {
@@ -51,10 +95,7 @@ public class Specification {
             for (Iterator it = object.keys(); it.hasNext(); ) {
                 String key = (String) it.next();
 
-                if (key.equals("$ref")) {
-                    JSONObject ref = resolveRef(object.getString("$ref"));
-                    pq.add(new Pair<>(path, ref));
-                } else if (key.equals("schema")) {
+                if (key.equals("schema")) {
                     // value
                     this.schemas.put(path + separator + key, extractTypes(object.getJSONObject(key)));
                 } else if (object.get(key) instanceof JSONObject) {
@@ -72,11 +113,12 @@ public class Specification {
                         }
                     }
 
-                    // TODO assumes that all arrays contain objects
                     for (int i = 0; i < array.length(); i++) {
-                        JSONObject next = array.getJSONObject(i);
+                        Object next = array.get(i);
 
-                        pq.add(new Pair<>(newPath + i, next));
+                        if (next instanceof JSONObject) {
+                            pq.add(new Pair<>(newPath + i, (JSONObject) next));
+                        }
                     }
 
                     // TODO
@@ -100,10 +142,6 @@ public class Specification {
         for (int i = 0; i < params.length(); i++) {
             JSONObject param = params.getJSONObject(i);
 
-            if (param.has("$ref")) {
-                param = resolveRef(param.getString("$ref"));
-            }
-
             String name = param.getString("name");
             boolean required = param.has("required") && param.getBoolean("required");
 
@@ -113,25 +151,21 @@ public class Specification {
         return paramSpecifications;
     }
 
-    private List<SchemaSpecification> extractTypes(JSONObject schema) {
+    public static List<SchemaSpecification> extractTypes(JSONObject schema) {
         List<SchemaSpecification> types = new ArrayList<>();
 
-        if (schema.has("anyOf")) {
-            for (int i = 0; i < schema.getJSONArray("anyOf").length(); i++) {
-                types.add(new SchemaSpecification(this.object, schema.getJSONArray("anyOf").getJSONObject(i)));
+        if (schema.has("oneOf")) {
+            for (int i = 0; i < schema.getJSONArray("oneOf").length(); i++) {
+                types.add(new SchemaSpecification(schema.getJSONArray("oneOf").getJSONObject(i)));
             }
         } else if (schema.has("type") && schema.get("type") instanceof JSONArray) {
             for (int i = 0; i < schema.getJSONArray("type").length(); i++) {
                 JSONObject temp = new JSONObject(schema);
                 temp.put("type", schema.getJSONArray("type").getString(i));
-                types.add(new SchemaSpecification(this.object, temp));
+                types.add(new SchemaSpecification(temp));
             }
         } else {
-            if (schema.has("$ref")) {
-                schema = resolveRef(schema.getString("$ref"));
-            }
-
-            types.add(new SchemaSpecification(this.object, schema));
+            types.add(new SchemaSpecification(schema));
         }
 
         return types;

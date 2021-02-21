@@ -16,6 +16,12 @@ public class StringGene extends ValueGene<String> {
     public Gene mutate(Generator generator) {
         if (getRandom().nextDouble() < 0.95) {
             // select position to change/add/delete a character
+
+            if (this.getValue().length() == 0) {
+                // TODO always just add because there are no chars to mutate
+                return getNewGene(generator);
+            }
+
             int position = getRandom().nextInt(this.getValue().length());
 
             // convert the string to a character array

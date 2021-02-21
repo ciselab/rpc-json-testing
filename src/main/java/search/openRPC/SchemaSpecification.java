@@ -3,6 +3,16 @@ package search.openRPC;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static search.openRPC.Specification.extractTypes;
+
 public class SchemaSpecification {
 
     private String type;
@@ -13,7 +23,12 @@ public class SchemaSpecification {
     private String pattern;
     private String[] enums;
 
-    public SchemaSpecification(JSONObject specification, JSONObject schema) {
+    private Set<String> requiredKeys;
+    private Map<String, List<SchemaSpecification>> childSchemaSpecification;
+
+    private List<SchemaSpecification> arrayItemSchemaSpecification;
+
+    public SchemaSpecification(JSONObject schema) {
         this.type = schema.getString("type");
 
         if (type.equals("integer")) {
@@ -31,11 +46,28 @@ public class SchemaSpecification {
                 }
             }
         } else if (type.equals("object")) {
-            // TODO
+            requiredKeys = new HashSet<>();
+            childSchemaSpecification = new HashMap<>();
+            if (schema.has("required")) {
+                JSONArray requiredArgs = schema.getJSONArray("required");
+
+                for (int i = 0; i < requiredArgs.length(); i++) {
+                    requiredKeys.add(requiredArgs.getString(i));
+                }
+            }
+            if (schema.has("properties")) {
+                JSONObject args = schema.getJSONObject("properties");
+
+                for (Iterator it = args.keys(); it.hasNext(); ) {
+                    String key = (String) it.next();
+                    childSchemaSpecification.put(key, extractTypes(args.getJSONObject(key)));
+                }
+            }
+        } else if (type.equals("array")) {
+            if (schema.has("items")) {
+                arrayItemSchemaSpecification = extractTypes(schema.getJSONObject("items"));
+            }
         }
-
-        // TODO more options
-
     }
 
     public String getType() {
@@ -56,5 +88,17 @@ public class SchemaSpecification {
 
     public String[] getEnums() {
         return enums;
+    }
+
+    public Set<String> getRequiredKeys() {
+        return requiredKeys;
+    }
+
+    public Map<String, List<SchemaSpecification>> getChildSchemaSpecification() {
+        return childSchemaSpecification;
+    }
+
+    public List<SchemaSpecification> getArrayItemSchemaSpecification() {
+        return arrayItemSchemaSpecification;
     }
 }
