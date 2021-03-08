@@ -58,6 +58,11 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
         JSONObjectGene clone = this.copy();
         List<StringGene> keys = new ArrayList<>(clone.children.keySet());
 
+        // if there are no parameters/children and there is no schema, do not do anything.
+        if (getSchema() == null && keys.isEmpty()) {
+            return clone;
+        }
+
         // if there is no schema it means this is the main parameters object
         if (getSchema() == null) {
             // TODO this always mutates exactly ONE CHILD (but we might want to mutate more later)
