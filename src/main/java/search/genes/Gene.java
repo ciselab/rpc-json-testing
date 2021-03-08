@@ -1,8 +1,15 @@
 package search.genes;
 
 import search.Generator;
+import search.openRPC.SchemaSpecification;
 
 public abstract class Gene<T> {
+
+    private SchemaSpecification schema;
+
+    public Gene(SchemaSpecification schema) {
+        this.schema = schema;
+    }
 
     abstract T toJSON();
 
@@ -10,4 +17,7 @@ public abstract class Gene<T> {
 
     abstract Gene<T> copy();
 
+    public SchemaSpecification getSchema() {
+        return schema;
+    }
 }

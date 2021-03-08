@@ -21,7 +21,7 @@ public class ResponseFitness extends Fitness {
 
     private static String separator = "/";
 
-    // MAP<METHOD, MAP<TYPE, MAP<CATEGORY, COUNT>>>
+    // MAP<METHOD, MAP<PATH-TO-PARAM, MAP<CATEGORY, COUNT>>>
     private Map<String, Map<String, Map<Type, Integer>>> valuePerKeyCount;
 
     public ResponseFitness(Client client) {
@@ -40,18 +40,17 @@ public class ResponseFitness extends Fitness {
         List<ResponseObject> responses = getResponses(population);
 
         for (int i = 0; i < population.size(); i++) {
-            Double fitness = recordValueTypesAndGetFitness(population.get(i).getMethod(), responses.get(i).getResponseObject());
+//            System.out.println(responses.get(i).getResponseObject());
+            Double fitness = recordValueTypesAndGetFitness(population.get(i).getMethod(), responses.get(i).getResponseObject()); // population and responses are in the same order
 
             fitness = 1.0 / (1 + fitness);
-
 //            System.out.println(responses.get(i).getResponseObject().toString(2));
-            System.out.println(fitness);
-
+//            System.out.println(fitness);
 
             population.get(i).setFitness(fitness);
+//            System.out.println(valuePerKeyCount);
         }
     }
-
 
     /**
      * Copy the response JSONObject and remove the values.
@@ -63,6 +62,7 @@ public class ResponseFitness extends Fitness {
         JSONObject structure = new JSONObject(response.toString());
 
         Double score = 0d;
+        int numberOfKeys = 0;
 
         Queue<Pair<String, JSONObject>> queue = new LinkedList<>();
         queue.add(new Pair<>("", structure));
@@ -72,12 +72,15 @@ public class ResponseFitness extends Fitness {
             String path = pair.getKey();
             JSONObject object = pair.getValue();
 
+//            System.out.println();
+
             Iterator<String> it = object.keys();
             while (it.hasNext()) {
                 String key = it.next();
 
                 if (object.isNull(key)) {
                     score += recordType(method, path + separator + key, Type.NULL);
+                    numberOfKeys += 1;
                     continue;
                 }
 
@@ -89,11 +92,13 @@ public class ResponseFitness extends Fitness {
 
                     if (array.length() == 0) {
                         score += recordType(method, path + separator + key, Type.EMPTY_ARRAY);
+                        numberOfKeys += 1;
                         continue;
                     }
 
                     if (array.isNull(0)) {
                         score += recordType(method, path + separator + key, Type.NULL_ARRAY);
+                        numberOfKeys += 1;
                     }
 
                     Object arrayObject = array.get(0);
@@ -103,13 +108,19 @@ public class ResponseFitness extends Fitness {
                         queue.add(new Pair<>(path + separator + key, (JSONObject) arrayObject));
                     } else {
                         score += recordType(method, path + separator + key, Type.matchTypeArray(arrayObject));
+                        numberOfKeys += 1;
                     }
                 } else {
                     score += recordType(method, path + separator + key, Type.matchType(smallerObject));
+                    numberOfKeys += 1;
                 }
             }
         }
-        return score;
+//        System.out.println(valuePerKeyCount);
+        if (numberOfKeys == 0) {
+            return score;
+        }
+        return score/numberOfKeys;
     }
 
     private Integer recordType(String method, String path, Type type) {

@@ -95,10 +95,10 @@ public class SchemaSpecification {
     }
 
     public Map<String, List<SchemaSpecification>> getChildSchemaSpecification() {
-        return childSchemaSpecification;
+        return new HashMap<>(childSchemaSpecification);
     }
 
     public List<SchemaSpecification> getArrayItemSchemaSpecification() {
-        return arrayItemSchemaSpecification;
+        return new ArrayList<>(arrayItemSchemaSpecification);
     }
 }

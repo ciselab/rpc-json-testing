@@ -1,5 +1,7 @@
 package search.genes;
 
+import search.openRPC.SchemaSpecification;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,10 @@ import java.util.List;
  * @param <T>
  */
 public abstract class NestedGene<T> extends Gene<T> {
+
+    public NestedGene(SchemaSpecification schema) {
+        super(schema);
+    }
 
     public abstract boolean hasChildren();
 

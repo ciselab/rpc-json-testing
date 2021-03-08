@@ -1,5 +1,7 @@
 package util;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -15,7 +17,7 @@ public final class RandomSingleton {
         return random;
     }
 
-    public static int getRandomIndex(List list) {
+    public static int getRandomIndex(Collection list) {
         return getRandom().nextInt(list.size());
     }
 

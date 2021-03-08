@@ -1,6 +1,7 @@
 package search.genes;
 
 import search.Generator;
+import search.openRPC.SchemaSpecification;
 import search.openRPC.Specification;
 
 import static util.RandomSingleton.getRandom;
@@ -8,14 +9,20 @@ import static util.RandomSingleton.getRandomIndex;
 
 public class StringGene extends ValueGene<String> {
 
-    public StringGene(String key, String value) {
-        super(key, value);
+    public StringGene(SchemaSpecification schema, String value) {
+        super(schema, value);
     }
 
     @Override
     public Gene mutate(Generator generator) {
+        if (getSchema() == null) {
+            return this.copy();
+        }
+
         if (getRandom().nextDouble() < 0.95) {
             // select position to change/add/delete a character
+
+            // TODO USE SCHEMA
 
             if (this.getValue().length() == 0) {
                 // TODO always just add because there are no chars to mutate
@@ -55,7 +62,7 @@ public class StringGene extends ValueGene<String> {
 
 //            System.out.println("stringGene changed from " + this.getValue() + " to " + mutatedValue);
 
-            return new StringGene(this.getSpecPath(), mutatedValue);
+            return new StringGene(this.getSchema(), mutatedValue);
         } else {
             // change gene schema type (e.g. no longer string but long, or still string but totally different string)
             return getNewGene(generator);
@@ -64,6 +71,8 @@ public class StringGene extends ValueGene<String> {
 
     @Override
     public StringGene copy() {
-        return new StringGene(this.getSpecPath(), getValue());
+        return new StringGene(this.getSchema(), getValue());
     }
+
+
 }

@@ -1,6 +1,7 @@
 package search.genes;
 
 import search.Generator;
+import search.openRPC.SchemaSpecification;
 
 /**
  * ValueGene represents one single gene (can be BooleanGene, LongGene or StringGene).
@@ -8,11 +9,10 @@ import search.Generator;
  */
 public abstract class ValueGene<T> extends Gene<T> {
 
-    private String specPath;
     private T value;
 
-    public ValueGene(String specPath, T value) {
-        this.specPath = specPath;
+    public ValueGene(SchemaSpecification schema, T value) {
+        super(schema);
         this.value = value;
     }
 
@@ -26,11 +26,14 @@ public abstract class ValueGene<T> extends Gene<T> {
     }
 
     public Gene getNewGene(Generator generator) {
-        return generator.generateValueGene(getSpecPath());
+        return generator.generateValueGene(getSchema());
     }
 
-    public String getSpecPath() {
-        return specPath;
+    @Override
+    public String toString() {
+        return "ValueGene{" +
+            "value=" + value +
+            '}';
     }
 }
 
