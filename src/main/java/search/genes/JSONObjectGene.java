@@ -58,10 +58,6 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
         JSONObjectGene clone = this.copy();
         List<StringGene> keys = new ArrayList<>(clone.children.keySet());
 
-        if (keys.size() == 0) {
-            return clone;
-        }
-
         // if there is no schema it means this is the main parameters object
         if (getSchema() == null) {
             // TODO this always mutates exactly ONE CHILD (but we might want to mutate more later)
@@ -72,6 +68,11 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
             Gene child = clone.children.get(key);
             clone.addChild(key, child.mutate(generator));
 
+            return clone;
+        }
+
+        // if the JSONObjectGene has no children, it will stay empty.
+        if (getSchema().getChildSchemaSpecification().keySet().isEmpty()) {
             return clone;
         }
 
