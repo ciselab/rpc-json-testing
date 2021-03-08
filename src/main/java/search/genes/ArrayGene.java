@@ -53,10 +53,6 @@ public class ArrayGene extends NestedGene<JSONArray> {
     public ArrayGene mutate(Generator generator) {
         ArrayGene clone = this.copy();
 
-        if (clone.children.size() == 0) {
-            return clone;
-        }
-
         // if there is no schema it means this is the main parameters array
         if (getSchema() == null) {
             // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
@@ -66,7 +62,12 @@ public class ArrayGene extends NestedGene<JSONArray> {
             return clone;
         }
 
-
+        // if the array is always empty according to specification, it stays empty.
+        if (getSchema().getArrayItemSchemaSpecification().isEmpty()) {
+            System.out.println("HELP");
+            System.exit(1);
+            return clone;
+        }
         List<SchemaSpecification> children = getSchema().getArrayItemSchemaSpecification();
         // TODO we only take the first specification for now but this could be an anyof/oneof so we should take into account that we have to change the type of all child genes
 
