@@ -3,10 +3,7 @@ import org.json.JSONObject;
 import search.BasicEA;
 import search.Generator;
 import search.Individual;
-import search.objective.RandomFitness;
-import search.objective.ResponseFitness;
-import search.objective.ResponseStructureFitness;
-import search.objective.StatusCodeFitness;
+import search.objective.ResponseFitnessClustering;
 import search.openRPC.Specification;
 import test_generation.TestWriter;
 import util.IO;
@@ -42,15 +39,17 @@ public class Main {
             URL url = new URL(url_ripple);
             Client client = new Client(url);
 
-            ResponseFitness fitness = new ResponseFitness(client);
+            ResponseFitnessClustering fitness = new ResponseFitnessClustering(client);
 
             BasicEA ea = new BasicEA(fitness, generator);
-            List<Individual> population = ea.generatePopulation(5);
+            List<Individual> population = ea.generatePopulation(10);
 
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 20; i++) {
                 System.out.println("Generation: " + i);
                 population = ea.nextGeneration(population);
             }
+
+            fitness.printResults();
 
             String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
             TestWriter testWriter = new TestWriter(url_ripple, testDirectory);

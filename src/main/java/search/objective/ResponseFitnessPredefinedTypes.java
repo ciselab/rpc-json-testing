@@ -5,7 +5,6 @@ import connection.ResponseObject;
 import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONString;
 import search.Generator;
 import search.Individual;
 
@@ -17,14 +16,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-public class ResponseFitness extends Fitness {
+public class ResponseFitnessPredefinedTypes extends Fitness {
 
     private static String separator = "/";
 
     // MAP<METHOD, MAP<PATH-TO-PARAM, MAP<CATEGORY, COUNT>>>
     private Map<String, Map<String, Map<Type, Integer>>> valuePerKeyCount;
 
-    public ResponseFitness(Client client) {
+    public ResponseFitnessPredefinedTypes(Client client) {
         super(client);
         this.valuePerKeyCount = new HashMap<>();
     }
@@ -120,7 +119,7 @@ public class ResponseFitness extends Fitness {
         if (numberOfKeys == 0) {
             return score;
         }
-        return score/numberOfKeys;
+        return score / numberOfKeys;
     }
 
     private Integer recordType(String method, String path, Type type) {

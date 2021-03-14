@@ -36,7 +36,7 @@ public class BasicEA {
         List<Individual> offspring = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
-            System.out.println("Ind: " + population.get(i).toRequest());
+//            System.out.println("Ind: " + population.get(i).toRequest());
             offspring.add(population.get(i).mutate(generator));
         }
 
