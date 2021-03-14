@@ -17,12 +17,19 @@ public class SchemaSpecification {
 
     private String type;
 
+    // for LongGenes
     private Long min;
     private Long max;
 
+    // for StringGenes
     private String pattern;
     private String[] enums;
 
+    // for ArrayGenes
+    private Long length;
+    public static final Integer MAX_ARRAY_SIZE = 10;
+
+    // for JSONObjectGenes
     private Set<String> requiredKeys;
     private Map<String, List<SchemaSpecification>> childSchemaSpecification;
 
@@ -64,9 +71,14 @@ public class SchemaSpecification {
                 }
             }
         } else if (type.equals("array")) {
+            length = schema.has("length") ? schema.getLong("length") : MAX_ARRAY_SIZE;
+            System.out.println(length);
             if (schema.has("items")) {
                 arrayItemSchemaSpecification = extractTypes(schema.getJSONObject("items"));
             }
+//            if (schema.has("length")) {
+//                length = schema.getLong("length");
+//            }
         }
     }
 
@@ -89,6 +101,8 @@ public class SchemaSpecification {
     public String[] getEnums() {
         return enums;
     }
+
+    public Long getLength() { return length; }
 
     public Set<String> getRequiredKeys() {
         return requiredKeys;

@@ -21,6 +21,7 @@ public class LongGene extends ValueGene<Long> {
             Long lb = schema.getMin();
             Long ub = schema.getMax();
             Long distanceMinMax = ub - lb;
+
             //double check that this is always above 0
             double newValue = getValue();
 
@@ -43,10 +44,12 @@ public class LongGene extends ValueGene<Long> {
 
             newValue = Math.round(newValue + deltaq * distanceMinMax);
 
-            if (newValue < lb)
-                newValue = lb;
-            else if (newValue > ub)
-                newValue = ub;
+            // This part does not allow for the creation of edge cases
+            // (below the minimum and above the maximum)
+//            if (newValue < lb)
+//                newValue = lb;
+//            else if (newValue > ub)
+//                newValue = ub;
 
             return new LongGene(this.getSchema(), (long) newValue);
 

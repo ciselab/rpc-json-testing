@@ -117,7 +117,7 @@ public class Generator {
                 // TODO probably always just one type of child
                 ArrayGene arrayGene = new ArrayGene(schema);
 
-                for (int i = 0; i < getRandom().nextInt(ArrayGene.MAX_ARRAY_SIZE); i++) {
+                for (int i = 0; i < getRandom().nextInt(SchemaSpecification.MAX_ARRAY_SIZE); i++) {
                     arrayGene.addChild(generateValueGene(items.get(0)));
                 }
 

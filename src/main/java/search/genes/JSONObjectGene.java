@@ -88,7 +88,7 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
 
         if ((choice <= 0.1 || keys.isEmpty()) && clone.addRandomNonRequiredChild(generator)) {
             return clone;
-        } else if (choice <= 0.2 && clone.removeRandomNonRequiredChild()) {
+        } else if (choice <= 0.2 && clone.removeRandomChild()) {
             return clone;
         } else if (choice <= 0.4 && !keys.isEmpty()) {
             // replace random child
@@ -109,7 +109,7 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
 
         return clone;
     }
-
+    
     /**
      * Add one of the missing non-required children of the JSONObjectGene.
      */
@@ -134,9 +134,9 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
     }
 
     /**
-     * Remove one of the children of the JSONObjectGene.
+     * Remove one of the (required or non-required) children of the JSONObjectGene.
      */
-    public boolean removeRandomNonRequiredChild() {
+    public boolean removeRandomChild() {
         Set<String> nonRequiredKeys = new HashSet<>();
 
         // add all children
@@ -144,10 +144,12 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
             nonRequiredKeys.add(child.getValue());
         }
 
-        // remove required children
-        nonRequiredKeys.removeAll(this.getSchema().getRequiredKeys());
+        // remove required children from the set (containing child to be removed) from with a certain probability
+        if (getRandom().nextDouble() > 0.75) {
+            nonRequiredKeys.removeAll(this.getSchema().getRequiredKeys());
+        }
 
-        // leaves us with a set of used children which are non required
+        // leaves us with a set of used children which are non-required or both required/non-required
 
         if (nonRequiredKeys.isEmpty()) {
             return false;

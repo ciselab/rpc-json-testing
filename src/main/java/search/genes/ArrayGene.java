@@ -15,8 +15,6 @@ import static util.RandomSingleton.getRandom;
  */
 public class ArrayGene extends NestedGene<JSONArray> {
 
-    public static final int MAX_ARRAY_SIZE = 10; // TODO move this somehwere else
-
     private List<Gene> children;
 
     public ArrayGene(SchemaSpecification schema) {
@@ -64,20 +62,19 @@ public class ArrayGene extends NestedGene<JSONArray> {
 
         // if the array is always empty according to specification, it stays empty.
         if (getSchema().getArrayItemSchemaSpecification().isEmpty()) {
-            System.out.println("HELP");
-            System.exit(1);
             return clone;
         }
+
         List<SchemaSpecification> children = getSchema().getArrayItemSchemaSpecification();
         // TODO we only take the first specification for now but this could be an anyof/oneof so we should take into account that we have to change the type of all child genes
 
         double choice = getRandom().nextDouble();
 
-        if (clone.children.size() < MAX_ARRAY_SIZE && (clone.children.size() == 0 || choice <= 0.1)) {
-            // add
+        if (clone.children.size() < this.getSchema().getLength() && (clone.children.size() == 0 || choice <= 0.1)) {
+            // add a child
             clone.children.add(generator.generateValueGene(children.get(0)));
         } else if (clone.children.size() > 1 && choice <= 0.2) {
-            // remove
+            // remove a child
             int index = getRandom().nextInt(clone.children.size());
             clone.children.remove(index);
 
