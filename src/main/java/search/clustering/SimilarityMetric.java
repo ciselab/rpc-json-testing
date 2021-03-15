@@ -1,7 +1,5 @@
 package search.clustering;
 
-import javax.print.attribute.standard.NumberUp;
-import java.util.Arrays;
 import java.util.List;
 
 public class SimilarityMetric {
@@ -12,11 +10,11 @@ public class SimilarityMetric {
      * @param b cluster b
      * @return the average Euclidean similarity
      */
-    public double calculateSimilarity(List<List<Object>> a, List<List<Object>> b) {
+    public double calculateSimilarity(List<List<Object>> a, List<List<Object>> b, List<Integer> weightVector) {
         Double distance = 0.0;
         for (List<Object> featureVectorA : a) {
             for (List<Object> featureVectorB : b) {
-                distance += calculateFeatureVectorDistance(featureVectorA, featureVectorB);
+                distance += calculateFeatureVectorDistance(featureVectorA, featureVectorB, weightVector);
             }
         }
 
@@ -31,7 +29,7 @@ public class SimilarityMetric {
      * @param b
      * @return
      */
-    private double calculateFeatureVectorDistance(List<Object> a, List<Object> b) {
+    private double calculateFeatureVectorDistance(List<Object> a, List<Object> b, List<Integer> weightVector) {
         double distance = 0;
         for (int i = 0; i < a.size(); i++) {
             Object objectA = a.get(i);
@@ -41,14 +39,13 @@ public class SimilarityMetric {
             }
 
             if (objectA instanceof String) {
-                distance += Math.pow(stringDistance((String) objectA, (String) objectB), 2);
+                distance += Math.pow(stringDistance((String) objectA, (String) objectB), 2) * (1.0 / (double) weightVector.get(i));
             } else if (objectA instanceof Boolean) {
-                distance += Math.pow(boolDistance((Boolean) objectA, (Boolean) objectB), 2);
+                distance += Math.pow(boolDistance((Boolean) objectA, (Boolean) objectB), 2) * (1.0 / (double) weightVector.get(i));
             } else if (objectA instanceof Number) {
-                distance += Math.pow(numberDistance(((Number) objectA).doubleValue(), ((Number) objectB).doubleValue()), 2);
+                distance += Math.pow(numberDistance(((Number) objectA).doubleValue(), ((Number) objectB).doubleValue()), 2) * (1.0 / (double) weightVector.get(i));
             }
         }
-
         return Math.sqrt(distance);
     }
 

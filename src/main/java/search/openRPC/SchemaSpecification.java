@@ -72,7 +72,6 @@ public class SchemaSpecification {
             }
         } else if (type.equals("array")) {
             length = schema.has("length") ? schema.getLong("length") : MAX_ARRAY_SIZE;
-            System.out.println(length);
             if (schema.has("items")) {
                 arrayItemSchemaSpecification = extractTypes(schema.getJSONObject("items"));
             }

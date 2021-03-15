@@ -69,14 +69,14 @@ public class ResponseFitnessClustering extends Fitness {
             JSONObject stripped = stripValues(response);
             String strippedString = stripped.toString();
 
-            List<Object> featureVector = getVector(response);
+            Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response);
 
             // If empty object just give it a fitness of zero
-            if (featureVector.size() == 0) {
+            if (featureAndWeightVector.getKey().size() == 0) {
                 population.get(i).setFitness(0);
                 continue;
             }
-//            System.out.println(featureVector);
+//            System.out.println(featureAndWeightVector);
 
             if (!clusteringPerResponseStructure.containsKey(method)) {
                 clusteringPerResponseStructure.put(method, new HashMap<>());
@@ -87,12 +87,12 @@ public class ResponseFitnessClustering extends Fitness {
 
 
             if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
-                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering());
+                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering(featureAndWeightVector.getValue()));
             }
 
             AgglomerativeClustering clustering = clusteringPerResponseStructure.get(method).get(strippedString);
 
-            double cost = clustering.cluster(featureVector);
+            double cost = clustering.cluster(featureAndWeightVector.getKey());
 
             double fitness = 1.0 / (1 + cost);
             population.get(i).setFitness(fitness);
@@ -101,20 +101,24 @@ public class ResponseFitnessClustering extends Fitness {
     }
 
     /**
-     * Copy the response JSONObject and remove the values.
+     * Calculate the feature vector and the weight vector.
      *
-     * @param response
-     * @return JSONObject with standard values, but key structure intact.
+     * @param response the response JSONObject
+     * @return featureVector and weightVector
      */
-    public List<Object> getVector(JSONObject response) {
+    public Pair<List<Object>, List<Integer>> getVector(JSONObject response) {
         JSONObject structure = new JSONObject(response.toString());
 
         List<Object> featureVector = new ArrayList<>();
-        Queue<JSONObject> queue = new LinkedList<>();
-        queue.add(structure);
+        List<Integer> weightVector = new ArrayList<>();
+
+        Queue<Pair<JSONObject, Integer>> queue = new LinkedList<>();
+        queue.add(new Pair<>(structure, 0));
 
         while (!queue.isEmpty()) {
-            JSONObject object = queue.poll();
+            Pair<JSONObject, Integer> pair = queue.poll();
+            JSONObject object = pair.getKey();
+            Integer depth = pair.getValue();
 
             Iterator<String> it = object.keys();
             while (it.hasNext()) {
@@ -128,7 +132,7 @@ public class ResponseFitnessClustering extends Fitness {
 
                 Object smallerObject = object.get(key);
                 if (smallerObject instanceof JSONObject) {
-                    queue.add((JSONObject) object.get(key));
+                    queue.add(new Pair<>((JSONObject) object.get(key), depth+1));
                 } else if (smallerObject instanceof JSONArray) {
                     JSONArray array = ((JSONArray) smallerObject);
 
@@ -146,17 +150,18 @@ public class ResponseFitnessClustering extends Fitness {
 
                     // just take first object of array
                     if (arrayObject instanceof JSONObject) {
-                        queue.add((JSONObject) arrayObject);
+                        queue.add(new Pair<>((JSONObject) arrayObject, depth+1));
                     } else {
                         featureVector.add(arrayObject);
+                        weightVector.add(depth+1);
                     }
                 } else {
                     featureVector.add(smallerObject);
+                    weightVector.add(depth+1);
                 }
             }
         }
-
-        return featureVector;
+        return new Pair<>(featureVector, weightVector);
     }
 
     private static String STANDARD_STRING = "";
