@@ -16,8 +16,6 @@ public class AgglomerativeClustering {
 
     private List<List<Object>> values;
 
-    // TODO give weight vector to the agglomerative clustering so that higher levels value changes are less important
-    // TODO get the levels out
     public AgglomerativeClustering(List<Integer> weightVector) {
         this.metric = new SimilarityMetric();
         this.values = new ArrayList<>();

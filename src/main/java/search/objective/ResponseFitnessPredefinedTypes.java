@@ -2,7 +2,7 @@ package search.objective;
 
 import connection.Client;
 import connection.ResponseObject;
-import javafx.util.Pair;
+import util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import search.Generator;
