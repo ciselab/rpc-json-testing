@@ -13,13 +13,23 @@ public class LongGene extends ValueGene<Long> {
     @Override
     public Gene mutate(Generator generator) {
         // Polynomial mutation, based on EvoMaster implementation
-        if (getRandom().nextDouble() < 0.95) {
-
+        double random = getRandom().nextDouble();
+        if (random < 0.95) {
             // Get minimum and maximum value of the parameter range
             SchemaSpecification schema = getSchema();
 
             Long lb = schema.getMin();
             Long ub = schema.getMax();
+
+            // With some probability use the boundary cases for the value
+            if (random < 0.15) {
+                if (getRandom().nextDouble() < 0.5) {
+                    return new LongGene(this.getSchema(), (long) lb);
+                } else {
+                    return new LongGene(this.getSchema(), (long) ub);
+                }
+            }
+
             Long distanceMinMax = ub - lb;
 
             //double check that this is always above 0

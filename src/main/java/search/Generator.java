@@ -146,7 +146,7 @@ public class Generator {
      * @param regex
      * @return String
      */
-    public String generateRandomValue(String regex) {
+    public static String generateRandomValue(String regex) {
         //TODO: investigate rgxGen lib and alternatives (there might be better ones)
 
         RgxGen rgxGen = new RgxGen(regex);
