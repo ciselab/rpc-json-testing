@@ -2,13 +2,13 @@ package search.objective;
 
 import connection.Client;
 import connection.ResponseObject;
-import util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 import search.Generator;
 import search.Individual;
-import search.clustering.AgglomerativeClustering;
+import search.clustering.AgglomerativeClustering2;
+import util.Pair;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,18 +21,23 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-public class ResponseFitnessClustering extends Fitness {
+public class ResponseFitnessClustering2 extends Fitness {
 
     private static String separator = "/";
 
     // MAP<METHOD, MAP<STRUCTURE, LIST<PREVIOUS VALUES>>>
-    private Map<String, Map<String, AgglomerativeClustering>> clusteringPerResponseStructure;
+    private Map<String, Map<String, AgglomerativeClustering2>> clusteringPerResponseStructure;
     private Map<String, Set<Integer>> statuses;
 
-    public ResponseFitnessClustering(Client client) {
+    // Count the number of generations
+    private int generationCount;
+    final private int NEW_CLUSTERS_AFTER_GEN = 10;
+
+    public ResponseFitnessClustering2(Client client) {
         super(client);
         this.clusteringPerResponseStructure = new HashMap<>();
         this.statuses = new HashMap<>();
+        this.generationCount = 0;
     }
 
     public void printResults() {
@@ -55,24 +60,27 @@ public class ResponseFitnessClustering extends Fitness {
 
     @Override
     public void evaluate(Generator generator, List<Individual> population) {
-
         List<ResponseObject> responses = getResponses(population);
+
+        Map<String, Map<String, List<List<Object>>>> featureVectorPerStructurePerMethodOfCurrentPop = new HashMap<>();
 
         for (int i = 0; i < population.size(); i++) {
             String method = population.get(i).getMethod();
-            JSONObject request = population.get(i).toRequest();
             JSONObject response = responses.get(i).getResponseObject();
 
-            JSONObject stripped = stripValues(request, response);
+            System.out.println(response.toString());
+
+            JSONObject stripped = stripValues(response);
             String strippedString = stripped.toString();
 
-            Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripped);
-
-            // If empty object just give it a fitness of zero
-            if (featureAndWeightVector.getKey().size() == 0) {
-                population.get(i).setFitness(0);
-                continue;
+            Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response);
+            if (!featureVectorPerStructurePerMethodOfCurrentPop.containsKey(method)) {
+                featureVectorPerStructurePerMethodOfCurrentPop.put(method, new HashMap<>());
             }
+            if (!featureVectorPerStructurePerMethodOfCurrentPop.get(method).containsKey(strippedString)) {
+                featureVectorPerStructurePerMethodOfCurrentPop.get(method).put(strippedString, new ArrayList<>());
+            }
+            featureVectorPerStructurePerMethodOfCurrentPop.get(method).get(strippedString).add(featureAndWeightVector.getKey());
 
             if (!clusteringPerResponseStructure.containsKey(method)) {
                 clusteringPerResponseStructure.put(method, new HashMap<>());
@@ -81,19 +89,34 @@ public class ResponseFitnessClustering extends Fitness {
 
             statuses.get(method).add(responses.get(i).getResponseCode());
 
-
             if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
-                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering(featureAndWeightVector.getValue()));
+                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering2(featureAndWeightVector.getValue()));
             }
 
-            AgglomerativeClustering clustering = clusteringPerResponseStructure.get(method).get(strippedString);
+            // If empty object just give it a fitness of zero
+            if (featureAndWeightVector.getKey().size() == 0) {
+                population.get(i).setFitness(0);
+                continue;
+            }
 
-            double cost = clustering.cluster(featureAndWeightVector.getKey());
+            AgglomerativeClustering2 clustering = clusteringPerResponseStructure.get(method).get(strippedString);
+
+            // first generation every ind gets same fitness OR different metric
+            double cost = clustering.calculateMaxSimilarity(featureAndWeightVector.getKey());
+            System.out.println("Cost: " + cost);
 
             double fitness = 1.0 / (1 + cost);
             population.get(i).setFitness(fitness);
-
+            System.out.println("fitness " + fitness);
         }
+        if (generationCount % NEW_CLUSTERS_AFTER_GEN == 0) {
+            for (String method : featureVectorPerStructurePerMethodOfCurrentPop.keySet()) {
+                for (String responseStructure : featureVectorPerStructurePerMethodOfCurrentPop.get(method).keySet()) {
+                    clusteringPerResponseStructure.get(method).get(responseStructure).cluster(featureVectorPerStructurePerMethodOfCurrentPop.get(method).get(responseStructure));
+                }
+            }
+        }
+        generationCount += 1;
     }
 
     /**
@@ -102,7 +125,7 @@ public class ResponseFitnessClustering extends Fitness {
      * @param response the response JSONObject
      * @return featureVector and weightVector
      */
-    public Pair<List<Object>, List<Integer>> getVector(JSONObject response, JSONObject stripped) {
+    public Pair<List<Object>, List<Integer>> getVector(JSONObject response) {
         JSONObject structure = new JSONObject(response.toString());
 
         List<Object> featureVector = new ArrayList<>();
@@ -120,14 +143,9 @@ public class ResponseFitnessClustering extends Fitness {
             while (it.hasNext()) {
                 String key = it.next();
 
-                // Skip this key if the value is null or if it does not exist in the stripped JSONObject
                 if (object.isNull(key)) {
-                    System.out.println("WHA");
-                    // TODO should we do this? It  can occur that an error_message is null for example.
-                    if (stripped.has(key)) {
-                        featureVector.add("null");
-                        weightVector.add(depth+1);
-                    }
+                    // TODO maybe add this
+//                    featureVector.add(null);
                     continue;
                 }
 
@@ -152,11 +170,11 @@ public class ResponseFitnessClustering extends Fitness {
                     // just take first object of array
                     if (arrayObject instanceof JSONObject) {
                         queue.add(new Pair<>((JSONObject) arrayObject, depth+1));
-                    } else if (stripped.has(key)) {
+                    } else {
                         featureVector.add(arrayObject);
                         weightVector.add(depth+1);
                     }
-                } else if (stripped.has(key)) {
+                } else {
                     featureVector.add(smallerObject);
                     weightVector.add(depth+1);
                 }
@@ -174,89 +192,19 @@ public class ResponseFitnessClustering extends Fitness {
      * @param response
      * @return JSONObject with standard values, but key structure intact.
      */
-    public JSONObject stripValues(JSONObject request, JSONObject response) {
+    public JSONObject stripValues(JSONObject response) {
         JSONObject structure = new JSONObject(response.toString());
-        JSONObject copy = new JSONObject();
-
-        Queue<Pair<JSONObject, JSONObject>> queue = new LinkedList<>();
-        queue.add(new Pair<>(structure, copy));
-
-        HashMap<String, Object> requestKeyValuePairs = getKeyValuePairs(request);
-
-        // TODO something clever with arrays
-
-        while(!queue.isEmpty()) {
-            Pair<JSONObject, JSONObject> pair = queue.poll();
-            JSONObject object = pair.getKey();
-            JSONObject strippedObject = pair.getValue();
-
-            Iterator<String> it = object.keys();
-            while (it.hasNext()) {
-                String key = it.next();
-
-                Object smallerObject = object.get(key);
-                if (smallerObject instanceof JSONObject) {
-                    queue.add(new Pair<>((JSONObject) object.get(key), strippedObject));
-                } else if (smallerObject instanceof JSONArray) {
-                    JSONArray array = ((JSONArray) smallerObject);
-                    for (int i = 0; i < array.length(); i++) {
-                        if (i > 0) {
-                            array.remove(1);
-                            continue;
-                        }
-
-                        Object arrayObject = array.get(i);
-                        if (arrayObject instanceof JSONObject) {
-                            queue.add(new Pair<>((JSONObject) arrayObject, strippedObject));
-                        } else if (arrayObject instanceof JSONString) {
-                            array.put(i, STANDARD_STRING);
-                        } else if (arrayObject instanceof Number) {
-                            array.put(i, STANDARD_NUMBER);
-                        } else if (arrayObject instanceof Boolean) {
-                            array.put(i, STANDARD_BOOLEAN);
-                        }
-                        // TODO currently it is assuming no arrays in arrays
-                    }
-                } else if (!(requestKeyValuePairs.containsKey(key) && requestKeyValuePairs.get(key).equals(smallerObject))) {
-                    if (smallerObject instanceof String) {
-                        object.put(key, STANDARD_STRING);
-                        strippedObject.put(key, STANDARD_STRING);
-                    } else if (smallerObject instanceof Number) {
-                        object.put(key, STANDARD_NUMBER);
-                        strippedObject.put(key, STANDARD_NUMBER);
-                    } else if (smallerObject instanceof Boolean) {
-                        object.put(key, STANDARD_BOOLEAN);
-                        strippedObject.put(key, STANDARD_BOOLEAN);
-                    } else {
-                        // A unknown object
-                    }
-                }
-            }
-        }
-        System.out.println("Request: " + request.toString());
-        System.out.println("Response: " + response.toString());
-        System.out.println("Response stripped: " + copy.toString());
-        return copy;
-    }
-
-
-    // Check the key and value pairs in the request
-    // Match them with the key and value pairs in the response
-    // If they are a match, do not include this pair in the feature vector
-    public HashMap<String, Object> getKeyValuePairs(JSONObject request) {
-        JSONObject structure = new JSONObject(request.toString());
 
         Queue<JSONObject> queue = new LinkedList<>();
         queue.add(structure);
 
-        HashMap<String, Object> keyValuePairs = new HashMap<>();
+        // TODO something clever with arrays
 
-        while (!queue.isEmpty()) {
+        while(!queue.isEmpty()) {
             JSONObject object = queue.poll();
             Iterator<String> it = object.keys();
             while (it.hasNext()) {
                 String key = it.next();
-
                 Object smallerObject = object.get(key);
                 if (smallerObject instanceof JSONObject) {
                     queue.add((JSONObject) object.get(key));
@@ -272,27 +220,27 @@ public class ResponseFitnessClustering extends Fitness {
                         if (arrayObject instanceof JSONObject) {
                             queue.add((JSONObject) arrayObject);
                         } else if (arrayObject instanceof JSONString) {
-                            array.put(i, arrayObject);
+                            array.put(i, STANDARD_STRING);
                         } else if (arrayObject instanceof Number) {
-                            array.put(i, arrayObject);
+                            array.put(i, STANDARD_NUMBER);
                         } else if (arrayObject instanceof Boolean) {
-                            array.put(i, arrayObject);
+                            array.put(i, STANDARD_BOOLEAN);
                         }
                         // TODO currently it is assuming no arrays in arrays
                     }
                 } else if (smallerObject instanceof String) {
-                    keyValuePairs.put(key, smallerObject);
+                    object.put(key, STANDARD_STRING);
                 } else if (smallerObject instanceof Number) {
-                    keyValuePairs.put(key, smallerObject);
+                    object.put(key, STANDARD_NUMBER);
                 } else if (smallerObject instanceof Boolean) {
-                    keyValuePairs.put(key, smallerObject);
+                    object.put(key, STANDARD_BOOLEAN);
                 } else {
 //                    System.out.println(smallerObject.toString());
 //                    System.out.println(smallerObject.getClass());
                 }
             }
         }
-        return keyValuePairs;
+        return structure;
     }
 
 }

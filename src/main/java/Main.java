@@ -4,6 +4,7 @@ import search.BasicEA;
 import search.Generator;
 import search.Individual;
 import search.objective.ResponseFitnessClustering;
+import search.objective.ResponseFitnessClustering2;
 import search.openRPC.Specification;
 import test_generation.TestWriter;
 import util.IO;
