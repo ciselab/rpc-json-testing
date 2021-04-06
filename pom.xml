@@ -66,12 +66,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.2.0</version>
                 <configuration>
                     <archive>
-                        <manifest>
-                            <mainClass>com.src.main.java.Main</mainClass>
-                        </manifest>
+                        <manifestFile>src/main/java/META-INF/MANIFEST.MF</manifestFile>
+                        <!--<manifest>-->
+                            <!--<mainClass>com.src.main.java.Main</mainClass>-->
+                        <!--</manifest>-->
                     </archive>
                 </configuration>
             </plugin>
