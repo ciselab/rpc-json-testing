@@ -47,7 +47,6 @@ public class AgglomerativeClustering {
             }
         }
 
-
         this.values.add(newValue);
 
 

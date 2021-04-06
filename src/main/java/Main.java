@@ -43,7 +43,7 @@ public class Main {
             ResponseFitnessClustering fitness = new ResponseFitnessClustering(client);
 
             BasicEA ea = new BasicEA(fitness, generator);
-            List<Individual> population = ea.generatePopulation(10);
+            List<Individual> population = ea.generatePopulation(50);
 
             for (int i = 0; i < 20; i++) {
                 System.out.println("Generation: " + i);

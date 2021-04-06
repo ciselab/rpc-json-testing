@@ -122,7 +122,6 @@ public class ResponseFitnessClustering extends Fitness {
 
                 // Skip this key if the value is null or if it does not exist in the stripped JSONObject
                 if (object.isNull(key)) {
-                    System.out.println("WHA");
                     // TODO should we do this? It  can occur that an error_message is null for example.
                     if (stripped.has(key)) {
                         featureVector.add("null");
