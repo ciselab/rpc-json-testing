@@ -143,6 +143,14 @@
                 </configuration>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/resources</directory>
+                <includes>
+                    <include>ripple-openrpc.json</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 
 </project>
