@@ -55,12 +55,12 @@ public class StringGene extends ValueGene<String> {
             }
 
             // Option 3: mutate Regex pattern and generate a new value
-            if (getSchema().getPattern() != null && probability < 0.3) {
-                // Note that the pattern in the schema is NOT changed
-                String regex = getSchema().getPattern();
-                String mutatedRegex = mutateRegex(regex);
-                return new StringGene(this.getSchema(), Generator.generateRandomValue(mutatedRegex));
-            }
+//            if (getSchema().getPattern() != null && probability < 0.3) {
+//                // Note that the pattern in the schema is NOT changed
+//                String regex = getSchema().getPattern();
+//                String mutatedRegex = mutateRegex(regex);
+//                return new StringGene(this.getSchema(), Generator.generateRandomValue(mutatedRegex));
+//            }
 
             // Option 4: mutate characters in the string
             String mutatedValue = mutateCharacters(this.getValue());
