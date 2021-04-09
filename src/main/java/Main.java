@@ -40,7 +40,7 @@ public class Main {
 
             // The url for the Ripple JSON-RPC API ledger (testnet)
 //            String url_ripple = "https://s.altnet.rippletest.net:51234";
-            String url_ripple = "http://localhost:8080";
+            String url_ripple = "http://127.0.0.1:5005";
             URL url = new URL(url_ripple);
             Client client = new Client(url);
 
