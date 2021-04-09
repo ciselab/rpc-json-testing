@@ -49,10 +49,18 @@ public class Main {
             BasicEA ea = new BasicEA(fitness, generator);
             List<Individual> population = ea.generatePopulation(50);
 
-            for (int i = 0; i < 20; i++) {
-                System.out.println("Generation: " + i);
+            Long startTime = System.currentTimeMillis();
+            int generation = 0;
+            while (System.currentTimeMillis() - startTime < 30 * 60 * 1000) {
+                System.out.println("Generation: " + generation);
+                generation += 1;
                 population = ea.nextGeneration(population);
             }
+
+//            for (int i = 0; i < 20; i++) {
+//                System.out.println("Generation: " + i);
+//                population = ea.nextGeneration(population);
+//            }
 
             fitness.printResults();
 
