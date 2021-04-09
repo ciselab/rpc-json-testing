@@ -38,7 +38,7 @@ public class StringGene extends ValueGene<String> {
             }
 
             // Option 2: pick one of the other enum values with a certain probability
-            if (this.getSchema().getEnums() != null && probability < 0.75) {
+            if (this.getSchema().getEnums() != null && probability < 0.6) {
                 List<String> options = new ArrayList<>();
                 Collections.addAll(options, getSchema().getEnums());
 
@@ -76,8 +76,13 @@ public class StringGene extends ValueGene<String> {
         // number of characters to change
         int toChange = (int) Math.ceil(FRACTION * value.length());
 
+
+        // TODO length must always be higher than 0
         // select the position from which to start to change/add/delete a character
-        int position = getRandom().nextInt(value.length() - toChange);
+        int position = 0;
+        if (value.length() > 1) {
+            position = getRandom().nextInt(value.length() - toChange);
+        }
 
         String mutatedValue = null;
 
@@ -118,8 +123,6 @@ public class StringGene extends ValueGene<String> {
                 position -= 1;
             }
         }
-//        System.out.println("current: " + this.getValue());
-//        System.out.println("mutated: " + mutatedValue);
         return mutatedValue;
     }
 
