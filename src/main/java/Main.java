@@ -9,6 +9,7 @@ import search.openRPC.Specification;
 import test_generation.TestWriter;
 import util.IO;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -18,9 +19,11 @@ public class Main {
 
     public static void main (String args[]) {
 
-        ClassLoader classLoader = Main.class.getClassLoader();
+        File jar = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        String directory = jar.getParentFile().getAbsolutePath();
 
-        String filepath = classLoader.getResource("ripple-openrpc.json").getFile();
+        String filepath = directory + System.getProperty("file.separator") + "ripple-openrpc.json";
+
         Specification specification = null;
 
         try {
@@ -36,6 +39,7 @@ public class Main {
             // TODO (later): find other APIs to connect to
 
             // The url for the Ripple JSON-RPC API ledger (testnet)
+//            String url_ripple = "https://s.altnet.rippletest.net:51234";
             String url_ripple = "http://localhost:8080";
             URL url = new URL(url_ripple);
             Client client = new Client(url);
