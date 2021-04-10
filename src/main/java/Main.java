@@ -8,6 +8,7 @@ import search.objective.ResponseFitnessClustering;
 import search.objective.ResponseFitnessClustering2;
 import search.objective.ResponseFitnessPredefinedTypes;
 import search.objective.ResponseStructureFitness;
+import search.objective.StatusCodeFitness;
 import search.openRPC.Specification;
 import test_generation.TestWriter;
 import util.IO;
@@ -47,7 +48,7 @@ public class Main {
             URL url = new URL(url_ripple);
             Client client = new Client(url);
 
-            ResponseFitnessPredefinedTypes fitness = new ResponseFitnessPredefinedTypes(client);
+            StatusCodeFitness fitness = new StatusCodeFitness(client);
 
             BasicEA ea = new BasicEA(fitness, generator);
             List<Individual> population = ea.generatePopulation(50);
