@@ -6,6 +6,7 @@ import search.Individual;
 import search.objective.RandomFitness;
 import search.objective.ResponseFitnessClustering;
 import search.objective.ResponseFitnessClustering2;
+import search.objective.ResponseStructureFitness;
 import search.openRPC.Specification;
 import test_generation.TestWriter;
 import util.IO;
@@ -40,12 +41,12 @@ public class Main {
             // TODO (later): find other APIs to connect to
 
             // The url for the Ripple JSON-RPC API ledger (testnet)
-//            String url_ripple = "https://s.altnet.rippletest.net:51234";
-            String url_ripple = "http://127.0.0.1:5005";
+            String url_ripple = "https://s.altnet.rippletest.net:51234";
+//            String url_ripple = "http://127.0.0.1:5005";
             URL url = new URL(url_ripple);
             Client client = new Client(url);
 
-            RandomFitness fitness = new RandomFitness(client);
+            ResponseStructureFitness fitness = new ResponseStructureFitness(client);
 
             BasicEA ea = new BasicEA(fitness, generator);
             List<Individual> population = ea.generatePopulation(50);
