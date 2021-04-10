@@ -1,6 +1,7 @@
 package search.objective;
 
 import connection.Client;
+import connection.ResponseObject;
 import search.Generator;
 import search.Individual;
 
@@ -19,7 +20,10 @@ public class RandomFitness extends Fitness {
 
     @Override
     public void evaluate(Generator generator, Individual individual) throws IOException {
-        getClient().createRequest(individual.getHTTPMethod(), individual.toRequest());
+        ResponseObject response = getClient().createRequest(individual.getHTTPMethod(), individual.toRequest());
+        System.out.println(response.getResponseCode() + " " + response.getResponseObject().toString());
+
+//        getClient().createRequest(individual.getHTTPMethod(), individual.toRequest());
         individual.setFitness(getRandom().nextGaussian());
         System.out.println(individual.getHTTPMethod()+ " " + individual.getMethod() + " " + individual.toRequest().toString());
     }
