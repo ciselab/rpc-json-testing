@@ -103,11 +103,18 @@ public class ResponseFitnessClustering2 extends Fitness {
 
             // first generation every ind gets same fitness OR different metric
             double cost = clustering.calculateMaxSimilarity(featureAndWeightVector.getKey());
-            System.out.println("Cost: " + cost);
+//            System.out.println("Cost: " + cost);
 
             double fitness = 1.0 / (1 + cost);
             population.get(i).setFitness(fitness);
-            System.out.println("fitness " + fitness);
+//            System.out.println("fitness " + fitness);
+
+            // TODO hack for worst output
+            if (population.get(i).getMethod().equals("random") ||
+                population.get(i).getMethod().equals("server_info") ||
+                population.get(i).getMethod().equals("server_state")) {
+                population.get(i).setFitness(0);
+            }
         }
         if (generationCount % NEW_CLUSTERS_AFTER_GEN == 0) {
             for (String method : featureVectorPerStructurePerMethodOfCurrentPop.keySet()) {
