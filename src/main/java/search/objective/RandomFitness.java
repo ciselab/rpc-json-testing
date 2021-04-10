@@ -21,6 +21,7 @@ public class RandomFitness extends Fitness {
     public void evaluate(Generator generator, Individual individual) throws IOException {
         getClient().createRequest(individual.getHTTPMethod(), individual.toRequest());
         individual.setFitness(getRandom().nextGaussian());
+        System.out.println(individual.getHTTPMethod()+ " " + individual.getMethod() + " " + individual.toRequest().toString());
     }
 
     @Override
