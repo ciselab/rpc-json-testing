@@ -93,6 +93,13 @@ public class ResponseFitnessClustering extends Fitness {
             double fitness = 1.0 / (1 + cost);
             population.get(i).setFitness(fitness);
 
+            // TODO hack for worst output
+            if (population.get(i).getMethod().equals("random") ||
+                population.get(i).getMethod().equals("server_info") ||
+                population.get(i).getMethod().equals("server_state")) {
+                population.get(i).setFitness(0);
+            }
+
         }
     }
 

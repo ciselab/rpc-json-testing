@@ -43,12 +43,12 @@ public class Main {
             // TODO (later): find other APIs to connect to
 
             // The url for the Ripple JSON-RPC API ledger (testnet)
-//            String url_ripple = "https://s.altnet.rippletest.net:51234";
-            String url_ripple = "http://127.0.0.1:5005";
+            String url_ripple = "https://s.altnet.rippletest.net:51234";
+//            String url_ripple = "http://127.0.0.1:5005";
             URL url = new URL(url_ripple);
             Client client = new Client(url);
 
-            StatusCodeFitness fitness = new StatusCodeFitness(client);
+            ResponseFitnessClustering fitness = new ResponseFitnessClustering(client);
 
             BasicEA ea = new BasicEA(fitness, generator);
             List<Individual> population = ea.generatePopulation(50);
