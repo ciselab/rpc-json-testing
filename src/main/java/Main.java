@@ -46,7 +46,7 @@ public class Main {
             URL url = new URL(url_ripple);
             Client client = new Client(url);
 
-            ResponseStructureFitness fitness = new ResponseStructureFitness(client);
+            ResponseFitnessClustering fitness = new ResponseFitnessClustering(client);
 
             BasicEA ea = new BasicEA(fitness, generator);
             List<Individual> population = ea.generatePopulation(50);
