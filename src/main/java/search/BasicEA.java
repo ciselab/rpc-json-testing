@@ -7,6 +7,8 @@ import search.openRPC.Specification;
 import java.util.ArrayList;
 import java.util.List;
 
+import static util.RandomSingleton.getRandom;
+
 public class BasicEA {
 
     private Fitness fitness;
@@ -63,14 +65,50 @@ public class BasicEA {
         // evaluate entire population
         fitness.evaluate(generator, offspring);
 
+//        return elitistSelection(offspring);
+        return tournamentSelection(offspring, 4);
+    }
+
+    private List<Individual> tournamentSelection(List<Individual> population, int tournamentSize) {
+        // select next generation
+        List<Individual> newPopulation = new ArrayList<>();
+
+        int champions = tournamentSize / 2;
+
+        while (!population.isEmpty()) {
+            List<Individual> tournament = new ArrayList<>();
+
+            for (int i = 0; i < tournamentSize; i++) {
+                if (population.isEmpty()) {
+                    break;
+                }
+
+                tournament.add(population.remove(getRandom().nextInt(population.size())));
+            }
+
+            // Sort
+            tournament.sort((o1, o2) -> Double.compare(o2.getFitness(), o1.getFitness()));
+
+            for (int i = 0; i < champions; i++) {
+                if (tournament.size() - 1 <= i) {
+                    break;
+                }
+                newPopulation.add(tournament.get(i));
+            }
+        }
+
+        return newPopulation;
+    }
+
+    private List<Individual> elitistSelection(List<Individual> population) {
         // Sort
-        offspring.sort((o1, o2) -> Double.compare(o2.getFitness(), o1.getFitness()));
+        population.sort((o1, o2) -> Double.compare(o2.getFitness(), o1.getFitness()));
 
         // select next generation
         List<Individual> newPopulation = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
-            newPopulation.add(offspring.get(i));
+            newPopulation.add(population.get(i));
         }
 
         return newPopulation;
