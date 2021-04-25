@@ -22,22 +22,40 @@ public class BasicEA {
     public List<Individual> generatePopulation(int size) {
         List<Individual> population = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            String methodName = generator.getRandomMethod();
-            ArrayGene method = generator.generateMethod(methodName);
-
-            Individual individual = new Individual(generator.generateHTTPMethod(), methodName, method);
-            population.add(individual);
+            population.add(generateRandomIndividual());
         }
         return population;
+    }
+
+    public Individual generateRandomIndividual() {
+        String methodName = generator.getRandomMethod();
+        ArrayGene method = generator.generateMethod(methodName);
+
+        return new Individual(generator.generateHTTPMethod(), methodName, method);
     }
 
     public List<Individual> nextGeneration(List<Individual> population) {
         // TODO generate offspring (mutation and crossover)
         List<Individual> offspring = new ArrayList<>();
 
+        int mutations = 3;
+
         for (int i = 0; i < population.size(); i++) {
 //            System.out.println("Ind: " + population.get(i).toRequest());
-            offspring.add(population.get(i).mutate(generator));
+            String parent = population.get(i).toRequest().toString();
+            Individual mutant = population.get(i);
+            for (int j = 0; j < mutations; j++) {
+                mutant = mutant.mutate(generator);
+            }
+
+            String mutantString = mutant.toRequest().toString();
+
+            if (parent.equals(mutantString)) {
+                mutant = generateRandomIndividual();
+            }
+
+            offspring.add(mutant);
+
         }
 
         offspring.addAll(population);
