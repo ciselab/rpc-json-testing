@@ -42,10 +42,10 @@ public class ResponseStructureFitness2 extends Fitness {
         for (int i = 0; i < population.size(); i++) {
             String structureString = stripValues(population.get(i).toRequest(), responses.get(i).getResponseObject()).toString();
 
-//            System.out.println("Ind " + i + ": ");
+            System.out.println("Ind " + i + ": ");
 //            System.out.println(population.get(i).toRequest().toString());
 //            System.out.println(responses.get(i).getResponseObject().toString());
-//            System.out.println(structureString);
+            System.out.println(structureString);
 
             if (!structureFrequencyTable.containsKey(structureString)) {
                 structureFrequencyTable.put(structureString, 0);

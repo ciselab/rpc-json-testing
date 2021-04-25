@@ -105,48 +105,33 @@ public abstract class Fitness {
 
                     strippedObject.put(key, smallerStrippedArray);
 
-                    for (int i = 0; i < array.length(); i++) {
-                        if (i > 0) {
-                            array.remove(1);
-                            continue;
-                        }
-
-                        Object arrayObject = array.get(i);
+                    if (array.length() > 0) {
+                        Object arrayObject = array.get(0);
                         if (arrayObject instanceof JSONObject) {
                             JSONObject evenSmallerObject = new JSONObject();
-                            smallerStrippedArray.put(i, evenSmallerObject);
+                            smallerStrippedArray.put(0, evenSmallerObject);
 
                             queue.add(new Pair<>((JSONObject) arrayObject, evenSmallerObject));
                         } else if (arrayObject instanceof JSONString) {
-                            array.put(i, STANDARD_STRING);
-                            smallerStrippedArray.put(i, STANDARD_STRING);
+                            smallerStrippedArray.put(0, STANDARD_STRING);
                         } else if (arrayObject instanceof Number) {
-                            array.put(i, STANDARD_NUMBER);
-                            smallerStrippedArray.put(i, STANDARD_NUMBER);
+                            smallerStrippedArray.put(0, STANDARD_NUMBER);
                         } else if (arrayObject instanceof Boolean) {
-                            array.put(i, STANDARD_BOOLEAN);
-                            smallerStrippedArray.put(i, STANDARD_BOOLEAN);
-                        } else if (array.isNull(i)) {
-                            array.put(i, "null");
-                            smallerStrippedArray.put(i, "null");
+                            smallerStrippedArray.put(0, STANDARD_BOOLEAN);
+                        } else if (array.isNull(0)) {
+                            smallerStrippedArray.put(0, "null");
                         }
                         // TODO currently it is assuming no arrays in arrays
                     }
                 } else if (!(requestKeyValuePairs.containsKey(key) && requestKeyValuePairs.get(key).equals(smallerObject))) {
                     if (smallerObject instanceof String) {
-                        object.put(key, STANDARD_STRING);
                         strippedObject.put(key, STANDARD_STRING);
                     } else if (smallerObject instanceof Number) {
-                        object.put(key, STANDARD_NUMBER);
                         strippedObject.put(key, STANDARD_NUMBER);
                     } else if (smallerObject instanceof Boolean) {
-                        object.put(key, STANDARD_BOOLEAN);
                         strippedObject.put(key, STANDARD_BOOLEAN);
                     } else if (object.isNull(key)) {
-                        object.put(key, "null");
                         strippedObject.put(key, "null");
-                    } else {
-                        // A unknown object
                     }
                 }
             }
