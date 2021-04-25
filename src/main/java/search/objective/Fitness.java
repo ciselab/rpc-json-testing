@@ -33,14 +33,22 @@ public abstract class Fitness {
     public List<ResponseObject> getResponses(List<Individual> population) {
         List<ResponseObject> responses = new ArrayList<>();
 
+        double averageEvalTime = 0;
+
         for (int i = 0; i < population.size(); i++) {
             Individual individual = population.get(i);
+            long start = System.nanoTime();
             try {
                 responses.add(getClient().createRequest(individual.getHTTPMethod(), individual.toRequest()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            averageEvalTime += (System.nanoTime() - start);
         }
+
+        averageEvalTime /= (population.size() * 1000000);
+        System.out.println(averageEvalTime + " ms");
         return responses;
     }
 
