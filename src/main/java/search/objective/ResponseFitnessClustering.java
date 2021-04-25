@@ -62,6 +62,7 @@ public class ResponseFitnessClustering extends Fitness {
             String method = population.get(i).getMethod();
             JSONObject request = population.get(i).toRequest();
             JSONObject response = responses.get(i).getResponseObject();
+            System.out.println("Statuscode: " + responses.get(i).getResponseCode());
 
             JSONObject stripped = stripValues(request, response);
             String strippedString = stripped.toString();
@@ -171,134 +172,6 @@ public class ResponseFitnessClustering extends Fitness {
         return new Pair<>(featureVector, weightVector);
     }
 
-    private static String STANDARD_STRING = "";
-    private static Boolean STANDARD_BOOLEAN = true;
-    private static Integer STANDARD_NUMBER = 0;
 
-    /**
-     * Copy the response JSONObject and remove the values.
-     * @param response
-     * @return JSONObject with standard values, but key structure intact.
-     */
-    public JSONObject stripValues(JSONObject request, JSONObject response) {
-        JSONObject structure = new JSONObject(response.toString());
-        JSONObject copy = new JSONObject();
-
-        Queue<Pair<JSONObject, JSONObject>> queue = new LinkedList<>();
-        queue.add(new Pair<>(structure, copy));
-
-        HashMap<String, Object> requestKeyValuePairs = getKeyValuePairs(request);
-
-        // TODO something clever with arrays
-
-        while(!queue.isEmpty()) {
-            Pair<JSONObject, JSONObject> pair = queue.poll();
-            JSONObject object = pair.getKey();
-            JSONObject strippedObject = pair.getValue();
-
-            Iterator<String> it = object.keys();
-            while (it.hasNext()) {
-                String key = it.next();
-
-                Object smallerObject = object.get(key);
-                if (smallerObject instanceof JSONObject) {
-                    queue.add(new Pair<>((JSONObject) object.get(key), strippedObject));
-                } else if (smallerObject instanceof JSONArray) {
-                    JSONArray array = ((JSONArray) smallerObject);
-                    for (int i = 0; i < array.length(); i++) {
-                        if (i > 0) {
-                            array.remove(1);
-                            continue;
-                        }
-
-                        Object arrayObject = array.get(i);
-                        if (arrayObject instanceof JSONObject) {
-                            queue.add(new Pair<>((JSONObject) arrayObject, strippedObject));
-                        } else if (arrayObject instanceof JSONString) {
-                            array.put(i, STANDARD_STRING);
-                        } else if (arrayObject instanceof Number) {
-                            array.put(i, STANDARD_NUMBER);
-                        } else if (arrayObject instanceof Boolean) {
-                            array.put(i, STANDARD_BOOLEAN);
-                        }
-                        // TODO currently it is assuming no arrays in arrays
-                    }
-                } else if (!(requestKeyValuePairs.containsKey(key) && requestKeyValuePairs.get(key).equals(smallerObject))) {
-                    if (smallerObject instanceof String) {
-                        object.put(key, STANDARD_STRING);
-                        strippedObject.put(key, STANDARD_STRING);
-                    } else if (smallerObject instanceof Number) {
-                        object.put(key, STANDARD_NUMBER);
-                        strippedObject.put(key, STANDARD_NUMBER);
-                    } else if (smallerObject instanceof Boolean) {
-                        object.put(key, STANDARD_BOOLEAN);
-                        strippedObject.put(key, STANDARD_BOOLEAN);
-                    } else {
-                        // A unknown object
-                    }
-                }
-            }
-        }
-        System.out.println("Request: " + request.toString());
-        System.out.println("Response: " + response.toString());
-        System.out.println("Response stripped: " + copy.toString());
-        return copy;
-    }
-
-
-    // Check the key and value pairs in the request
-    // Match them with the key and value pairs in the response
-    // If they are a match, do not include this pair in the feature vector
-    public HashMap<String, Object> getKeyValuePairs(JSONObject request) {
-        JSONObject structure = new JSONObject(request.toString());
-
-        Queue<JSONObject> queue = new LinkedList<>();
-        queue.add(structure);
-
-        HashMap<String, Object> keyValuePairs = new HashMap<>();
-
-        while (!queue.isEmpty()) {
-            JSONObject object = queue.poll();
-            Iterator<String> it = object.keys();
-            while (it.hasNext()) {
-                String key = it.next();
-
-                Object smallerObject = object.get(key);
-                if (smallerObject instanceof JSONObject) {
-                    queue.add((JSONObject) object.get(key));
-                } else if (smallerObject instanceof JSONArray) {
-                    JSONArray array = ((JSONArray) smallerObject);
-                    for (int i = 0; i < array.length(); i++) {
-                        if (i > 0) {
-                            array.remove(1);
-                            continue;
-                        }
-
-                        Object arrayObject = array.get(i);
-                        if (arrayObject instanceof JSONObject) {
-                            queue.add((JSONObject) arrayObject);
-                        } else if (arrayObject instanceof JSONString) {
-                            array.put(i, arrayObject);
-                        } else if (arrayObject instanceof Number) {
-                            array.put(i, arrayObject);
-                        } else if (arrayObject instanceof Boolean) {
-                            array.put(i, arrayObject);
-                        }
-                        // TODO currently it is assuming no arrays in arrays
-                    }
-                } else if (smallerObject instanceof String) {
-                    keyValuePairs.put(key, smallerObject);
-                } else if (smallerObject instanceof Number) {
-                    keyValuePairs.put(key, smallerObject);
-                } else if (smallerObject instanceof Boolean) {
-                    keyValuePairs.put(key, smallerObject);
-                } else {
-//                    System.out.println(smallerObject.toString());
-//                    System.out.println(smallerObject.getClass());
-                }
-            }
-        }
-        return keyValuePairs;
-    }
 
 }

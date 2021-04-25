@@ -40,9 +40,16 @@ public class Generator {
         throw new IllegalArgumentException("Cannot find schema of type: " + type);
     }
 
+    /**
+     * Remove a method from the specification so that it cannot be used again.
+     * @param method
+     */
+    public void removeMethod(String method) {
+        this.specification.getMethods().remove(method);
+    }
+
     public String getRandomMethod() {
         List<String> methods = new ArrayList<>(specification.getMethods().keySet());
-
         return methods.get(getRandomIndex(methods));
     }
 
