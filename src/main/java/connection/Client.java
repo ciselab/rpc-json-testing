@@ -38,9 +38,10 @@ public class Client {
 
         String jsonOutputString;
 
+        // Wait for response
         try(BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
             StringBuilder response = new StringBuilder();
-            String responseLine = null;
+            String responseLine;
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }
@@ -55,6 +56,7 @@ public class Client {
         // Print the response
 //        System.out.println("Code: " + con.getResponseCode());
 //        System.out.println("JSON: " + new JSONObject(jsonOutputString));
+        con.disconnect();
 
         return new ResponseObject(con.getResponseCode(), new JSONObject(jsonOutputString));
     }
