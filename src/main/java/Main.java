@@ -8,6 +8,7 @@ import search.objective.ResponseFitnessClustering;
 import search.objective.ResponseFitnessClustering2;
 import search.objective.ResponseFitnessPredefinedTypes;
 import search.objective.ResponseStructureFitness;
+import search.objective.ResponseStructureFitness2;
 import search.objective.StatusCodeFitness;
 import search.openRPC.Specification;
 import test_generation.TestWriter;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class Main {
 
-    public static void main (String args[]) {
+    public static void main(String args[]) {
 
         File jar = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         String directory = jar.getParentFile().getAbsolutePath();
@@ -43,12 +44,13 @@ public class Main {
             // TODO (later): find other APIs to connect to
 
             // The url for the Ripple JSON-RPC API ledger (testnet)
-//            String url_ripple = "https://s.altnet.rippletest.net:51234";
-            String url_ripple = "http://127.0.0.1:5005";
+            String url_ripple = "https://s.altnet.rippletest.net:51234";
+//            String url_ripple = "http://127.0.0.1:5005";
             URL url = new URL(url_ripple);
             Client client = new Client(url);
 
-            RandomFitness fitness = new RandomFitness(client);
+//            ResponseFitnessClustering fitness = new ResponseFitnessClustering(client);
+            ResponseStructureFitness2 fitness = new ResponseStructureFitness2(client);
 
             BasicEA ea = new BasicEA(fitness, generator);
             List<Individual> population = ea.generatePopulation(50);
@@ -58,7 +60,9 @@ public class Main {
             while (System.currentTimeMillis() - startTime < 30 * 60 * 1000) {
                 System.out.println("Generation: " + generation);
                 generation += 1;
+                long start = System.nanoTime();
                 population = ea.nextGeneration(population);
+                System.out.println("generation time: " + ((System.nanoTime() - start) / 1000000d));
             }
 
 //            for (int i = 0; i < 20; i++) {
