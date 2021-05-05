@@ -133,6 +133,7 @@ public class AgglomerativeClustering {
 //        System.out.println(similarityJumps);
         double maxJump = 0;
         int maxJumpIndex = 0;
+        List<Double> jumps = new ArrayList<>();
         for (int i = 0; i < similarityJumps.size() - 1; i++) {
             double dissimilarityCurrent = (1.0 / similarityJumps.get(i)) - 1.0;
             double dissimilarityNext = (1.0 / similarityJumps.get(i + 1)) - 1.0;
@@ -140,9 +141,13 @@ public class AgglomerativeClustering {
             double jump = dissimilarityNext - dissimilarityCurrent;
             if (maxJump <= jump) {
                 maxJump = jump;
-                maxJumpIndex = i;
+                maxJumpIndex = i + 1; ///after the jump there is new cluster
             }
+
+            jumps.add(jump);
         }
+
+//        System.out.println(jumps);
 
         this.clusters = inBetweenClusters.get(maxJumpIndex);
 

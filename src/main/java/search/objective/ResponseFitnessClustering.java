@@ -5,10 +5,11 @@ import connection.ResponseObject;
 import util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONString;
+
 import search.Generator;
 import search.Individual;
 import search.clustering.AgglomerativeClustering;
+import util.Triple;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +45,23 @@ public class ResponseFitnessClustering extends Fitness {
 
             for (String structure : clusteringPerResponseStructure.get(method).keySet()) {
                 System.out.println("\t\t\tClusters: " + clusteringPerResponseStructure.get(method).get(structure).getClusters().size());
+
+                List<Integer> clusterSize = new ArrayList<>();
+
+                StringBuilder individuals = new StringBuilder();
+
+                for (List<List<Object>> cluster : clusteringPerResponseStructure.get(method).get(structure).getClusters()) {
+                    clusterSize.add(cluster.size());
+                    // printing
+                    for (List<Object> vector: cluster) {
+                        individuals.append("\t\t\t\t\t").append(vector.toString()).append("\n");
+                    }
+                    individuals.append("\n");
+                }
+
+                System.out.println("\t\t\t\t" + clusterSize.toString());
+                System.out.println(individuals);
+
             }
         }
     }
@@ -62,7 +80,6 @@ public class ResponseFitnessClustering extends Fitness {
             String method = population.get(i).getMethod();
             JSONObject request = population.get(i).toRequest();
             JSONObject response = responses.get(i).getResponseObject();
-            System.out.println("Statuscode: " + responses.get(i).getResponseCode());
 
             JSONObject stripped = stripValues(request, response);
             String strippedString = stripped.toString();
@@ -116,13 +133,14 @@ public class ResponseFitnessClustering extends Fitness {
         List<Object> featureVector = new ArrayList<>();
         List<Integer> weightVector = new ArrayList<>();
 
-        Queue<Pair<JSONObject, Integer>> queue = new LinkedList<>();
-        queue.add(new Pair<>(structure, 0));
+        Queue<Triple<JSONObject, Integer, JSONObject>> queue = new LinkedList<>();
+        queue.add(new Triple<>(structure, 0, stripped));
 
         while (!queue.isEmpty()) {
-            Pair<JSONObject, Integer> pair = queue.poll();
+            Triple<JSONObject, Integer, JSONObject> pair = queue.poll();
             JSONObject object = pair.getKey();
             Integer depth = pair.getValue();
+            JSONObject strippedObject = pair.getValue2();
 
             Iterator<String> it = object.keys();
             while (it.hasNext()) {
@@ -138,11 +156,18 @@ public class ResponseFitnessClustering extends Fitness {
                     continue;
                 }
 
+                if (!strippedObject.has(key)) {
+                    continue;
+                }
+
                 Object smallerObject = object.get(key);
+                Object strippedSmallerObject = strippedObject.get(key);
                 if (smallerObject instanceof JSONObject) {
-                    queue.add(new Pair<>((JSONObject) object.get(key), depth+1));
+                    queue.add(new Triple<>((JSONObject) smallerObject, depth+1, (JSONObject) strippedSmallerObject));
                 } else if (smallerObject instanceof JSONArray) {
                     JSONArray array = ((JSONArray) smallerObject);
+                    JSONArray strippedArray = ((JSONArray) strippedSmallerObject);
+
 
                     if (array.length() == 0) {
                         // TODO maybe add something here (empty array) (maybe add the length of the array as a value)
@@ -151,27 +176,28 @@ public class ResponseFitnessClustering extends Fitness {
 
                     if (array.isNull(0)) {
                         // TODO maybe add this
-//                    featureVector.add(null);
+                        featureVector.add("null");
                     }
 
                     Object arrayObject = array.get(0);
+                    Object strippedArrayObject = strippedArray.get(0);
 
+                    // TODO assumes no arrays in arrays
                     // just take first object of array
                     if (arrayObject instanceof JSONObject) {
-                        queue.add(new Pair<>((JSONObject) arrayObject, depth+1));
-                    } else if (stripped.has(key)) {
+                        queue.add(new Triple<>((JSONObject) arrayObject, depth+1, (JSONObject) strippedArrayObject));
+                    } else {
                         featureVector.add(arrayObject);
                         weightVector.add(depth+1);
                     }
-                } else if (stripped.has(key)) {
+                } else {
                     featureVector.add(smallerObject);
                     weightVector.add(depth+1);
                 }
             }
         }
+
         return new Pair<>(featureVector, weightVector);
     }
-
-
 
 }

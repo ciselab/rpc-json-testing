@@ -57,7 +57,7 @@ public abstract class Fitness {
         }
 
         averageEvalTime /= (population.size() * 1000000);
-        System.out.println(averageEvalTime + " ms");
+        System.out.println(averageEvalTime + " ms per test");
         return responses;
     }
 
@@ -112,7 +112,7 @@ public abstract class Fitness {
                             smallerStrippedArray.put(0, evenSmallerObject);
 
                             queue.add(new Pair<>((JSONObject) arrayObject, evenSmallerObject));
-                        } else if (arrayObject instanceof JSONString) {
+                        } else if (arrayObject instanceof String) {
                             smallerStrippedArray.put(0, STANDARD_STRING);
                         } else if (arrayObject instanceof Number) {
                             smallerStrippedArray.put(0, STANDARD_NUMBER);
