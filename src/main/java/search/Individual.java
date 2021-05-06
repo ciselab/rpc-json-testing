@@ -4,6 +4,8 @@ import org.json.JSONObject;
 import search.genes.ArrayGene;
 import search.openRPC.Specification;
 
+import java.util.Objects;
+
 import static util.RandomSingleton.getRandom;
 
 public class Individual {
@@ -69,4 +71,20 @@ public class Individual {
     public void setFitness(double fitness) {
         this.fitness = fitness;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Individual that = (Individual) o;
+        return
+//            Objects.equals(httpMethod, that.httpMethod) &&
+            Objects.equals(method, that.method) &&
+            Objects.equals(genes, that.genes);
+    }
+
 }

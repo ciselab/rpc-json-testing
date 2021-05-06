@@ -30,6 +30,8 @@ public class ResponseFitnessClustering extends Fitness {
     private Map<String, Map<String, AgglomerativeClustering>> clusteringPerResponseStructure;
     private Map<String, Set<Integer>> statuses;
 
+    private double ARCHIVE_THRESHOLD = 0.8;
+
     public ResponseFitnessClustering(Client client) {
         super(client);
         this.clusteringPerResponseStructure = new HashMap<>();
@@ -109,13 +111,19 @@ public class ResponseFitnessClustering extends Fitness {
             double cost = clustering.cluster(featureAndWeightVector.getKey());
 
             double fitness = 1.0 / (1 + cost);
-            population.get(i).setFitness(fitness);
-
-            // TODO hack for worst output
+            // TODO not use this hack for worst output
             if (population.get(i).getMethod().equals("random") ||
                 population.get(i).getMethod().equals("server_info") ||
                 population.get(i).getMethod().equals("server_state")) {
-                population.get(i).setFitness(0);
+                fitness = 0;
+            }
+            population.get(i).setFitness(fitness);
+
+            // decide whether to add individual to the archive
+            if (fitness >= ARCHIVE_THRESHOLD && !archive.contains(population.get(i))) {
+                this.addToArchive(population.get(i));
+                System.out.println(population.get(i).toRequest());
+                System.out.println("fitness: " + fitness);
             }
 
         }

@@ -33,6 +33,9 @@ public class ResponseFitnessClustering2 extends Fitness {
     private int generationCount;
     final private int NEW_CLUSTERS_AFTER_GEN = 10;
 
+    private double ARCHIVE_THRESHOLD = 0.75;
+
+    // This fitness function clusters once per X generations.
     public ResponseFitnessClustering2(Client client) {
         super(client);
         this.clusteringPerResponseStructure = new HashMap<>();
@@ -103,19 +106,24 @@ public class ResponseFitnessClustering2 extends Fitness {
 
             // first generation every ind gets same fitness OR different metric
             double cost = clustering.calculateMaxSimilarity(featureAndWeightVector.getKey());
-//            System.out.println("Cost: " + cost);
 
             double fitness = 1.0 / (1 + cost);
-            population.get(i).setFitness(fitness);
-//            System.out.println("fitness " + fitness);
-
-            // TODO hack for worst output
+            // TODO not use this hack for worst output
             if (population.get(i).getMethod().equals("random") ||
                 population.get(i).getMethod().equals("server_info") ||
                 population.get(i).getMethod().equals("server_state")) {
-                population.get(i).setFitness(0);
+                fitness = 0;
+            }
+            population.get(i).setFitness(fitness);
+
+            // decide whether to add individual to the archive
+            if (fitness >= ARCHIVE_THRESHOLD && !archive.contains(population.get(i))) {
+                this.addToArchive(population.get(i));
+                System.out.println(population.get(i).toRequest());
+                System.out.println("fitness: " + fitness);
             }
         }
+
         if (generationCount % NEW_CLUSTERS_AFTER_GEN == 0) {
             for (String method : featureVectorPerStructurePerMethodOfCurrentPop.keySet()) {
                 for (String responseStructure : featureVectorPerStructurePerMethodOfCurrentPop.get(method).keySet()) {

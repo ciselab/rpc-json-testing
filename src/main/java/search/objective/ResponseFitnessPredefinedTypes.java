@@ -23,6 +23,8 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
     // MAP<METHOD, MAP<PATH-TO-PARAM, MAP<CATEGORY, COUNT>>>
     private Map<String, Map<String, Map<Type, Integer>>> valuePerKeyCount;
 
+    private double ARCHIVE_THRESHOLD = 0.8;
+
     public ResponseFitnessPredefinedTypes(Client client) {
         super(client);
         this.valuePerKeyCount = new HashMap<>();
@@ -39,16 +41,18 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
         List<ResponseObject> responses = getResponses(population);
 
         for (int i = 0; i < population.size(); i++) {
-//            System.out.println(responses.get(i).getResponseObject());
             Double fitness = recordValueTypesAndGetFitness(population.get(i).getMethod(), responses.get(i).getResponseObject()); // population and responses are in the same order
 
             fitness = 1.0 / (1 + fitness);
-//            System.out.println(responses.get(i).getResponseObject().toString(2));
-//            System.out.println(fitness);
 
             population.get(i).setFitness(fitness);
-//            System.out.println(valuePerKeyCount);
+
+            // decide whether to add individual to the archive
+            if (fitness >= ARCHIVE_THRESHOLD && !archive.contains(population.get(i))) {
+                this.addToArchive(population.get(i));
+            }
         }
+        System.out.println(valuePerKeyCount);
     }
 
     /**
@@ -70,8 +74,6 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
             Pair<String, JSONObject> pair = queue.poll();
             String path = pair.getKey();
             JSONObject object = pair.getValue();
-
-//            System.out.println();
 
             Iterator<String> it = object.keys();
             while (it.hasNext()) {
@@ -115,7 +117,7 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
                 }
             }
         }
-//        System.out.println(valuePerKeyCount);
+
         if (numberOfKeys == 0) {
             return score;
         }

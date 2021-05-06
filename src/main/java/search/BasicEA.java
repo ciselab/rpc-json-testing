@@ -86,7 +86,7 @@ public class BasicEA {
                 tournament.add(population.remove(getRandom().nextInt(population.size())));
             }
 
-            // Sort
+            // Sort by descending order
             tournament.sort((o1, o2) -> Double.compare(o2.getFitness(), o1.getFitness()));
 
             for (int i = 0; i < champions; i++) {
@@ -113,4 +113,5 @@ public class BasicEA {
 
         return newPopulation;
     }
+
 }

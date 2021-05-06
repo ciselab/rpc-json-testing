@@ -24,6 +24,7 @@ public class ResponseStructureFitness3 extends Fitness {
 
     private Map<String, Integer> structureFrequencyTable;
 
+    private double ARCHIVE_THRESHOLD;
 
     public ResponseStructureFitness3(Client client) {
         super(client);
@@ -49,7 +50,7 @@ public class ResponseStructureFitness3 extends Fitness {
             structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
         }
 
-        double avgFitness = 0;
+        double totalFitness = 0;
 
         for (int i = 0; i < population.size(); i++) {
             String structureString = stripValues(population.get(i).toRequest(), responses.get(i).getResponseObject()).toString();
@@ -64,11 +65,17 @@ public class ResponseStructureFitness3 extends Fitness {
 
 //            System.out.println(structureFrequencyTable.get(stripValues(responses.get(i).getResponseObject()).toString()));
             double fitness = exploitationFitness * explorationFitness;
-            avgFitness += fitness;
+            totalFitness += fitness;
             population.get(i).setFitness(fitness);
+
+            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if statuscode is relatively rare, add to archive.
+            // decide whether to add individual to the archive
+            if (fitness >= ARCHIVE_THRESHOLD && !archive.contains(population.get(i))) {
+                this.addToArchive(population.get(i));
+            }
         }
 
-        System.out.println(avgFitness / population.size());
+        System.out.println("average fitness: " + totalFitness / population.size());
         System.out.println("Map: " + structureFrequencyTable.keySet().size());
     }
 

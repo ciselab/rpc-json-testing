@@ -31,6 +31,8 @@ public class SimilarityMetric {
      */
     private double calculateFeatureVectorDistance(List<Object> a, List<Object> b, List<Integer> weightVector) {
         double distance = 0;
+        int differentFeatures = 0;
+
         for (int i = 0; i < a.size(); i++) {
             Object objectA = a.get(i);
             Object objectB = b.get(i);
@@ -39,12 +41,29 @@ public class SimilarityMetric {
             }
 
             if (objectA instanceof String) {
-                distance += Math.pow(stringDistance((String) objectA, (String) objectB), 2) * (1.0 / (double) weightVector.get(i));
+                double tempDistance = Math.pow(stringDistance((String) objectA, (String) objectB), 2) * (1.0 / (double) weightVector.get(i));
+                distance += tempDistance;
+                if (tempDistance != 0) {
+                    differentFeatures += 1;
+                }
+
             } else if (objectA instanceof Boolean) {
-                distance += Math.pow(boolDistance((Boolean) objectA, (Boolean) objectB), 2) * (1.0 / (double) weightVector.get(i));
+                double tempDistance = Math.pow(boolDistance((Boolean) objectA, (Boolean) objectB), 2) * (1.0 / (double) weightVector.get(i));
+                distance += tempDistance;
+                if (tempDistance != 0) {
+                    differentFeatures += 1;
+                }
             } else if (objectA instanceof Number) {
-                distance += Math.pow(numberDistance(((Number) objectA).doubleValue(), ((Number) objectB).doubleValue()), 2) * (1.0 / (double) weightVector.get(i));
+                double tempDistance = Math.pow(numberDistance(((Number) objectA).doubleValue(), ((Number) objectB).doubleValue()), 2) * (1.0 / (double) weightVector.get(i));
+                distance += tempDistance;
+                if (tempDistance != 0) {
+                    differentFeatures += 1;
+                }
             }
+        }
+        // If half of the features in the vector are not different, two vectors are not different enough and distance should be 0.
+        if (differentFeatures / a.size() < 5) {
+            return 0;
         }
         return Math.sqrt(distance);
     }
@@ -58,7 +77,8 @@ public class SimilarityMetric {
     }
 
     /**
-     * Levenshtein distance
+     * Levenshtein distance.
+     * The minimum number of single-character edits (insertions, deletions or substitutions) required to change one word into the other.
      * @param a
      * @param b
      * @return
@@ -91,7 +111,12 @@ public class SimilarityMetric {
 //        for (int i = 0; i < distance.length; i++) {
 //            System.out.println(Arrays.toString(distance[i]));
 //        }
-        return distance[a.length()][b.length()];
+        double dist = distance[a.length()][b.length()];
+        double maxStringDistance = 20;
+        if (dist > maxStringDistance) {
+            dist = maxStringDistance;
+        }
+        return dist;
     }
 
 }

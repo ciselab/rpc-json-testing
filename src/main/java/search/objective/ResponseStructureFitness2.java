@@ -23,6 +23,7 @@ public class ResponseStructureFitness2 extends Fitness {
 
     private Map<String, Integer> structureFrequencyTable;
 
+    private double ARCHIVE_THRESHOLD;
 
     public ResponseStructureFitness2(Client client) {
         super(client);
@@ -39,6 +40,7 @@ public class ResponseStructureFitness2 extends Fitness {
 
         List<ResponseObject> responses = getResponses(population);
 
+        // Fill in hashmap with structure frequency
         for (int i = 0; i < population.size(); i++) {
             String structureString = stripValues(population.get(i).toRequest(), responses.get(i).getResponseObject()).toString();
 
@@ -51,64 +53,24 @@ public class ResponseStructureFitness2 extends Fitness {
                 structureFrequencyTable.put(structureString, 0);
             }
             structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
-        }
-
-        for (int i = 0; i < population.size(); i++) {
+//        }
+//
+            // Evaluate individual compared to the map
+//        for (int i = 0; i < population.size(); i++) {
 //            System.out.println(structureFrequencyTable.get(stripValues(responses.get(i).getResponseObject()).toString()));
             double fitness = (double) 1 / structureFrequencyTable.get(stripValues(population.get(i).toRequest(), responses.get(i).getResponseObject()).toString());
             population.get(i).setFitness(fitness);
+
+            System.out.println("Fitness: " + fitness);
+
+            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if statuscode is relatively rare, add to archive.
+            // decide whether to add individual to the archive
+            if (fitness >= ARCHIVE_THRESHOLD && !archive.contains(population.get(i))) {
+                this.addToArchive(population.get(i));
+            }
         }
 
         System.out.println("Map: " + structureFrequencyTable.keySet().size());
     }
-//
-//    /**
-//     * Copy the response JSONObject and remove the values.
-//     * @param response
-//     * @return JSONObject with standard values, but key structure intact.
-//     */
-//    public JSONObject stripValues(JSONObject response) {
-//        JSONObject structure = new JSONObject(response.toString());
-//
-//        Queue<JSONObject> queue = new LinkedList<>();
-//        queue.add(structure);
-//
-//        while(!queue.isEmpty()) {
-//            JSONObject object = queue.poll();
-//            Iterator<String> it = object.keys();
-//            while (it.hasNext()) {
-//                String key = it.next();
-//                Object smallerObject = object.get(key);
-//                if (smallerObject instanceof JSONObject) {
-//                    queue.add((JSONObject) object.get(key));
-//                } else if (smallerObject instanceof JSONArray) {
-//                    JSONArray array = ((JSONArray) smallerObject);
-//                    for (int i = 0; i < array.length(); i++) {
-//                        Object arrayObject = array.get(i);
-//                        if (arrayObject instanceof JSONObject) {
-//                            queue.add((JSONObject) arrayObject);
-//                        } else if (arrayObject instanceof JSONString) {
-//                            array.put(i, STANDARD_STRING);
-//                        } else if (arrayObject instanceof Number) {
-//                            array.put(i, STANDARD_NUMBER);
-//                        } else if (arrayObject instanceof Boolean) {
-//                            array.put(i, STANDARD_BOOLEAN);
-//                        }
-//                        // TODO currently it is assuming no arrays in arrays
-//                    }
-//                } else if (smallerObject instanceof String) {
-//                    object.put(key, STANDARD_STRING);
-//                } else if (smallerObject instanceof Number) {
-//                    object.put(key, STANDARD_NUMBER);
-//                } else if (smallerObject instanceof Boolean) {
-//                    object.put(key, STANDARD_BOOLEAN);
-//                } else {
-////                    System.out.println(smallerObject.toString());
-////                    System.out.println(smallerObject.getClass());
-//                }
-//            }
-//        }
-//        return structure;
-//    }
 
 }

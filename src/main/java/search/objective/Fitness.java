@@ -25,8 +25,11 @@ public abstract class Fitness {
 
     private Client client;
 
+    public List<Individual> archive;
+
     public Fitness(Client client) {
         this.client = client;
+        this.archive = new ArrayList<>();
     }
 
     public abstract void evaluate(Generator generator, Individual individual) throws IOException;
@@ -196,4 +199,11 @@ public abstract class Fitness {
         return keyValuePairs;
     }
 
+    public List<Individual> getArchive() {
+        return archive;
+    }
+
+    public void addToArchive(Individual ind) {
+        archive.add(ind);
+    }
 }
