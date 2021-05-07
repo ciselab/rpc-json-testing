@@ -30,7 +30,7 @@ cd blockchain-testing
 mvn clean test -Dtest=generated.ind*
 
 # calculate test coverage
-k $(lsof -t -i:5005)
+kill $(lsof -t -i:5005)
 cd ..
 cd rippled-1.6.0
 gcovr -b -r ./ -o coverage_results.txt
