@@ -5,7 +5,7 @@ apt-get install -y --no-install-recommends lsof procps
 # run the rippled server in the background
 cd rippled-1.6.0/build/cmake/coverage
 ./rippled -a -v --debug & disown
-sleep 30
+sleep 180
 cd ../../../../
 
 # run the tool
@@ -24,7 +24,7 @@ cd rippled-1.6.0
 find . -type f -name "*.gcda" -delete 
 cd build/cmake/coverage
 ./rippled -a -v --debug & disown
-sleep 30
+sleep 180
 cd ../../../../
 cd blockchain-testing
 mvn clean test -Dtest=generated.ind*
@@ -34,4 +34,4 @@ kill $(lsof -t -i:5005)
 cd ..
 cd rippled-1.6.0
 gcovr -b -r ./ -o coverage_results.txt
-echo "Fitness: <1> and time: <86400000>" > coverage_results.txt
+echo "Fitness: <1> and time: <86400000>" >> coverage_results.txt cat coverage_results.txt
