@@ -122,8 +122,8 @@ public class ResponseFitnessClustering extends Fitness {
             // decide whether to add individual to the archive
             if (fitness >= ARCHIVE_THRESHOLD && !archive.contains(population.get(i))) {
                 this.addToArchive(population.get(i));
-                System.out.println(population.get(i).toRequest());
-                System.out.println("fitness: " + fitness);
+//                System.out.println(population.get(i).toRequest());
+//                System.out.println("fitness: " + fitness);
             }
 
         }

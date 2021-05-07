@@ -4,10 +4,8 @@ import connection.Client;
 import connection.ResponseObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONString;
 import search.Generator;
 import search.Individual;
-import util.Pair;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+/**
+ * Use complexity of the request and response object (layers of JSON object) in the fitness calculation.
+ */
 public class ResponseStructureFitness3 extends Fitness {
     private static String STANDARD_STRING = "";
     private static Boolean STANDARD_BOOLEAN = true;
@@ -24,7 +25,7 @@ public class ResponseStructureFitness3 extends Fitness {
 
     private Map<String, Integer> structureFrequencyTable;
 
-    private double ARCHIVE_THRESHOLD;
+    private double ARCHIVE_THRESHOLD = 0.8;
 
     public ResponseStructureFitness3(Client client) {
         super(client);
@@ -58,7 +59,6 @@ public class ResponseStructureFitness3 extends Fitness {
             int inputComplexity = calculateComplexity(population.get(i).toRequest());
             int outputComplexity = calculateComplexity(responses.get(i).getResponseObject());
 
-
             double exploitationFitness = 1.0 / (1.0 + (double) structureFrequencyTable.get(structureString));
             // every key should be mutated atleast once
             double explorationFitness = (inputComplexity + outputComplexity);
@@ -68,14 +68,14 @@ public class ResponseStructureFitness3 extends Fitness {
             totalFitness += fitness;
             population.get(i).setFitness(fitness);
 
-            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if statuscode is relatively rare, add to archive.
+//            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.
             // decide whether to add individual to the archive
             if (fitness >= ARCHIVE_THRESHOLD && !archive.contains(population.get(i))) {
                 this.addToArchive(population.get(i));
             }
         }
 
-        System.out.println("average fitness: " + totalFitness / population.size());
+//        System.out.println("average fitness: " + totalFitness / population.size());
         System.out.println("Map: " + structureFrequencyTable.keySet().size());
     }
 

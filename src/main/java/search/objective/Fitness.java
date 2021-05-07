@@ -60,7 +60,7 @@ public abstract class Fitness {
         }
 
         averageEvalTime /= (population.size() * 1000000);
-        System.out.println(averageEvalTime + " ms per test");
+//        System.out.println("Average test time: " + averageEvalTime + " ms");
         return responses;
     }
 

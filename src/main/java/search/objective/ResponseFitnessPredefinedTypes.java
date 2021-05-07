@@ -52,7 +52,7 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
                 this.addToArchive(population.get(i));
             }
         }
-        System.out.println(valuePerKeyCount);
+//        System.out.println(valuePerKeyCount);
     }
 
     /**

@@ -52,6 +52,22 @@ public class ResponseFitnessClustering2 extends Fitness {
 
             for (String structure : clusteringPerResponseStructure.get(method).keySet()) {
                 System.out.println("\t\t\tClusters: " + clusteringPerResponseStructure.get(method).get(structure).getClusters().size());
+
+                List<Integer> clusterSize = new ArrayList<>();
+
+                StringBuilder individuals = new StringBuilder();
+
+                for (List<List<Object>> cluster : clusteringPerResponseStructure.get(method).get(structure).getClusters()) {
+                    clusterSize.add(cluster.size());
+                    // printing
+                    for (List<Object> vector: cluster) {
+                        individuals.append("\t\t\t\t\t").append(vector.toString()).append("\n");
+                    }
+                    individuals.append("\n");
+                }
+
+                System.out.println("\t\t\t\t" + clusterSize.toString());
+                System.out.println(individuals);
             }
         }
     }
@@ -71,7 +87,7 @@ public class ResponseFitnessClustering2 extends Fitness {
             String method = population.get(i).getMethod();
             JSONObject response = responses.get(i).getResponseObject();
 
-            System.out.println(response.toString());
+//            System.out.println(response.toString());
 
             JSONObject stripped = stripValues(response);
             String strippedString = stripped.toString();
@@ -119,8 +135,8 @@ public class ResponseFitnessClustering2 extends Fitness {
             // decide whether to add individual to the archive
             if (fitness >= ARCHIVE_THRESHOLD && !archive.contains(population.get(i))) {
                 this.addToArchive(population.get(i));
-                System.out.println(population.get(i).toRequest());
-                System.out.println("fitness: " + fitness);
+//                System.out.println(population.get(i).toRequest());
+//                System.out.println("fitness: " + fitness);
             }
         }
 

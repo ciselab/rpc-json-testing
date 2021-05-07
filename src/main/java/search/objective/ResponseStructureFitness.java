@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+/**
+ *  * This ResponseStructureFitness uses specific stripValues function.
+ */
 public class ResponseStructureFitness extends Fitness {
     private static String STANDARD_STRING = "";
     private static Boolean STANDARD_BOOLEAN = true;
@@ -23,7 +26,7 @@ public class ResponseStructureFitness extends Fitness {
 
     private Map<String, Integer> structureFrequencyTable;
 
-    private double ARCHIVE_THRESHOLD;
+    private double ARCHIVE_THRESHOLD = 0.8;
 
     public ResponseStructureFitness(Client client) {
         super(client);
@@ -40,7 +43,9 @@ public class ResponseStructureFitness extends Fitness {
 
         List<ResponseObject> responses = getResponses(population);
 
-        this.structureFrequencyTable = new HashMap<>();
+//        this.structureFrequencyTable = new HashMap<>();
+
+        // Fill in hashmap with structure frequency
         for (int i = 0; i < population.size(); i++) {
             String structureString = stripValues(responses.get(i).getResponseObject()).toString();
 //            System.out.println("Ind " + i + ": " + structureString);
@@ -48,14 +53,15 @@ public class ResponseStructureFitness extends Fitness {
                 structureFrequencyTable.put(structureString, 0);
             }
             structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
-        }
+//        }
 
-        for (int i = 0; i < population.size(); i++) {
+            // Evaluate individual compared to the map
+//        for (int i = 0; i < population.size(); i++) {
 //            System.out.println(structureFrequencyTable.get(stripValues(responses.get(i).getResponseObject()).toString()));
             double fitness = (double) 1 / structureFrequencyTable.get(stripValues(responses.get(i).getResponseObject()).toString());
             population.get(i).setFitness(fitness);
 
-            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if statuscode is relatively rare, add to archive.
+//            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.
             // decide whether to add individual to the archive
             if (fitness >= ARCHIVE_THRESHOLD && !archive.contains(population.get(i))) {
                 this.addToArchive(population.get(i));

@@ -13,7 +13,7 @@ import java.util.Map;
 public class StatusCodeFitness extends Fitness {
     private Map<Integer, Integer> statusFrequencyTable;
 
-    private double ARCHIVE_THRESHOLD;
+    private double ARCHIVE_THRESHOLD = 0.8;
 
     public StatusCodeFitness(Client client) {
         super(client);
@@ -42,7 +42,6 @@ public class StatusCodeFitness extends Fitness {
 //        for (int i = 0; i < population.size(); i++) {
             // If statuscode occurs only once in a large population, it is more rare than if it occurs once in a small population.
             double fitness = 1 / statusFrequencyTable.get(responses.get(i).getResponseCode());
-            System.out.println(responseCode);
 
             Individual ind = population.get(i);
             ind.setFitness(fitness);

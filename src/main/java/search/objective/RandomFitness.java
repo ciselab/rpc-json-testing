@@ -48,11 +48,8 @@ public class RandomFitness extends Fitness {
                 this.addToArchive(individual);
             }
 
-            averageEvalTime += (System.nanoTime() - start);
         }
 
-        averageEvalTime /= (population.size() * 1000000d);
-        System.out.println("Average test time: " + averageEvalTime + " ms");
     }
 
 }
