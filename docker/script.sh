@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # run the rippled server in the background
 cd rippled-1.6.0/build/cmake/coverage
 ./rippled -a -v --debug & disown
@@ -26,6 +28,6 @@ kill $(lsof -t -i:5005)
 cd ..
 cd rippled-1.6.0
 gcovr -b -r ./ -o coverage_results.txt
-echo "Fitness: " + $1 + "and time: " + $2 + "" >> coverage_results.txt cat coverage_results.txt
+echo "Fitness:" $1 "and time:" $2 "minutes" >> coverage_results.txt cat coverage_results.txt
 
 exit
