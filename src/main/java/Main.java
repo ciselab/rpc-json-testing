@@ -27,10 +27,10 @@ public class Main {
 
     public static void main(String args[]) {
         String fitnessFunction = "";
-        int runningTime = 24 * 60 * 60 * 1000; //default value
+        int runningTime = 24*60; //default value
         try {
             fitnessFunction = args[0]; // 1, 2, 3, 4, 5, 6, 7 or 8, default is 1
-            runningTime = Integer.parseInt(args[1]); // time in milliseconds, default is 24 hours
+            runningTime = Integer.parseInt(args[1]); // time in minutes, default is 24 hours
         }
         catch (ArrayIndexOutOfBoundsException e){
             System.out.println("Argument(s) not specified. Default value(s) used.");
@@ -103,7 +103,7 @@ public class Main {
                     System.out.println("No or invalid argument specified. Using default fitness: RandomFitness");
                     fitness = new RandomFitness(client);
             }
-            System.out.println("Experiment will run for " + runningTime + " ms = " + ((double) runningTime/1000/60) + " minute(s) = " + ((double) runningTime/1000/60/60) + " hour(s)");
+            System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime/60) + " hour(s)");
 
             BasicEA ea = new BasicEA(fitness, generator);
             List<Individual> population = ea.generatePopulation(50);
@@ -111,7 +111,7 @@ public class Main {
             // stopping criterium: time
             Long startTime = System.currentTimeMillis();
             int generation = 0;
-            while (System.currentTimeMillis() - startTime < runningTime) {
+            while (System.currentTimeMillis() - startTime < (runningTime*60*1000)) {
 //                fitness.printResults();
                 System.out.println("Generation: " + generation);
                 generation += 1;

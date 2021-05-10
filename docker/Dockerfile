@@ -2,7 +2,6 @@ FROM ubuntu:18.04
 
 # Install required packages and boost.
 RUN apt-get -y update && \
-	apt-get -y upgrade && \
 	apt-get -y install --no-install-recommends git pkg-config protobuf-compiler libprotobuf-dev libssl-dev wget build-essential unzip python3 gcovr default-jdk maven lsof procps && rm -rf /var/lib/apt/lists/* && \
 	wget https://lisv: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@github.com/Kitware/CMake/releases/download/v3.13.3/cmake-3.13.3-Linux-x86_64.sh && \
 	sh cmake-3.13.3-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir && \
@@ -30,3 +29,6 @@ RUN git clone https://lisv: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@github.com/S
 	git pull && \
 	mvn clean install -DskipTests && \
 	cp src/main/resources/ripple-openrpc.json target/
+	
+ENTRYPOINT ["git update-index -- chmod=+x blockchain-testing/docker/script.sh"]
+CMD ["1", "6000"]
