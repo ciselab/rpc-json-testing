@@ -17,6 +17,7 @@ import test_generation.TestWriter;
 import util.IO;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,12 +26,14 @@ import java.util.List;
 
 public class Main {
 
+    private static ArrayList<Double> bestFitness = new ArrayList<>();
+
     public static void main(String args[]) {
         String fitnessFunction = "";
-        int runningTime = 24*60; //default value
+        int runningTime = 60; //default value
         try {
             fitnessFunction = args[0]; // 1, 2, 3, 4, 5, 6, 7 or 8, default is 1
-            runningTime = Integer.parseInt(args[1]); // time in minutes, default is 24 hours
+            runningTime = Integer.parseInt(args[1]); // time in minutes, default is 1 hour
         }
         catch (ArrayIndexOutOfBoundsException e){
             System.out.println("Argument(s) not specified. Default value(s) used.");
@@ -68,35 +71,35 @@ public class Main {
 
             switch (fitnessFunction) {
                 case "1":
-                    System.out.println("Using RandomFitness");
+                    System.out.println("Using 1: RandomFitness");
                     fitness = new RandomFitness(client);
                     break;
                 case "2":
-                    System.out.println("Using StatusCodeFitness");
+                    System.out.println("Using 2: StatusCodeFitness");
                     fitness = new StatusCodeFitness(client);
                     break;
                 case "3":
-                    System.out.println("Using ResponseFitnessPredefinedTypes");
+                    System.out.println("Using 3: ResponseFitnessPredefinedTypes");
                     fitness = new ResponseFitnessPredefinedTypes(client);
                     break;
                 case "4":
-                    System.out.println("Using ResponseFitnessClustering");
+                    System.out.println("Using 4: ResponseFitnessClustering");
                     fitness = new ResponseFitnessClustering(client);
                     break;
                 case "5":
-                    System.out.println("Using ResponseFitnessClustering2");
+                    System.out.println("Using 5: ResponseFitnessClustering2");
                     fitness = new ResponseFitnessClustering2(client);
                     break;
                 case "6":
-                    System.out.println("Using ResponseStructureFitness");
+                    System.out.println("Using 6: ResponseStructureFitness");
                     fitness = new ResponseStructureFitness(client);
                     break;
                 case "7":
-                    System.out.println("Using ResponseStructureFitness2");
+                    System.out.println("Using 7: ResponseStructureFitness2");
                     fitness = new ResponseStructureFitness2(client);
                     break;
                 case "8":
-                    System.out.println("Using ResponseStructureFitness3");
+                    System.out.println("Using 8: ResponseStructureFitness3");
                     fitness = new ResponseStructureFitness3(client);
                     break;
                 default:
@@ -112,11 +115,20 @@ public class Main {
             Long startTime = System.currentTimeMillis();
             int generation = 0;
             while (System.currentTimeMillis() - startTime < (runningTime*60*1000)) {
-//                fitness.printResults();
                 System.out.println("Generation: " + generation);
                 generation += 1;
                 long start = System.nanoTime();
                 population = ea.nextGeneration(population);
+
+                // keeping records of the highest fitness in each generation
+                double maxFitness = 0;
+                for (Individual ind : population) {
+                    if (ind.getFitness() > maxFitness) {
+                        maxFitness = ind.getFitness();
+                    }
+                }
+                bestFitness.add(maxFitness);
+
 //                System.out.println("Generation time: " + ((System.nanoTime() - start) / 1000000d));
 
             }
@@ -127,7 +139,12 @@ public class Main {
 //                population = ea.nextGeneration(population);
 //            }
 
-//            ((ResponseFitnessClustering2) fitness).printResults();
+            // Write best fitness values of each generation to file
+            FileWriter writer = new FileWriter("best_fitness_values.txt");
+            for(Double fit: bestFitness) {
+                writer.write(fit + System.lineSeparator());
+            }
+            writer.close();
 
             // Write tests for the best individuals
             String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
