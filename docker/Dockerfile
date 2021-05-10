@@ -32,5 +32,5 @@ RUN git clone https://lisv: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@github.com/S
 # Give permission to run script
 RUN cd blockchain-testing/docker && chmod +x script.sh
 
-ENTRYPOINT ["git update-index -- chmod=+x blockchain-testing/docker/script.sh"]
+ENTRYPOINT ["blockchain-testing/docker/script.sh"]
 CMD ["1", "60"]
