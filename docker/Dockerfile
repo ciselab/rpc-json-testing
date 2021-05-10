@@ -15,7 +15,6 @@ ENV BOOST_ROOT /boost_1_71_0
 RUN wget https://lisv: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@github.com/ripple/rippled/archive/refs/tags/1.6.0.zip && \
 	mv 1.6.0.zip rippled-1.6.0.zip && \
 	unzip rippled-1.6.0.zip
-	
 RUN cd rippled-1.6.0 && \
 	python3 ./Builds/Test.py -v --dir coverage -- -j 4
 
@@ -30,5 +29,8 @@ RUN git clone https://lisv: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@github.com/S
 	mvn clean install -DskipTests && \
 	cp src/main/resources/ripple-openrpc.json target/
 	
+# Give permission to run script
+RUN cd blockchain-testing/docker && chmod +x script.sh
+
 ENTRYPOINT ["git update-index -- chmod=+x blockchain-testing/docker/script.sh"]
-CMD ["1", "6000"]
+CMD ["1", "60"]
