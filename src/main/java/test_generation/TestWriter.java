@@ -46,7 +46,7 @@ public class TestWriter {
             "    @Test\n" +
             "    public void test () {\n" +
             "        String method = \"" + individual.getHTTPMethod() + "\";\n" +
-            "        JSONObject request = new JSONObject(\"" + individual.toRequest().toString().replace("\"", "\\\"")  + "\");\n\n" +
+            "        JSONObject request = new JSONObject(\"" + individual.toRequest().toString().replace("\\", "\\\\").replace("\"", "\\\"")  + "\");\n\n" +
             "        try {\n" +
             "            client.createRequest(method, request);\n" +
             "        } catch (IOException e) {\n" +

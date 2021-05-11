@@ -14,6 +14,7 @@ cd ..
 
 # delete generated cov files and restart rippled server to run tests
 kill $(lsof -t -i:5005)
+sleep 120
 cd rippled-1.6.0
 find . -type f -name "*.gcda" -delete 
 cd build/cmake/coverage
@@ -25,6 +26,7 @@ mvn clean test -Dtest=generated.ind*
 
 # calculate test coverage
 kill $(lsof -t -i:5005)
+sleep 120
 cd ..
 cd rippled-1.6.0
 gcovr -b -r ./ -o coverage_results.txt

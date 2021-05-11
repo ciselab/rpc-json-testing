@@ -552,10 +552,59 @@
       "name": "sign",
       "description": "Cryptographically sign a transaction.",
       "params": [
+        {
+          "$ref": "#/components/contentDescriptors/TxJson"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Secret"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Seed"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/SeedHex"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Passphrase"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/KeyType"
+        },
+        {
+          "name": "offline",
+          "description": "If true, when constructing the transaction, do not try to automatically fill any transaction details. The default is false.",
+          "schema": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        {
+          "name": "build_path",
+          "description": "If this field is provided, the server auto-fills the Paths field of a Payment transaction before signing. You must omit this field if the transaction is a direct XRP payment or if it is not a Payment-type transaction. Caution: The server looks for the presence or absence of this field, not its value. This behavior may change.",
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "fee_mult_max",
+          "description": "Signing fails with the error rpcHIGH_FEE if the auto-filled Fee value would be greater than the reference transaction cost × fee_mult_max ÷ fee_div_max. This field has no effect if you explicitly specify the Fee field of the transaction. The default is 10.",
+          "schema": {
+            "type": "integer",
+            "default": 10
+          }
+        },
+        {
+          "name": "fee_div_max",
+          "description": "Signing fails with the error rpcHIGH_FEE if the auto-filled Fee value would be greater than the reference transaction cost × fee_mult_max ÷ fee_div_max. This field has no effect if you explicitly specify the Fee field of the transaction. The default is 1.",
+          "schema": {
+            "type": "integer",
+            "default": 1
+          }
+        }
       ],
       "result": {
         "name": "result",
-        "description": "",
+        "description": "A signed binary representation of the transaction.",
         "schema": {
           "type": "object"
         }
@@ -565,10 +614,31 @@
       "name": "sign_for",
       "description": "Contribute to a multi-signature.",
       "params": [
+        {
+          "$ref": "#/components/contentDescriptors/Account"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/TxJson"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Secret"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Seed"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/SeedHex"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Passphrase"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/KeyType"
+        }
       ],
       "result": {
         "name": "result",
-        "description": "",
+        "description": "Signed transaction.",
         "schema": {
           "type": "object"
         }
@@ -578,10 +648,21 @@
       "name": "submit",
       "description": "Send a transaction to the network.",
       "params": [
+        {
+          "name": "tx_blob",
+          "description": "Hex representation of the signed transaction to submit. This can be a multi-signed transaction.",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/HexString"
+          }
+        },
+        {
+          "$ref": "#/components/contentDescriptors/FailHard"
+        }
       ],
       "result": {
         "name": "result",
-        "description": "",
+        "description": "The complete transaction and engine result.",
         "schema": {
           "type": "object"
         }
@@ -591,10 +672,16 @@
       "name": "submit_multisigned",
       "description": "Send a multi-signed transaction to the network.",
       "params": [
+        {
+          "$ref": "#/components/contentDescriptors/TxJson"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/FailHard"
+        }
       ],
       "result": {
         "name": "result",
-        "description": "",
+        "description": "The complete transaction and engine result.",
         "schema": {
           "type": "object"
         }
@@ -760,10 +847,41 @@
       "name": "path_find",
       "description": "Find a path for a payment between two accounts and receive updates.",
       "params": [
+        {
+          "name": "subcommand",
+          "description": "There are three different modes, or sub-commands, of the path_find command. ",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": ["create", "close", "status"]
+          }
+        },
+        {
+          "$ref": "#/components/contentDescriptors/SourceAccount"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/DestinationAccount"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/DestinationAmount"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/SendMax"
+        },
+        {
+          "name": "paths",
+          "description": "Array of arrays of objects, representing payment paths to check.",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
       ],
       "result": {
         "name": "result",
-        "description": "",
+        "description": "A path along which a transaction can possibly be made.",
         "schema": {
           "type": "object"
         }
@@ -780,12 +898,7 @@
           "$ref": "#/components/contentDescriptors/DestinationAccount"
         },
         {
-          "name": "destination_amount",
-          "description": "Currency Amount that the destination account would receive in a transaction.",
-          "required": true,
-          "schema": {
-            "$ref": "#/components/schemas/CurrencyAmount"
-          }
+          "$ref": "#/components/contentDescriptors/DestinationAmount"
         },
         {
           "name": "send_max",
@@ -833,49 +946,22 @@
           }
         },
         {
-          "name": "secret",
-          "description": "The secret key to use to sign the claim. This must be the same key pair as the public key specified in the channel. Cannot be used with seed, seed_hex, or passphrase.",
-          "schema": {
-            "type": "string"
-          }
+          "$ref": "#/components/contentDescriptors/Secret"
         },
         {
-          "name": "seed",
-          "description": "The secret seed to use to sign the claim. This must be the same key pair as the public key specified in the channel. Must be in the XRP Ledger's base58 format. If provided, you must also specify the key_type. Cannot be used with secret, seed_hex, or passphrase. ",
-          "schema": {
-            "type": "string",
-            "pattern": "^s[1-9a-km-zA-HJ-NP-Z]{16,29}$"
-          }
+          "$ref": "#/components/contentDescriptors/Seed"
         },
         {
-          "name": "seed_hex",
-          "description": "The secret seed to use to sign the claim. This must be the same key pair as the public key specified in the channel. Must be in hexadecimal format. If provided, you must also specify the key_type. Cannot be used with secret, seed, or passphrase.",
-          "schema": {
-            "$ref": "#/components/schemas/HexString"
-          }
+          "$ref": "#/components/contentDescriptors/SeedHex"
         },
         {
-          "name": "passphrase",
-          "description": "A string passphrase to use to sign the claim. This must be the same key pair as the public key specified in the channel. The key derived from this passphrase must match the public key specified in the channel. If provided, you must also specify the key_type. Cannot be used with secret, seed, or seed_hex.",
-          "schema": {
-            "type": "string"
-          }
+          "$ref": "#/components/contentDescriptors/Passphrase"
         },
         {
-          "name": "key_type",
-          "description": "The signing algorithm of the cryptographic key pair provided. Valid types are secp256k1 or ed25519. The default is secp256k1.",
-          "schema": {
-            "type": "string",
-            "enum": ["secp256k1", "ed25519"]
-          }
+          "$ref": "#/components/contentDescriptors/KeyType"
         },
         {
-          "name": "amount",
-          "required": true,
-          "description": "Cumulative amount of XRP, in drops, to authorize. If the destination has already received a lesser amount of XRP from this channel, the signature created by this method can be redeemed for the difference.",
-          "schema": {
-            "$ref": "#/components/schemas/UnsignedInteger"
-          }
+          "$ref": "#/components/contentDescriptors/Amount"
         }
       ],
       "result": {
@@ -891,12 +977,7 @@
       "description": "Check a payment channel claim's signature.",
       "params": [
         {
-          "name": "amount",
-          "required": true,
-          "description": "The amount of XRP, in drops, the provided signature authorizes.",
-          "schema": {
-            "$ref": "#/components/schemas/UnsignedInteger"
-          }
+          "$ref": "#/components/contentDescriptors/Amount"
         },
         {
           "name": "channel_id",
@@ -957,9 +1038,8 @@
         {
           "name": "url",
           "description": "URL where the server sends a JSON-RPC callbacks for each event. Admin-only.",
-          "required": true,
           "schema": {
-            "type": "string", "pattern": "^(http:\\\/\\\/www\\.|https:\\\/\\\/www\\.|http:\\\/\\\/|https:\\\/\\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\\/.*)?$"
+            "type": "string", "pattern": "(http(s)?:\\\/\\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}(\\.[a-z]{2,6})?\\b([-a-zA-Z0-9@:%_\\+.~#?&\\\/\\\/=]*)"
           }
         },
         {
@@ -1090,6 +1170,18 @@
         "type": "string",
         "pattern": "^[0-9]*$"
       },
+      "UnsignedInteger8bit": {
+        "type": "string",
+        "pattern": "^[0-9]*$"
+      },
+      "UnsignedInteger16bit": {
+        "type": "string",
+        "pattern": "^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$"
+      },
+      "UnsignedInteger32bit": {
+        "type": "string",
+        "pattern": "^[0-9]*$"
+      },
       "HexString": {
         "type": "string",
         "pattern": "^(0x|0X)?[a-fA-F0-9]+$"
@@ -1101,6 +1193,71 @@
       "AccountPublicKey": {
         "type": "string",
         "pattern": "^a[1-9a-km-zA-HJ-NP-Z]{33,53}$"
+      },
+      "Transaction": {
+        "type": "object",
+        "required": ["Account", "TransactionType", "Fee", "Sequence"],
+        "properties": {
+          "Account": {
+            "description": "The unique address of the account that initiated the transaction.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "TransactionType": {
+            "description": "The type of transaction.",
+            "type": "string",
+            "enum": ["Payment", "OfferCreate", "OfferCancel", "TrustSet", "AccountSet", "AccountDelete", "SetRegularKey", "SignerListSet", "EscrowCreate", "EscrowFinish", "EscrowCancel", "PaymentChannelCreate", "PaymentChannelFund", "PaymentChannelClaim", "DepositPreauth"]
+          },
+          "Fee": {
+            "description": "Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.",
+            "$ref": "#/components/schemas/UnsignedInteger"
+          },
+          "Sequence": {
+            "description": "The sequence number of the account sending the transaction. A transaction is only valid if the Sequence number is exactly 1 greater than the previous transaction from the same account. The special case 0 means the transaction is using a Ticket instead",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "AccountTxnID": {
+            "description": "Hash value identifying another transaction. If provided, this transaction is only valid if the sending account's previously-sent transaction matches the provided hash.",
+            "$ref": "#/components/schemas/Hex64String"
+          },
+          "Flags": {
+            "description": "Set of bit-flags for this transaction.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "LastLedgerSequence": {
+            "description": "Highest ledger index this transaction can appear in. Specifying this field places a strict upper limit on how long the transaction can wait to be validated or rejected.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "Memos": {
+            "description": "Additional arbitrary information used to identify this transaction.",
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "Signers": {
+            "description": "Array of objects that represent a multi-signature which authorizes this transaction.",
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "SourceTag": {
+            "description": "Arbitrary integer used to identify the reason for this payment, or a sender on whose behalf this transaction is made. Conventionally, a refund should specify the initial payment's SourceTag as the refund payment's DestinationTag.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "SigningPubKey": {
+            "description": "(Automatically added when signing) Hex representation of the public key that corresponds to the private key used to sign this transaction. If an empty string, indicates a multi-signature is present in the Signers field instead.",
+            "$ref": "#/components/schemas/HexString"
+          },
+          "TicketSequence": {
+            "description": "The sequence number of the ticket to use in place of a Sequence number. If this is provided, Sequence must be 0. Cannot be used with AccountTxnID.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "TxnSignature": {
+            "description": "(Automatically added when signing) The signature that verifies this transaction as originating from the account it says it is from.",
+            "type": "string"
+          }
+        }
       },
       "DepositPreauth": {
         "description": "A DepositPreauth object.",
@@ -1188,7 +1345,7 @@
         "oneOf": [
           {
             "type": "string",
-            "pattern": "^\\D{3}$"
+            "pattern": "^[a-zA-Z0-9?!@#$%^&*<>(){}[\\]|]{3}$"
           },
           {
             "type": "string",
@@ -1332,6 +1489,58 @@
           "type": "object"
         }
       },
+      "TxJson": {
+        "name": "tx_json",
+        "description": "The Transaction to sign.",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Transaction"
+        }
+      },
+      "FailHard": {
+        "name": "fail_hard",
+        "description": "If true, and the transaction fails locally, do not retry or relay the transaction to other servers",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "Secret": {
+        "name": "secret",
+        "description": "The secret key to use to sign the claim. This must be the same key pair as the public key specified in the channel. Cannot be used with seed, seed_hex, or passphrase.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Seed": {
+        "name": "seed",
+        "description": "The secret seed to use to sign the claim. This must be the same key pair as the public key specified in the channel. Must be in the XRP Ledger's base58 format. If provided, you must also specify the key_type. Cannot be used with secret, seed_hex, or passphrase. ",
+        "schema": {
+          "type": "string",
+          "pattern": "^s[1-9a-km-zA-HJ-NP-Z]{16,29}$"
+        }
+      },
+      "SeedHex": {
+        "name": "seed_hex",
+        "description": "The secret seed to use to sign the claim. This must be the same key pair as the public key specified in the channel. Must be in hexadecimal format. If provided, you must also specify the key_type. Cannot be used with secret, seed, or passphrase.",
+        "schema": {
+          "$ref": "#/components/schemas/HexString"
+        }
+      },
+      "Passphrase": {
+        "name": "passphrase",
+        "description": "A string passphrase to use to sign the claim. This must be the same key pair as the public key specified in the channel. The key derived from this passphrase must match the public key specified in the channel. If provided, you must also specify the key_type. Cannot be used with secret, seed, or seed_hex.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "KeyType": {
+        "name": "key_type",
+        "description": "The signing algorithm of the cryptographic key pair provided. Valid types are secp256k1 or ed25519. The default is secp256k1.",
+        "schema": {
+          "type": "string",
+          "enum": ["secp256k1", "ed25519"]
+        }
+      },
       "Transactions": {
         "name": "transactions",
         "description": "If true, return information on transactions in the specified ledger version. Defaults to false. Ignored if you did not specify a ledger version.",
@@ -1351,6 +1560,14 @@
         "description": "If true, and the command is requesting the current ledger, includes an array of queued transactions in the results.",
         "schema": {
           "type": "boolean"
+        }
+      },
+      "Amount": {
+        "name": "amount",
+        "required": true,
+        "description": "The amount of XRP, in drops, the provided signature authorizes.",
+        "schema": {
+          "$ref": "#/components/schemas/UnsignedInteger"
         }
       },
       "Streams": {
@@ -1398,6 +1615,21 @@
         "required": true,
         "schema": {
           "$ref": "#/components/schemas/Address"
+        }
+      },
+      "DestinationAmount": {
+        "name": "destination_amount",
+        "description": "Currency Amount that the destination account would receive in a transaction.",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/CurrencyAmount"
+        }
+      },
+      "SendMax": {
+        "name": "send_max",
+        "description": "Currency Amount that would be spent in the transaction. Cannot be used with source_currencies.",
+        "schema": {
+          "$ref": "#/components/schemas/CurrencyAmount"
         }
       },
       "Books": {
