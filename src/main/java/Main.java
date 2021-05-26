@@ -8,7 +8,6 @@ import search.objective.RandomFitness;
 import search.objective.ResponseFitnessClustering;
 import search.objective.ResponseFitnessClustering2;
 import search.objective.ResponseFitnessPredefinedTypes;
-import search.objective.ResponseStructureFitness;
 import search.objective.ResponseStructureFitness2;
 import search.objective.ResponseStructureFitness3;
 import search.objective.StatusCodeFitness;
@@ -91,15 +90,11 @@ public class Main {
                     fitness = new ResponseFitnessClustering2(client);
                     break;
                 case "6":
-                    System.out.println("Using 6: ResponseStructureFitness");
-                    fitness = new ResponseStructureFitness(client);
-                    break;
-                case "7":
-                    System.out.println("Using 7: ResponseStructureFitness2");
+                    System.out.println("Using 6: ResponseStructureFitness2");
                     fitness = new ResponseStructureFitness2(client);
                     break;
-                case "8":
-                    System.out.println("Using 8: ResponseStructureFitness3");
+                case "7":
+                    System.out.println("Using 7: ResponseStructureFitness3");
                     fitness = new ResponseStructureFitness3(client);
                     break;
                 default:
