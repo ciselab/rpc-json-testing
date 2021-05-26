@@ -72,7 +72,7 @@ public class ResponseStructureFitness extends Fitness {
     }
 
     /**
-     * Copy the response JSONObject and remove the values.
+     * Copy the response JSONObject and remove the values (replace with standard string, number, boolean).
      * @param response
      * @return JSONObject with standard values, but key structure intact.
      */

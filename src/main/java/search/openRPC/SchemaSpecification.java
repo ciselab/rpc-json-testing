@@ -36,7 +36,15 @@ public class SchemaSpecification {
     private List<SchemaSpecification> arrayItemSchemaSpecification;
 
     public SchemaSpecification(JSONObject schema) {
-        this.type = schema.getString("type");
+        System.out.println(schema.toString());
+
+        if (schema.has("type")) {
+            this.type = schema.getString("type");
+        } else if (schema.has("items")) {
+            this.type = "array";
+        } else {
+            throw new RuntimeException("Schema has no type: " + schema.toString());
+        }
 
         if (type.equals("integer")) {
             min = schema.has("minimum") ? schema.getLong("minimum") : 0L;
@@ -54,7 +62,7 @@ public class SchemaSpecification {
             }
         } else if (type.equals("object")) {
             requiredKeys = new HashSet<>();
-            childSchemaSpecification = new HashMap<>();
+            childSchemaSpecification = new HashMap<>() ;
             if (schema.has("required")) {
                 JSONArray requiredArgs = schema.getJSONArray("required");
 
