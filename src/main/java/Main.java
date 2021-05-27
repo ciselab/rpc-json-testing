@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Main {
 
@@ -134,16 +135,21 @@ public class Main {
 //                population = ea.nextGeneration(population);
 //            }
 
-            // Write best fitness values of each generation to file
-            FileWriter writer = new FileWriter("best_fitness_values.txt");
+            // Write tests for the best individuals
+            String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
+            TestWriter testWriter = new TestWriter(url_ripple, testDirectory);
+
+            // Write archive size and best fitness values of each generation to file
+            FileWriter writer = new FileWriter("archiveSize_bestFitnessValues.txt");
+
+            File directory_tests = new File(testDirectory);
+            int fileCount = Objects.requireNonNull(directory_tests.list()).length;
+            writer.write("Amount of tests in the archive: " + fileCount + "\n");
+
             for(Double fit: bestFitness) {
                 writer.write(fit + System.lineSeparator());
             }
             writer.close();
-
-            // Write tests for the best individuals
-            String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
-            TestWriter testWriter = new TestWriter(url_ripple, testDirectory);
 
             // Delete old test files
             for (File file : new java.io.File(testDirectory).listFiles()) {

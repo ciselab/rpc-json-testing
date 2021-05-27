@@ -16,6 +16,8 @@ cd ..
 kill $(lsof -t -i:5005)
 sleep 120
 cd rippled-1.6.0
+gcovr -b -r ./ -o coverage_results_without_archive.txt
+echo "Fitness:" $1 "and time:" $2 "minutes" >> coverage_results_without_archive.txt cat coverage_results_without_archive.txt
 find . -type f -name "*.gcda" -delete 
 cd build/cmake/coverage
 ./rippled -a -v --debug & disown
