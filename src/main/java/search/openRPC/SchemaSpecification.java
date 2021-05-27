@@ -36,7 +36,6 @@ public class SchemaSpecification {
     private List<SchemaSpecification> arrayItemSchemaSpecification;
 
     public SchemaSpecification(JSONObject schema) {
-        System.out.println(schema.toString());
 
         if (schema.has("type")) {
             this.type = schema.getString("type");
