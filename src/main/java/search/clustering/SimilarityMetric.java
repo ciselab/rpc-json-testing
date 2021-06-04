@@ -41,7 +41,8 @@ public class SimilarityMetric {
             }
 
             if (objectA instanceof String) {
-                double tempDistance = Math.pow(stringDistance((String) objectA, (String) objectB), 2) * (1.0 / (double) weightVector.get(i));
+                double maxStringDistance = 20;
+                double tempDistance = Math.pow(Math.min(stringDistance((String) objectA, (String) objectB), maxStringDistance), 2) * (1.0 / (double) weightVector.get(i));
                 distance += tempDistance;
                 if (tempDistance != 0) {
                     differentFeatures += 1;
@@ -68,12 +69,12 @@ public class SimilarityMetric {
         return Math.sqrt(distance);
     }
 
-    private double boolDistance(Boolean a, Boolean b) {
+    public static double boolDistance(Boolean a, Boolean b) {
         return a == b ? 0 : 1;
     }
 
-    private double numberDistance(Double a, Double b) {
-        return a - b;
+    public static double numberDistance(Double a, Double b) {
+        return Math.abs(a - b);
     }
 
     /**
@@ -83,7 +84,7 @@ public class SimilarityMetric {
      * @param b
      * @return
      */
-    private static double stringDistance(String a, String b) {
+    public static double stringDistance(String a, String b) {
         // TODO seems to be incorrect somehow
         double[][] distance = new double[a.length() + 1][b.length() + 1];
 
@@ -112,10 +113,7 @@ public class SimilarityMetric {
 //            System.out.println(Arrays.toString(distance[i]));
 //        }
         double dist = distance[a.length()][b.length()];
-        double maxStringDistance = 20;
-        if (dist > maxStringDistance) {
-            dist = maxStringDistance;
-        }
+
         return dist;
     }
 

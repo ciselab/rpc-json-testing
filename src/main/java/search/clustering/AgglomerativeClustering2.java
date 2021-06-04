@@ -8,10 +8,10 @@ public class AgglomerativeClustering2 {
 
     private SimilarityMetric metric;
 
-    // each value in the feature vector has a certain weight/importance
+    // Each value in the feature vector has a certain weight/importance
     private List<Integer> weightVector;
 
-    // clusters, cluster, featureVector (of different types)
+    // List of all the clusters (each cluster in the list has one or more items in its cluster (items are featureVector (of different types)).
     private List<List<List<Object>>> clusters;
     private List<List<Double>> similarityMatrix;
 
@@ -23,7 +23,7 @@ public class AgglomerativeClustering2 {
     }
 
     /**
-     * Returns the cost of the newValue
+     * Computes the cost of the newValue.
      * @param values feature vectors of the current population
      * @return
      */
@@ -31,6 +31,7 @@ public class AgglomerativeClustering2 {
         List<List<List<Object>>> clusters = new ArrayList<>();
         List<List<List<List<Object>>>> inBetweenClusters = new ArrayList<>();
 
+        // Create a cluster for each data point
         for (List<Object> datapoint : values) {
             List<List<Object>> cluster = new ArrayList<>();
             cluster.add(datapoint);
@@ -127,6 +128,11 @@ public class AgglomerativeClustering2 {
         this.clusters = inBetweenClusters.get(maxJumpIndex);
     }
 
+    /**
+     * Create a copy of all the clusters.
+     * @param toCopy
+     * @return
+     */
     private List<List<List<Object>>> deepCopy(List<List<List<Object>>> toCopy) {
         List<List<List<Object>>> copy = new ArrayList<>();
 
