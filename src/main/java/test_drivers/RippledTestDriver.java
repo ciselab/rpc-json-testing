@@ -17,7 +17,7 @@ public class RippledTestDriver extends TestDriver {
     public void prepareTest() throws IOException, InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder();
 
-        processBuilder.command("bash", "-c", "startRippled.sh");
+        processBuilder.command("startRippled.sh");
 //        processBuilder.command("cmd", "/c", "startRippled.sh");
 
 //        processBuilder.command("/bin/bash", "startRippled.sh");
