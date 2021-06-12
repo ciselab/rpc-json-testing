@@ -16,13 +16,13 @@ public class RippledTestDriver extends TestDriver {
 
     public void prepareTest() throws IOException, InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("echo", "hello");
+        processBuilder.command("bash", "-c", "echo", "hello");
 //        processBuilder.command("/bin/bash", "startRippled.sh");
-//        processBuilder.command("kill", "$(lsof -t -i:5005)");
-//        processBuilder.command("sleep", "5");
-        processBuilder.command("cd", "rippled-1.6.0/build/cmake/coverage");
-        processBuilder.command("./rippled", "-a", "-v", "--debug", "&", "disown");
-//        processBuilder.command("sleep", "5");
+        processBuilder.command("bash", "-c", "kill", "$(lsof -t -i:5005)");
+        processBuilder.command("bash", "-c", "sleep", "120");
+        processBuilder.command("bash", "-c", "cd", "rippled-1.6.0/build/cmake/coverage");
+        processBuilder.command("bash", "-c", "./rippled", "-a", "-v", "--debug", "&", "disown");
+        processBuilder.command("bash", "-c", "sleep", "120");
 
 //        # kill current rippled server at port 5005
 //        kill $(lsof -t -i:5005)
@@ -37,6 +37,8 @@ public class RippledTestDriver extends TestDriver {
 
         printResults(process);
         process.waitFor();
+
+        System.exit(0);
     }
 
     private static void printResults(Process process) throws IOException {
