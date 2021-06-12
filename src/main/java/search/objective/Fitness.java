@@ -143,7 +143,6 @@ public abstract class Fitness {
         return copy;
     }
 
-
     // Check the key and value pairs in the request
     // Match them with the key and value pairs in the response
     // If they are a match, do not include this pair in the feature vector

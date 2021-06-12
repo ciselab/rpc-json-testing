@@ -53,9 +53,6 @@ public class Client {
             jsonOutputString = "{}";
         }
 
-        // Print the response
-//        System.out.println("Code: " + con.getResponseCode());
-//        System.out.println("JSON: " + new JSONObject(jsonOutputString));
         con.disconnect();
 
         return new ResponseObject(con.getResponseCode(), new JSONObject(jsonOutputString));
