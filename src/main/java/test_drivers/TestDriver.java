@@ -14,7 +14,7 @@ public abstract class TestDriver {
         this.client = client;
     }
 
-    public abstract ResponseObject runTest(Individual individual) throws IOException, InterruptedException;
+    public abstract ResponseObject runTest(Individual individual) throws Exception;
 
     public Client getClient() {
         return client;

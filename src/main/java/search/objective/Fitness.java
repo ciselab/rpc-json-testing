@@ -49,6 +49,8 @@ public abstract class Fitness {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             averageEvalTime += (System.nanoTime() - start);

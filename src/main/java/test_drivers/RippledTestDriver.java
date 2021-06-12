@@ -6,6 +6,7 @@ import search.Individual;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class RippledTestDriver extends TestDriver {
@@ -14,7 +15,7 @@ public class RippledTestDriver extends TestDriver {
         super(client);
     }
 
-    public void prepareTest() throws IOException, InterruptedException {
+    public void prepareTest() throws Exception {
         ProcessBuilder processBuilder = new ProcessBuilder();
 
         processBuilder.command("/blockchain-testing/startRippled.sh");
@@ -36,23 +37,31 @@ public class RippledTestDriver extends TestDriver {
 //            ./rippled -a -v --debug & disown
 //        sleep 120
 
-        Process process = processBuilder.start();
+        Process p = processBuilder.start();
 
-        printResults(process);
-        process.waitFor();
+        String output = loadStream(p.getInputStream());
+        String error  = loadStream(p.getErrorStream());
+        int rc = p.waitFor();
+        System.out.println("Process ended with rc=" + rc);
+        System.out.println("\nStandard Output:\n");
+        System.out.println(output);
+        System.out.println("\nStandard Error:\n");
+        System.out.println(error);
 
         System.exit(0);
     }
 
-    private static void printResults(Process process) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+    private String loadStream(InputStream s) throws Exception
+    {
+        BufferedReader br = new BufferedReader(new InputStreamReader(s));
+        StringBuilder sb = new StringBuilder();
         String line;
-        while ((line = reader.readLine()) != null) {
-            System.out.println(line);
-        }
+        while((line=br.readLine()) != null)
+            sb.append(line).append("\n");
+        return sb.toString();
     }
 
-    public ResponseObject runTest(Individual individual) throws IOException, InterruptedException {
+    public ResponseObject runTest(Individual individual) throws Exception {
         prepareTest();
         ResponseObject responseObject = getClient().createRequest(individual.getHTTPMethod(), individual.toRequest());
 
