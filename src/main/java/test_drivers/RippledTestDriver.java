@@ -37,6 +37,7 @@ public class RippledTestDriver extends TestDriver {
 //            ./rippled -a -v --debug & disown
 //        sleep 120
 
+        processBuilder.redirectErrorStream(true);
         Process p = processBuilder.start();
 
         String output = loadStream(p.getInputStream());
