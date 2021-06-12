@@ -137,25 +137,24 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
      * Remove one of the (required or non-required) children of the JSONObjectGene.
      */
     public boolean removeRandomChild() {
-        Set<String> nonRequiredKeys = new HashSet<>();
+        Set<String> usedKeys = new HashSet<>();
 
-        // add all children
+        // Add all children
         for (StringGene child : this.children.keySet()) {
-            nonRequiredKeys.add(child.getValue());
+            usedKeys.add(child.getValue());
         }
 
-        // remove required children from the set (containing child to be removed) from with a certain probability
-        if (getRandom().nextDouble() > 0.75) {
-            nonRequiredKeys.removeAll(this.getSchema().getRequiredKeys());
-        }
+        // Remove required children from the set (containing child to be removed) from with a certain probability
+//        if (getRandom().nextDouble() > 0.75) {
+//            usedKeys.removeAll(this.getSchema().getRequiredKeys());
+//        }
 
-        // leaves us with a set of used children which are non-required or both required/non-required
-
-        if (nonRequiredKeys.isEmpty()) {
+        // If there are no keys, there are no children that can be removed.
+        if (usedKeys.isEmpty()) {
             return false;
         }
-        int index = getRandomIndex(nonRequiredKeys);
-        String childKey = (String) nonRequiredKeys.toArray()[index];
+        int index = getRandomIndex(usedKeys);
+        String childKey = (String) usedKeys.toArray()[index];
 
         for (StringGene key : children.keySet()) {
             if (key.getValue().equals(childKey)) {

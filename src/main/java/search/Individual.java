@@ -28,18 +28,23 @@ public class Individual {
         request.put("params", genes.toJSON());
         return request;
     }
-    
+
+    /**
+     * Mutate individual.
+     * @param generator
+     * @return mutated individual
+     */
     public Individual mutate(Generator generator) {
         if (getRandom().nextDouble() < 0.01) {
             // mutate http method
             return new Individual(generator.generateHTTPMethod(), method, genes.copy());
         } else if (getRandom().nextDouble() < 0.1) {
-            // mutate method
+            // mutate method (this is actually not mutation but just a new individual)
             String methodName = generator.getRandomMethod();
             ArrayGene method = generator.generateMethod(methodName);
             return new Individual(generator.generateHTTPMethod(), methodName, method);
         } else {
-            // mutate parameters
+            // mutate parameters (mutate certain rate of parameters)
             ArrayGene newGenes = genes.mutate(generator);
             return new Individual(httpMethod, method, newGenes);
         }
