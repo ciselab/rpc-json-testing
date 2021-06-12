@@ -42,8 +42,8 @@ public class RippledTestDriver extends TestDriver {
 
         String output = loadStream(p.getInputStream());
         String error  = loadStream(p.getErrorStream());
-        int rc = p.waitFor();
-        System.out.println("Process ended with rc=" + rc);
+//        int rc = p.waitFor();
+//        System.out.println("Process ended with rc=" + rc);
         System.out.println("\nStandard Output:\n");
         System.out.println(output);
         System.out.println("\nStandard Error:\n");
