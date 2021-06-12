@@ -18,6 +18,8 @@ public class RippledTestDriver extends TestDriver {
     public void prepareTest() throws Exception {
         ProcessBuilder processBuilder = new ProcessBuilder();
 
+        System.out.println("line 1");
+
         processBuilder.command("/blockchain-testing/startRippled.sh");
 //        processBuilder.command("cmd", "/c", "startRippled.sh");
 
@@ -37,11 +39,19 @@ public class RippledTestDriver extends TestDriver {
 //            ./rippled -a -v --debug & disown
 //        sleep 120
 
+        System.out.println("2");
         processBuilder.redirectErrorStream(true);
+        System.out.println("3");
+
         Process p = processBuilder.start();
+        System.out.println("4");
 
         String output = loadStream(p.getInputStream());
+        System.out.println("5");
+
         String error  = loadStream(p.getErrorStream());
+        System.out.println("6");
+
 //        int rc = p.waitFor();
 //        System.out.println("Process ended with rc=" + rc);
         System.out.println("\nStandard Output:\n");
@@ -57,8 +67,10 @@ public class RippledTestDriver extends TestDriver {
         BufferedReader br = new BufferedReader(new InputStreamReader(s));
         StringBuilder sb = new StringBuilder();
         String line;
-        while((line=br.readLine()) != null)
+        while((line=br.readLine()) != null) {
+            System.out.println(line);
             sb.append(line).append("\n");
+        }
         return sb.toString();
     }
 
