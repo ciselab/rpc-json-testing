@@ -4,6 +4,7 @@ import connection.Client;
 import connection.ResponseObject;
 import search.Generator;
 import search.Individual;
+import test_drivers.TestDriver;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,14 +16,9 @@ public class StatusCodeFitness extends Fitness {
 
     private double ARCHIVE_THRESHOLD = 0.8;
 
-    public StatusCodeFitness(Client client) {
-        super(client);
+    public StatusCodeFitness(TestDriver testDriver) {
+        super(testDriver);
         this.statusFrequencyTable = new HashMap<>();
-    }
-
-    @Override
-    public void evaluate(Generator generator, Individual individual) throws IOException {
-        // Cannot evaluate one individual in this case. Evaluation is based on entire generation.
     }
 
     @Override
@@ -48,7 +44,7 @@ public class StatusCodeFitness extends Fitness {
 
             ARCHIVE_THRESHOLD = Math.min((100 / statusFrequencyTable.size()), ARCHIVE_THRESHOLD); // if statuscode is relatively rare, add to archive.
             // decide whether to add individual to the archive
-            if (fitness >= ARCHIVE_THRESHOLD && !archive.contains(ind)) {
+            if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(ind)) {
                 this.addToArchive(ind);
             }
 

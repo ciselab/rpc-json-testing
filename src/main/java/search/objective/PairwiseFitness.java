@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import search.Generator;
 import search.Individual;
 import search.clustering.SimilarityMetric;
+import test_drivers.TestDriver;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,13 +19,8 @@ import java.util.Queue;
 
 public class PairwiseFitness extends Fitness {
 
-    public PairwiseFitness(Client client) {
-        super(client);
-    }
-
-    @Override
-    public void evaluate(Generator generator, Individual individual) throws IOException {
-
+    public PairwiseFitness(TestDriver testDriver) {
+        super(testDriver);
     }
 
     @Override

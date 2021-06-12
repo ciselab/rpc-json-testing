@@ -4,6 +4,7 @@ import search.BasicEA;
 import search.Generator;
 import search.Individual;
 import search.objective.Fitness;
+import search.objective.PairwiseFitness;
 import search.objective.RandomFitness;
 import search.objective.ResponseFitnessClustering;
 import search.objective.ResponseFitnessClustering2;
@@ -12,6 +13,8 @@ import search.objective.ResponseStructureFitness2;
 import search.objective.ResponseStructureFitness3;
 import search.objective.StatusCodeFitness;
 import search.openRPC.Specification;
+import test_drivers.RippledTestDriver;
+import test_drivers.TestDriver;
 import test_generation.TestWriter;
 import util.IO;
 
@@ -59,48 +62,48 @@ public class Main {
         Generator generator = new Generator(specification);
 
         try {
-            // TODO (later): find other APIs to connect to
-
             // The url for the Ripple JSON-RPC API ledger (testnet)
 //            String url_ripple = "https://s.altnet.rippletest.net:51234";
             String url_ripple = "http://127.0.0.1:5005";
 
             URL url = new URL(url_ripple);
             Client client = new Client(url);
+            TestDriver testDriver = new RippledTestDriver(client);
             Fitness fitness;
 
             switch (fitnessFunction) {
                 case "1":
                     System.out.println("Using 1: RandomFitness");
-                    fitness = new RandomFitness(client);
+                    fitness = new RandomFitness(testDriver);
                     break;
                 case "2":
                     System.out.println("Using 2: StatusCodeFitness");
-                    fitness = new StatusCodeFitness(client);
+                    fitness = new StatusCodeFitness(testDriver);
                     break;
                 case "3":
                     System.out.println("Using 3: ResponseFitnessPredefinedTypes");
-                    fitness = new ResponseFitnessPredefinedTypes(client);
+                    fitness = new ResponseFitnessPredefinedTypes(testDriver);
                     break;
                 case "4":
                     System.out.println("Using 4: ResponseFitnessClustering");
-                    fitness = new ResponseFitnessClustering(client);
+                    fitness = new ResponseFitnessClustering(testDriver);
                     break;
                 case "5":
                     System.out.println("Using 5: ResponseFitnessClustering2");
-                    fitness = new ResponseFitnessClustering2(client);
+                    fitness = new ResponseFitnessClustering2(testDriver);
                     break;
                 case "6":
                     System.out.println("Using 6: ResponseStructureFitness2");
-                    fitness = new ResponseStructureFitness2(client);
+                    fitness = new ResponseStructureFitness2(testDriver);
                     break;
                 case "7":
                     System.out.println("Using 7: ResponseStructureFitness3");
-                    fitness = new ResponseStructureFitness3(client);
+                    fitness = new ResponseStructureFitness3(testDriver);
                     break;
                 default:
                     System.out.println("No or invalid argument specified. Using default fitness: RandomFitness");
-                    fitness = new RandomFitness(client);
+//                    fitness = new RandomFitness(testDriver);
+                    fitness = new PairwiseFitness(testDriver);
             }
             System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime/60) + " hour(s)");
 

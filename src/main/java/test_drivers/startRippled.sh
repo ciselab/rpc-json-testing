@@ -6,6 +6,3 @@
 #cd rippled-1.6.0/build/cmake/coverage
 #./rippled -a -v --debug & disown
 #sleep 120
-
-echo "hhelp"
-sleep 120

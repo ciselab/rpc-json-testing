@@ -1,12 +1,12 @@
 package search.objective;
 
-import connection.Client;
 import connection.ResponseObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 import search.Generator;
 import search.Individual;
+import test_drivers.TestDriver;
 import util.Pair;
 
 import java.io.IOException;
@@ -19,20 +19,13 @@ import java.util.Queue;
 
 public abstract class Fitness {
 
-    public Client getClient() {
-        return client;
-    }
+    private TestDriver testDriver;
+    private List<Individual> archive;
 
-    private Client client;
-
-    public List<Individual> archive;
-
-    public Fitness(Client client) {
-        this.client = client;
+    public Fitness(TestDriver testDriver) {
+        this.testDriver = testDriver;
         this.archive = new ArrayList<>();
     }
-
-    public abstract void evaluate(Generator generator, Individual individual) throws IOException;
 
     public abstract void evaluate(Generator generator, List<Individual> population);
 
@@ -51,8 +44,10 @@ public abstract class Fitness {
             Individual individual = population.get(i);
             long start = System.nanoTime();
             try {
-                responses.add(getClient().createRequest(individual.getHTTPMethod(), individual.toRequest()));
+                responses.add(testDriver.runTest(individual));
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
@@ -205,4 +200,6 @@ public abstract class Fitness {
     public void addToArchive(Individual ind) {
         archive.add(ind);
     }
+
+
 }

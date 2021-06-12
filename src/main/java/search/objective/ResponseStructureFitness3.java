@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import search.Generator;
 import search.Individual;
+import test_drivers.TestDriver;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,14 +28,9 @@ public class ResponseStructureFitness3 extends Fitness {
 
     private double ARCHIVE_THRESHOLD = 0.8;
 
-    public ResponseStructureFitness3(Client client) {
-        super(client);
+    public ResponseStructureFitness3(TestDriver testDriver) {
+        super(testDriver);
         this.structureFrequencyTable = new HashMap<>();
-    }
-
-    @Override
-    public void evaluate(Generator generator, Individual individual) throws IOException {
-        // Cannot evaluate one individual in this case. Evaluation is based on entire generation.
     }
 
     @Override
@@ -70,7 +66,7 @@ public class ResponseStructureFitness3 extends Fitness {
 
 //            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.
             // decide whether to add individual to the archive
-            if (fitness >= ARCHIVE_THRESHOLD && !archive.contains(population.get(i))) {
+            if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
                 this.addToArchive(population.get(i));
             }
         }

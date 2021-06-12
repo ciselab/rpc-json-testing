@@ -2,6 +2,7 @@ package search.objective;
 
 import connection.Client;
 import connection.ResponseObject;
+import test_drivers.TestDriver;
 import util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,16 +37,11 @@ public class ResponseFitnessClustering2 extends Fitness {
 
     private double ARCHIVE_THRESHOLD = 0.8;
 
-    public ResponseFitnessClustering2(Client client) {
-        super(client);
+    public ResponseFitnessClustering2(TestDriver testDriver) {
+        super(testDriver);
         this.clusteringPerResponseStructure = new HashMap<>();
         this.statuses = new HashMap<>();
         this.generationCount = 0;
-    }
-
-    @Override
-    public void evaluate(Generator generator, Individual individual) throws IOException {
-
     }
 
     @Override
@@ -111,7 +107,7 @@ public class ResponseFitnessClustering2 extends Fitness {
             population.get(i).setFitness(fitness);
 
             // decide whether to add individual to the archive
-            if (fitness >= ARCHIVE_THRESHOLD && !archive.contains(population.get(i))) {
+            if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
                 this.addToArchive(population.get(i));
             }
         }
