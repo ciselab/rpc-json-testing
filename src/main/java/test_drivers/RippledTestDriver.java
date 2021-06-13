@@ -69,17 +69,17 @@ public class RippledTestDriver extends TestDriver {
         return getClient().createRequest("POST", request);
     }
 
-    public void prepTest() throws Exception {
-        startServer();
-//        System.out.println("PROPOSE WALLETS");
+        public void prepTest() throws Exception {
+            startServer();
+        System.out.println("PROPOSE WALLETS");
         ResponseObject accounts = retrieveAccounts();
-//        System.out.println(accounts.getResponseCode());
-//        System.out.println(accounts.getResponseObject());
-//        System.out.println("SENDING FROM GENESIS ACCOUNT");
+        System.out.println(accounts.getResponseCode());
+        System.out.println(accounts.getResponseObject());
+        System.out.println("SENDING FROM GENESIS ACCOUNT");
         ResponseObject createAccounts = createAccounts(accounts.getResponseObject());
-//        System.out.println(createAccounts.getResponseCode());
-//        System.out.println(createAccounts.getResponseObject());
-//        System.out.println("REPLACE ACCOUNTS IN REQUEST");
+        System.out.println(createAccounts.getResponseCode());
+        System.out.println(createAccounts.getResponseObject());
+        System.out.println("REPLACE ACCOUNTS IN REQUEST");
         this.accounts = accounts.getResponseObject();
     }
 
