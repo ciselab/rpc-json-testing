@@ -9,6 +9,8 @@ import java.io.IOException;
 
 public class RippledTestDriver extends TestDriver {
 
+    private JSONObject accounts;
+
     public RippledTestDriver(Client client) {
         super(client);
     }
@@ -43,8 +45,8 @@ public class RippledTestDriver extends TestDriver {
         JSONArray params = new JSONArray();
         JSONObject paramObj = new JSONObject();
         paramObj.put("secret", "snoPBrXtMeMyMHUVTgbuqAfg1SUTb"); // genesis secret
-        paramObj.put("offline", false);
-        paramObj.put("fee_multi_max", 1000);
+//        paramObj.put("offline", false);
+//        paramObj.put("fee_multi_max", 1000);
 
         JSONObject txJson = new JSONObject();
         txJson.put("TransactionType", "Payment");
@@ -54,7 +56,7 @@ public class RippledTestDriver extends TestDriver {
         JSONObject amount = new JSONObject();
         amount.put("currency", "USD");
         amount.put("issuer", "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"); // genesis account
-        amount.put("value", "1");
+        amount.put("value", "1000");
 
         txJson.put("Amount", amount);
 
@@ -67,29 +69,32 @@ public class RippledTestDriver extends TestDriver {
         return getClient().createRequest("POST", request);
     }
 
+    public void prepTest() throws Exception {
+        startServer();
+//        System.out.println("PROPOSE WALLETS");
+        ResponseObject accounts = retrieveAccounts();
+//        System.out.println(accounts.getResponseCode());
+//        System.out.println(accounts.getResponseObject());
+//        System.out.println("SENDING FROM GENESIS ACCOUNT");
+        ResponseObject createAccounts = createAccounts(accounts.getResponseObject());
+//        System.out.println(createAccounts.getResponseCode());
+//        System.out.println(createAccounts.getResponseObject());
+//        System.out.println("REPLACE ACCOUNTS IN REQUEST");
+        this.accounts = accounts.getResponseObject();
+    }
+
     private JSONObject replaceAccountStrings(JSONObject request, JSONObject accounts) {
         return new JSONObject(request.toString().replace("__ACCOUNT__", accounts.getJSONObject("result").getString("account_id")));
     }
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
-        startServer();
-        System.out.println("PROPOSE WALLETS");
-        ResponseObject accounts = retrieveAccounts();
-        System.out.println(accounts.getResponseCode());
-        System.out.println(accounts.getResponseObject());
-        System.out.println("SENDING FROM GENESIS ACCOUNT");
-        ResponseObject createAccounts = createAccounts(accounts.getResponseObject());
-        System.out.println(createAccounts.getResponseCode());
-        System.out.println(createAccounts.getResponseObject());
-        System.out.println("REPLACE ACCOUNTS IN REQUEST");
-        request = replaceAccountStrings(request, accounts.getResponseObject());
+        if (accounts == null) {
+            throw new Exception("No accounts found! Please call prepTest before runTest!!");
+        }
 
-        System.out.println("MAKE REQUEST");
-        ResponseObject responseObject = getClient().createRequest(method, request);
-        System.out.println(responseObject.getResponseCode());
-        System.out.println(responseObject.getResponseObject());
-        System.out.println();
-        return responseObject;
+        request = replaceAccountStrings(request, accounts);
+
+        return getClient().createRequest(method, request);
     }
 
 }

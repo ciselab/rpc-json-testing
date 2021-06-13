@@ -12,6 +12,8 @@ public abstract class TestDriver {
         this.client = client;
     }
 
+    public abstract void prepTest() throws Exception;
+
     public abstract ResponseObject runTest(String method, JSONObject request) throws Exception;
 
     public Client getClient() {

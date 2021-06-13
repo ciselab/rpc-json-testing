@@ -50,13 +50,24 @@ public abstract class Fitness {
             Individual individual = population.get(i);
             long start = System.nanoTime();
             try {
-                for (int j = 0; j < individual.getDna().size() - 1; j++) {
-                    Chromosome chromosome = individual.getDna().get(j);
-                    testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest());
-                }
-                Chromosome chromosome = individual.getDna().get(individual.getDna().size() - 1);
+                System.out.println("Preparing tests");
+                testDriver.prepTest();
 
-                responses.add(testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest()));
+                ResponseObject responseObject = null;
+
+                System.out.println("Running tests");
+                for (int j = 0; j < individual.getDna().size(); j++) {
+                    System.out.println("Running test: " + j);
+                    Chromosome chromosome = individual.getDna().get(j);
+                    responseObject = testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest());
+                }
+
+                if (responseObject == null) {
+                    throw new Exception("Individual with zero chromosomes!!!");
+                }
+
+                System.out.println("Test done");
+                responses.add(responseObject);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
