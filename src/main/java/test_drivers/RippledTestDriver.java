@@ -52,7 +52,7 @@ public class RippledTestDriver extends TestDriver {
         amount.put("issuer", "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"); // genesis account
         accounts.put("value", "2000");
         txJson.put("Account", "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"); // genesis account
-        txJson.put("Destination", accounts.getJSONObject("results").getString("account_id"));
+        txJson.put("Destination", accounts.getJSONObject("result").getString("account_id"));
 
         paramObj.put("tx_json", txJson);
         params.put(0, paramObj);
@@ -62,7 +62,7 @@ public class RippledTestDriver extends TestDriver {
     }
 
     private JSONObject replaceAccountStrings(JSONObject request, JSONObject accounts) {
-        return new JSONObject(request.toString().replace("__ACCOUNT__", accounts.getJSONObject("results").getString("account_id")));
+        return new JSONObject(request.toString().replace("__ACCOUNT__", accounts.getJSONObject("result").getString("account_id")));
     }
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
