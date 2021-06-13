@@ -68,11 +68,8 @@ public abstract class Fitness {
 
                 System.out.println("Test done");
                 responses.add(responseObject);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             } catch (Exception e) {
+                System.out.println(individual.toTotalJSONObject().toString(2));
                 e.printStackTrace();
             }
 
