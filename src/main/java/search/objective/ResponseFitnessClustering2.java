@@ -1,6 +1,5 @@
 package search.objective;
 
-import connection.Client;
 import connection.ResponseObject;
 import test_drivers.TestDriver;
 import util.Pair;
@@ -12,7 +11,6 @@ import search.Individual;
 import search.clustering.AgglomerativeClustering2;
 import util.Triple;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +21,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+/**
+ * Cluster once every X generations.
+ */
 public class ResponseFitnessClustering2 extends Fitness {
 
     private static String separator = "/";

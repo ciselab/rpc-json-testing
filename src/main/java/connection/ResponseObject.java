@@ -7,7 +7,7 @@ public class ResponseObject {
     private JSONObject responseObject;
 
     /**
-     * ResponseObject constructor.
+     * ResponseObject constructor. Contains the HTTP status code and the JSONObject returned by the server.
      * @param responseCode
      * @param responseObject
      */

@@ -76,7 +76,6 @@ public class StringGene extends ValueGene<String> {
         // number of characters to change
         int toChange = (int) Math.ceil(FRACTION * value.length());
 
-
         // TODO length must always be higher than 0
         // select the position from which to start to change/add/delete a character
         int position = 0;
@@ -126,6 +125,7 @@ public class StringGene extends ValueGene<String> {
         return mutatedValue;
     }
 
+    // DOES NOT WORK PROPERLY YET!
     public String mutateRegex(String regex) {
         // number of characters to change
         int toChange = (int) Math.ceil(FRACTION * regex.length());

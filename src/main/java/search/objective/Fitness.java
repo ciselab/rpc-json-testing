@@ -27,6 +27,11 @@ public abstract class Fitness {
         this.archive = new ArrayList<>();
     }
 
+    /**
+     * Evaluate the population on fitness.
+     * @param generator
+     * @param population
+     */
     public abstract void evaluate(Generator generator, List<Individual> population);
 
     /**
@@ -64,7 +69,6 @@ public abstract class Fitness {
     private static String STANDARD_STRING = "";
     private static Boolean STANDARD_BOOLEAN = true;
     private static Integer STANDARD_NUMBER = 0;
-
     /**
      * Copy the response JSONObject and remove the values.
      * Also remove keys with values which where given in the request.
@@ -136,13 +140,14 @@ public abstract class Fitness {
                 }
             }
         }
-
         return copy;
     }
 
-    // Check the key and value pairs in the request
-    // Match them with the key and value pairs in the response
-    // If they are a match, do not include this pair in the feature vector
+    /**
+     * Check the key and value pairs in the request, match them with the key and value pairs in the response and if they are a match, do not include this pair in the feature vector.
+     * @param request
+     * @return the key-value pairs in the response JSON Object.
+     */
     public HashMap<String, Object> getKeyValuePairs(JSONObject request) {
         JSONObject structure = new JSONObject(request.toString());
 

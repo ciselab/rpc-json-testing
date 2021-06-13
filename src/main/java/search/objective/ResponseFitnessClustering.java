@@ -1,18 +1,16 @@
 package search.objective;
 
-import connection.Client;
 import connection.ResponseObject;
 import test_drivers.TestDriver;
-import util.Pair;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import search.Generator;
 import search.Individual;
 import search.clustering.AgglomerativeClustering;
+import util.Pair;
 import util.Triple;
 
-import java.io.IOException;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +21,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+/**
+ * Cluster every individual.
+ */
 public class ResponseFitnessClustering extends Fitness {
 
     private static String separator = "/";
@@ -118,8 +119,6 @@ public class ResponseFitnessClustering extends Fitness {
             // decide whether to add individual to the archive
             if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
                 this.addToArchive(population.get(i));
-//                System.out.println(population.get(i).toRequest());
-//                System.out.println("fitness: " + fitness);
             }
 
         }

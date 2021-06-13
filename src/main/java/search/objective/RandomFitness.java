@@ -1,13 +1,10 @@
 package search.objective;
 
-import connection.Client;
 import connection.ResponseObject;
 import search.Generator;
 import search.Individual;
 import test_drivers.TestDriver;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static util.RandomSingleton.getRandom;
@@ -24,8 +21,7 @@ public class RandomFitness extends Fitness {
 
     @Override
     public void evaluate(Generator generator, List<Individual> population) {
-        double averageEvalTime = 0;
-
+        // Call methods
         List<ResponseObject> responseObjects = getResponses(population);
 
         for (int i = 0; i < population.size(); i++) {

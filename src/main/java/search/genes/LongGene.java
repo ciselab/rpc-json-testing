@@ -10,9 +10,13 @@ public class LongGene extends ValueGene<Long> {
         super(schema, value);
     }
 
+    /**
+     * Mutate the Long value using polynomial mutation (based on EvoMaster implementation).
+     * @param generator
+     * @return
+     */
     @Override
     public Gene mutate(Generator generator) {
-        // Polynomial mutation, based on EvoMaster implementation
         double random = getRandom().nextDouble();
         if (random < 0.95) {
             // Get minimum and maximum value of the parameter range
@@ -68,44 +72,6 @@ public class LongGene extends ValueGene<Long> {
             return getNewGene(generator);
         }
     }
-
-
-//    @Override
-//    public Gene mutate(Generator generator) {
-//        if (getRandom().nextDouble() < 0.95) {
-//
-//            // Get minimum and maximum value of the parameter range
-//            SchemaSpecification schema = getSchema();
-//
-//            Long minimum = schema.getMin();
-//            Long maximum = schema.getMax();
-//
-//            long newValue;
-//            if (getRandom().nextBoolean()) {
-//                // left
-//                long diff = getValue() - minimum;
-//                long mean = getValue();
-//                long std = diff / 10;// fit the entire diff in 10 std
-//
-//                newValue = (long) Math.abs(mean - (getRandom().nextGaussian() * std));
-//            } else {
-//                // right
-//                long diff = maximum - getValue();
-//                long mean = getValue();
-//                long std = diff / 10;// fit the entire diff in 10 std
-//
-//                newValue = (long) Math.abs((getRandom().nextGaussian() * std + mean));
-//            }
-//
-//            newValue = Math.max(minimum, newValue);
-//            newValue = Math.min(maximum, newValue);
-//
-//            return new LongGene(this.getSchema(), newValue);
-//        } else {
-//            // change gene type (e.g. string instead of long, or random long within specification)
-//            return getNewGene(generator);
-//        }
-//    }
 
     @Override
     public Gene<Long> copy() {

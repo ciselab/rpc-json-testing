@@ -18,7 +18,7 @@ import java.util.Queue;
 
 /**
  * Specification.
- * Uses the OpenRPC specification (a JSONObject) to retrieve required methods and corresponding params.
+ * Uses the OpenRPC specification (a JSONObject) to retrieve required methods, corresponding parameters, and schemas belonging to those parameters.
  */
 public class Specification {
 

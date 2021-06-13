@@ -1,7 +1,6 @@
 package search;
 
 import com.github.curiousoddman.rgxgen.RgxGen;
-import org.json.JSONObject;
 import search.genes.ArrayGene;
 import search.genes.BooleanGene;
 import search.genes.Gene;

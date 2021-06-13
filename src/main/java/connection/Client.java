@@ -20,6 +20,13 @@ public class Client {
     }
 
     // Based on https://www.twilio.com/blog/5-ways-to-make-http-requests-in-java
+    /**
+     * Send a JSON-RPC request to the server and retrieve the response.
+     * @param method
+     * @param request
+     * @return ResponseObject consisting of a HTTP status code and a JSON object
+     * @throws IOException
+     */
     public ResponseObject createRequest(String method, JSONObject request) throws IOException {
         // Open a connection on the URL and cast the response
         HttpURLConnection con = (HttpURLConnection) serverURI.openConnection();

@@ -1,21 +1,13 @@
 package search.objective;
 
-import connection.Client;
 import connection.ResponseObject;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONString;
 import search.Generator;
 import search.Individual;
 import test_drivers.TestDriver;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 /**
  * This ResponseStructureFitness uses the stripValues function from Fitness.
@@ -41,17 +33,15 @@ public class ResponseStructureFitness2 extends Fitness {
 
         // Fill in hashmap with structure frequency
         for (int i = 0; i < population.size(); i++) {
+
             String structureString = stripValues(population.get(i).toRequest(), responses.get(i).getResponseObject()).toString();
-//            System.out.println("Ind " + i + ": " + structureString);
+
             if (!structureFrequencyTable.containsKey(structureString)) {
                 structureFrequencyTable.put(structureString, 0);
             }
             structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
-//        }
-//
+
             // Evaluate individual compared to the map
-//        for (int i = 0; i < population.size(); i++) {
-//            System.out.println(structureFrequencyTable.get(stripValues(responses.get(i).getResponseObject()).toString()));
             double fitness = (double) 1 / structureFrequencyTable.get(stripValues(population.get(i).toRequest(), responses.get(i).getResponseObject()).toString());
             population.get(i).setFitness(fitness);
 
@@ -62,7 +52,7 @@ public class ResponseStructureFitness2 extends Fitness {
             }
         }
 
-        System.out.println("Map: " + structureFrequencyTable.keySet().size());
+//        System.out.println("Map: " + structureFrequencyTable.keySet().size());
     }
 
 }

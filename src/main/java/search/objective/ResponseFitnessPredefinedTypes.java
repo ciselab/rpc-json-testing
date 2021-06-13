@@ -1,15 +1,13 @@
 package search.objective;
 
-import connection.Client;
 import connection.ResponseObject;
 import test_drivers.TestDriver;
 import util.Pair;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import search.Generator;
 import search.Individual;
 
-import java.io.IOException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -48,7 +46,6 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
                 this.addToArchive(population.get(i));
             }
         }
-//        System.out.println(valuePerKeyCount);
     }
 
     /**
@@ -120,23 +117,24 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
         return score / numberOfKeys;
     }
 
+    /**
+     * Store the response (method and all its parameters and corresponding types) in a map to keep track of occurrences.
+     * @param method
+     * @param path
+     * @param type
+     * @return the number of times a type has occurred (within a certain parameter within a certain method)
+     */
     private Integer recordType(String method, String path, Type type) {
-//        System.out.println("Methods: " + valuePerKeyCount.keySet().size());
         if (!valuePerKeyCount.containsKey(method)) {
             valuePerKeyCount.put(method, new HashMap<>());
         }
-
-//        System.out.println(method + ": " + valuePerKeyCount.get(method).keySet().size());
         if (!valuePerKeyCount.get(method).containsKey(path)) {
             valuePerKeyCount.get(method).put(path, new HashMap<>());
         }
-
-//        System.out.println(path + ": " + valuePerKeyCount.get(method).get(path).keySet().size());
         if (!valuePerKeyCount.get(method).get(path).containsKey(type)) {
             valuePerKeyCount.get(method).get(path).put(type, 0);
         }
 
-//        System.out.println(type + ": " + valuePerKeyCount.get(method).get(path).get(type));
         Integer currentCount = valuePerKeyCount.get(method).get(path).get(type);
         valuePerKeyCount.get(method).get(path).put(type, valuePerKeyCount.get(method).get(path).get(type) + 1);
 

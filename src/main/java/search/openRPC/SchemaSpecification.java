@@ -13,6 +13,9 @@ import java.util.Set;
 
 import static search.openRPC.Specification.extractTypes;
 
+/**
+ * SchemaSpecification contains the attributes of a schema belonging to a parameter.
+ */
 public class SchemaSpecification {
 
     private String type;

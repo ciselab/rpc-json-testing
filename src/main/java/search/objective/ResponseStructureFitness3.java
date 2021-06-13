@@ -1,6 +1,5 @@
 package search.objective;
 
-import connection.Client;
 import connection.ResponseObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -8,7 +7,6 @@ import search.Generator;
 import search.Individual;
 import test_drivers.TestDriver;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -40,7 +38,6 @@ public class ResponseStructureFitness3 extends Fitness {
 
         for (int i = 0; i < population.size(); i++) {
             String structureString = stripValues(population.get(i).toRequest(), responses.get(i).getResponseObject()).toString();
-//            System.out.println("Ind " + i + ": " + structureString);
             if (!structureFrequencyTable.containsKey(structureString)) {
                 structureFrequencyTable.put(structureString, 0);
             }
@@ -56,10 +53,9 @@ public class ResponseStructureFitness3 extends Fitness {
             int outputComplexity = calculateComplexity(responses.get(i).getResponseObject());
 
             double exploitationFitness = 1.0 / (1.0 + (double) structureFrequencyTable.get(structureString));
-            // every key should be mutated atleast once
+            // every key should be mutated at least once
             double explorationFitness = (inputComplexity + outputComplexity);
 
-//            System.out.println(structureFrequencyTable.get(stripValues(responses.get(i).getResponseObject()).toString()));
             double fitness = exploitationFitness * explorationFitness;
             totalFitness += fitness;
             population.get(i).setFitness(fitness);
