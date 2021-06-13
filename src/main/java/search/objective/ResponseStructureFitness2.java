@@ -34,7 +34,7 @@ public class ResponseStructureFitness2 extends Fitness {
         // Fill in hashmap with structure frequency
         for (int i = 0; i < population.size(); i++) {
 
-            String structureString = stripValues(population.get(i).toRequest(), responses.get(i).getResponseObject()).toString();
+            String structureString = stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString();
 
             if (!structureFrequencyTable.containsKey(structureString)) {
                 structureFrequencyTable.put(structureString, 0);
@@ -42,7 +42,7 @@ public class ResponseStructureFitness2 extends Fitness {
             structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
 
             // Evaluate individual compared to the map
-            double fitness = (double) 1 / structureFrequencyTable.get(stripValues(population.get(i).toRequest(), responses.get(i).getResponseObject()).toString());
+            double fitness = (double) 1 / structureFrequencyTable.get(stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString());
             population.get(i).setFitness(fitness);
 
 //            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.

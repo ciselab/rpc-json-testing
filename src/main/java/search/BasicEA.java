@@ -3,6 +3,7 @@ package search;
 import search.genes.ArrayGene;
 import search.objective.Fitness;
 import search.openRPC.Specification;
+import util.RandomSingleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +31,17 @@ public class BasicEA {
     }
 
     public Individual generateRandomIndividual() {
-        String methodName = generator.getRandomMethod();
-        ArrayGene method = generator.generateMethod(methodName);
+        int nRequests = RandomSingleton.getRandom().nextInt(5) + 1;
+        List<Chromosome> dna = new ArrayList<>();
 
-        return new Individual(generator.generateHTTPMethod(), methodName, method);
+        for (int i = 0; i < nRequests; i++) {
+            String methodName = generator.getRandomMethod();
+            ArrayGene method = generator.generateMethod(methodName);
+            Chromosome chromosome = new Chromosome(generator.generateHTTPMethod(), methodName, method);
+            dna.add(chromosome);
+        }
+
+        return new Individual(dna);
     }
 
     public List<Individual> nextGeneration(List<Individual> population) {
@@ -44,13 +52,13 @@ public class BasicEA {
 
         for (int i = 0; i < population.size(); i++) {
 //            System.out.println("Ind: " + population.get(i).toRequest());
-            String parent = population.get(i).toRequest().toString();
+            String parent = population.get(i).toTotalJSONObject().toString();
             Individual mutant = population.get(i);
             for (int j = 0; j < mutations; j++) {
                 mutant = mutant.mutate(generator);
             }
 
-            String mutantString = mutant.toRequest().toString();
+            String mutantString = mutant.toTotalJSONObject().toString();
 
             if (parent.equals(mutantString)) {
                 mutant = generateRandomIndividual();

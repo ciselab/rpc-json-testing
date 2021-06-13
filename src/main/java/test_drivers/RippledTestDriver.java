@@ -2,7 +2,10 @@ package test_drivers;
 
 import connection.Client;
 import connection.ResponseObject;
-import search.Individual;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class RippledTestDriver extends TestDriver {
 
@@ -10,7 +13,7 @@ public class RippledTestDriver extends TestDriver {
         super(client);
     }
 
-    public void prepareTest() throws Exception {
+    public void startServer() throws InterruptedException, IOException {
         ProcessBuilder processBuilder = new ProcessBuilder();
 
         processBuilder.command("/blockchain-testing/startRippled.sh");

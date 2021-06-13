@@ -37,7 +37,7 @@ public class ResponseStructureFitness3 extends Fitness {
         List<ResponseObject> responses = getResponses(population);
 
         for (int i = 0; i < population.size(); i++) {
-            String structureString = stripValues(population.get(i).toRequest(), responses.get(i).getResponseObject()).toString();
+            String structureString = stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString();
             if (!structureFrequencyTable.containsKey(structureString)) {
                 structureFrequencyTable.put(structureString, 0);
             }
@@ -47,9 +47,9 @@ public class ResponseStructureFitness3 extends Fitness {
         double totalFitness = 0;
 
         for (int i = 0; i < population.size(); i++) {
-            String structureString = stripValues(population.get(i).toRequest(), responses.get(i).getResponseObject()).toString();
+            String structureString = stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString();
 
-            int inputComplexity = calculateComplexity(population.get(i).toRequest());
+            int inputComplexity = calculateComplexity(population.get(i).toTotalJSONObject());
             int outputComplexity = calculateComplexity(responses.get(i).getResponseObject());
 
             double exploitationFitness = 1.0 / (1.0 + (double) structureFrequencyTable.get(structureString));

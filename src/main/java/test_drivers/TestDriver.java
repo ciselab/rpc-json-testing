@@ -2,9 +2,7 @@ package test_drivers;
 
 import connection.Client;
 import connection.ResponseObject;
-import search.Individual;
-
-import java.io.IOException;
+import org.json.JSONObject;
 
 public abstract class TestDriver {
 
@@ -14,7 +12,7 @@ public abstract class TestDriver {
         this.client = client;
     }
 
-    public abstract ResponseObject runTest(Individual individual) throws Exception;
+    public abstract ResponseObject runTest(String method, JSONObject request) throws Exception;
 
     public Client getClient() {
         return client;

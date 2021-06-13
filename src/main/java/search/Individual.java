@@ -4,29 +4,28 @@ import org.json.JSONObject;
 import search.genes.ArrayGene;
 import search.openRPC.Specification;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static util.RandomSingleton.getRandom;
 
 public class Individual {
-    private String httpMethod;
-    private String method;
-    private ArrayGene genes;
+    private List<Chromosome> dna;
     private Integer age;
     private double fitness;
 
-    public Individual(String httpMethod, String method, ArrayGene genes) {
-        this.httpMethod = httpMethod;
-        this.method = method;
-        this.genes = genes;
+    public Individual(List<Chromosome> dna) {
+        this.dna = dna;
         this.age = 0;
     }
 
-    public JSONObject toRequest() {
-        JSONObject request = new JSONObject();
-        request.put("method", method);
-        request.put("params", genes.toJSON());
-        return request;
+    public JSONObject toTotalJSONObject() {
+        JSONObject totalJson = new JSONObject();
+        for (int i = 0; i < dna.size(); i++) {
+            totalJson.put("" + i, dna.get(i).toRequest());
+        }
+        return totalJson;
     }
 
     /**
@@ -35,19 +34,14 @@ public class Individual {
      * @return mutated individual
      */
     public Individual mutate(Generator generator) {
-        if (getRandom().nextDouble() < 0.01) {
-            // mutate http method
-            return new Individual(generator.generateHTTPMethod(), method, genes.copy());
-        } else if (getRandom().nextDouble() < 0.1) {
-            // mutate method (this is actually not mutation but just a new individual)
-            String methodName = generator.getRandomMethod();
-            ArrayGene method = generator.generateMethod(methodName);
-            return new Individual(generator.generateHTTPMethod(), methodName, method);
-        } else {
-            // mutate parameters (mutate certain rate of parameters)
-            ArrayGene newGenes = genes.mutate(generator);
-            return new Individual(httpMethod, method, newGenes);
+        List<Chromosome> newDna = new ArrayList<>();
+
+        for (int i = 0; i < dna.size(); i++) {
+            // TODO maybe make this conditional on random var
+            newDna.add(dna.get(i).mutate(generator));
         }
+
+        return new Individual(newDna);
     }
 
     /**
@@ -61,20 +55,16 @@ public class Individual {
         return age;
     }
 
-    public String getHTTPMethod() {
-        return httpMethod;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
     public double getFitness() {
         return fitness;
     }
 
     public void setFitness(double fitness) {
         this.fitness = fitness;
+    }
+
+    public List<Chromosome> getDna() {
+        return dna;
     }
 
     @Override
@@ -86,10 +76,18 @@ public class Individual {
             return false;
         }
         Individual that = (Individual) o;
-        return
-//            Objects.equals(httpMethod, that.httpMethod) &&
-            Objects.equals(method, that.method) &&
-            Objects.equals(genes, that.genes);
+
+        if (that.getDna().size() != this.getDna().size()) {
+            return false;
+        }
+
+        for (int i = 0; i < dna.size(); i++) {
+            if (!dna.get(i).equals(that.getDna().get(i))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

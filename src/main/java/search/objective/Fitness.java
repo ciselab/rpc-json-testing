@@ -4,6 +4,7 @@ import connection.ResponseObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
+import search.Chromosome;
 import search.Generator;
 import search.Individual;
 import test_drivers.TestDriver;
@@ -49,7 +50,13 @@ public abstract class Fitness {
             Individual individual = population.get(i);
             long start = System.nanoTime();
             try {
-                responses.add(testDriver.runTest(individual));
+                for (int j = 0; j < individual.getDna().size() - 1; j++) {
+                    Chromosome chromosome = individual.getDna().get(j);
+                    testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest());
+                }
+                Chromosome chromosome = individual.getDna().get(individual.getDna().size() - 1);
+
+                responses.add(testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest()));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {

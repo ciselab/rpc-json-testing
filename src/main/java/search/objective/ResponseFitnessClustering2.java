@@ -54,8 +54,8 @@ public class ResponseFitnessClustering2 extends Fitness {
         Map<String, Map<String, List<List<Object>>>> allFeatureVectors = new HashMap<>();
 
         for (int i = 0; i < population.size(); i++) {
-            String method = population.get(i).getMethod();
-            JSONObject request = population.get(i).toRequest();
+            String method = population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod();
+            JSONObject request = population.get(i).toTotalJSONObject();
             JSONObject response = responses.get(i).getResponseObject();
 
             JSONObject stripped = stripValues(request, response);
@@ -99,9 +99,9 @@ public class ResponseFitnessClustering2 extends Fitness {
             double fitness = 1.0 / (1 + cost);
 
             // TODO not use this hack for worst output
-            if (population.get(i).getMethod().equals("random") ||
-                population.get(i).getMethod().equals("server_info") ||
-                population.get(i).getMethod().equals("server_state")) {
+            if (population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("random") ||
+                population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_info") ||
+                population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_state")) {
                 fitness = 0;
             }
 

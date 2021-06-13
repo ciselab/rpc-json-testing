@@ -4,7 +4,7 @@ import search.BasicEA;
 import search.Generator;
 import search.Individual;
 import search.objective.Fitness;
-import search.objective.PairwiseFitness;
+//import search.objective.PairwiseFitness;
 import search.objective.RandomFitness;
 import search.objective.ResponseFitnessClustering;
 import search.objective.ResponseFitnessClustering2;
@@ -14,6 +14,7 @@ import search.objective.ResponseStructureFitness3;
 import search.objective.StatusCodeFitness;
 import search.openRPC.Specification;
 import test_drivers.RippledTestDriver;
+import test_drivers.RippledTestDriverTestNet;
 import test_drivers.TestDriver;
 import test_generation.TestWriter;
 import util.IO;
@@ -102,8 +103,8 @@ public class Main {
                     break;
                 default:
                     System.out.println("No or invalid argument specified. Using default fitness: RandomFitness");
-//                    fitness = new RandomFitness(testDriver);
-                    fitness = new PairwiseFitness(testDriver);
+                    fitness = new RandomFitness(testDriver);
+//                    fitness = new PairwiseFitness(testDriver);
             }
             System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime/60) + " hour(s)");
 
@@ -114,7 +115,6 @@ public class Main {
             Long startTime = System.currentTimeMillis();
             int generation = 0;
             while (System.currentTimeMillis() - startTime < (runningTime*60*1000)) {
-                System.out.println("Generation: " + generation);
                 generation += 1;
                 long start = System.nanoTime();
                 population = ea.nextGeneration(population);
@@ -127,6 +127,7 @@ public class Main {
                     }
                 }
                 bestFitness.add(maxFitness);
+                System.out.println("Generation: " + generation + " : " + maxFitness);
 
 //                System.out.println("Generation time: " + ((System.nanoTime() - start) / 1000000d));
 
@@ -140,7 +141,7 @@ public class Main {
 
             // Write tests for the best individuals
             String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
-            TestWriter testWriter = new TestWriter(url_ripple, testDirectory);
+            TestWriter testWriter = new TestWriter(url_ripple, testDirectory, "RippledTestDriver");
 
             // Write archive size and best fitness values of each generation to file
             FileWriter writer = new FileWriter("archiveSize_bestFitnessValues.txt");
