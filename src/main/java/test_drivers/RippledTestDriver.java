@@ -17,16 +17,23 @@ public class RippledTestDriver extends TestDriver {
 
     public void startServer() throws InterruptedException, IOException {
         ProcessBuilder processBuilder = new ProcessBuilder();
+        System.out.println("t1");
 
         processBuilder.command("/blockchain-testing/startRippled.sh");
+        System.out.println("t2");
 
         processBuilder.redirectErrorStream(true);
+        System.out.println("t3");
 
         Process p = processBuilder.start();
+        System.out.println("t4");
 
         int rc = p.waitFor();
+        System.out.println("t5");
+
         p.destroy();
-        
+        System.out.println("t6");
+
         System.out.println("Process ended with rc =" + rc);
     }
 
