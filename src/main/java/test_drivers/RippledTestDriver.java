@@ -43,18 +43,23 @@ public class RippledTestDriver extends TestDriver {
         JSONArray params = new JSONArray();
         JSONObject paramObj = new JSONObject();
         paramObj.put("secret", "snoPBrXtMeMyMHUVTgbuqAfg1SUTb"); // genesis secret
+        paramObj.put("offline", false);
+        paramObj.put("fee_multi_max", 1000);
 
         JSONObject txJson = new JSONObject();
         txJson.put("TransactionType", "Payment");
-        JSONObject amount = new JSONObject();
-        amount.put("currency", "XRP");
-        amount.put("issuer", "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"); // genesis account
-        amount.put("value", "2000");
-        txJson.put("Amount", amount);
         txJson.put("Account", "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"); // genesis account
         txJson.put("Destination", accounts.getJSONObject("result").getString("account_id"));
 
+        JSONObject amount = new JSONObject();
+        amount.put("currency", "USD");
+        amount.put("issuer", "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"); // genesis account
+        amount.put("value", "1");
+
+        txJson.put("Amount", amount);
+
         paramObj.put("tx_json", txJson);
+
         params.put(0, paramObj);
         request.put("params", params);
 
