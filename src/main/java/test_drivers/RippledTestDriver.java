@@ -15,7 +15,7 @@ public class RippledTestDriver extends TestDriver {
         super(client);
     }
 
-    public void startServer() throws InterruptedException, IOException {
+    public void startServer() throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder();
         System.out.println("t1");
 
@@ -28,13 +28,19 @@ public class RippledTestDriver extends TestDriver {
         Process p = processBuilder.start();
         System.out.println("t4");
 
-        int rc = p.waitFor();
-        System.out.println("t5");
+        try {
+            int rc = p.waitFor();
+            System.out.println("Process ended with rc =" + rc);
 
-        p.destroy();
-        System.out.println("t6");
+            System.out.println("t5");
+        } catch (InterruptedException ex) {
+            p.destroy();
+            System.out.println("t6");
+        }
 
-        System.out.println("Process ended with rc =" + rc);
+        System.out.println(p.isAlive());
+        System.out.println("t77");
+
     }
 
     private ResponseObject retrieveAccounts() throws IOException {
