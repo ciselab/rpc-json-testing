@@ -1160,7 +1160,7 @@
     "schemas": {
       "Address": {
         "type": "string",
-        "enum": ["__ACCOUNT__"]
+        "enum": ["__ACCOUNT__", "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"]
       },
       "ObjectID": {
         "type": "string",
