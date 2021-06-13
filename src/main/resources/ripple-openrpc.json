@@ -1159,8 +1159,16 @@
   "components": {
     "schemas": {
       "Address": {
-        "type": "string",
-        "pattern": "^r[1-9a-km-zA-NP-Z]{25,35}$"
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^r[1-9a-km-zA-NP-Z]{25,35}$"
+          },
+          {
+            "type": "string",
+            "enum": ["__ACCOUNT__"]
+          }
+        ]
       },
       "ObjectID": {
         "type": "string",
