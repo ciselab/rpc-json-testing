@@ -49,7 +49,8 @@ public class RippledTestDriver extends TestDriver {
         JSONObject amount = new JSONObject();
         amount.put("currency", "XRP");
         amount.put("issuer", "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"); // genesis account
-        accounts.put("value", "2000");
+        amount.put("value", "2000");
+        txJson.put("Amount", amount);
         txJson.put("Account", "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"); // genesis account
         txJson.put("Destination", accounts.getJSONObject("result").getString("account_id"));
 
