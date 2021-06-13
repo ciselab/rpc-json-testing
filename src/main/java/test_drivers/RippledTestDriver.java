@@ -25,6 +25,8 @@ public class RippledTestDriver extends TestDriver {
         Process p = processBuilder.start();
 
         int rc = p.waitFor();
+        p.destroy();
+        
         System.out.println("Process ended with rc =" + rc);
     }
 
