@@ -52,7 +52,7 @@ public class RippledTestDriver extends TestDriver {
         txJson.put("TransactionType", "Payment");
         txJson.put("Account", "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"); // genesis account
         txJson.put("Destination", accounts.getJSONObject("result").getString("account_id"));
-        txJson.put("Amount", "10000000");
+        txJson.put("Amount", "25000000"); // reserve is 20,000,000 XRP drops
 
         paramObj.put("tx_json", txJson);
 
