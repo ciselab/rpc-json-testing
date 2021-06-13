@@ -4,7 +4,7 @@ sleep 1
 
 # start rippled server again
 cd /rippled-1.6.0/build/cmake/coverage
-./rippled -a -v --start --debug & disown
+./rippled -a --start -v --debug & disown
 sleep 1
 
 exit 0

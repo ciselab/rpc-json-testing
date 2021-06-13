@@ -58,6 +58,7 @@ public class RippledTestDriver extends TestDriver {
         params.put(0, paramObj);
         request.put("params", params);
 
+        System.out.println(request.toString(2));
         return getClient().createRequest("POST", request);
     }
 
