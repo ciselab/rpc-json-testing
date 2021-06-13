@@ -42,7 +42,6 @@ public class RippledTestDriver extends TestDriver {
         request.put("method", "submit");
         JSONArray params = new JSONArray();
         JSONObject paramObj = new JSONObject();
-        paramObj.put("key_type", "secp256k1");
         paramObj.put("secret", "snoPBrXtMeMyMHUVTgbuqAfg1SUTb"); // genesis secret
 
         JSONObject txJson = new JSONObject();
@@ -80,7 +79,9 @@ public class RippledTestDriver extends TestDriver {
 
         System.out.println("MAKE REQUEST");
         ResponseObject responseObject = getClient().createRequest(method, request);
-
+        System.out.println(responseObject.getResponseCode());
+        System.out.println(responseObject.getResponseObject());
+        System.out.println();
         return responseObject;
     }
 
