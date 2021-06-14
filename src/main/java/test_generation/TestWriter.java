@@ -58,7 +58,8 @@ public class TestWriter {
             "\n" +
             "    @Test\n" +
             "    public void test () {\n" +
-            "        try {\n";
+            "        try {\n" +
+            "                testDriver.prepTest();\n";
 
         for (Chromosome chromosome : individual.getDna()) {
             test += "            String method = \"" + chromosome.getHTTPMethod() + "\";\n" +
