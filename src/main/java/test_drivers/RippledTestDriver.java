@@ -17,30 +17,18 @@ public class RippledTestDriver extends TestDriver {
 
     public void startServer() throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder();
-        System.out.println("t1");
 
         processBuilder.command("/blockchain-testing/startRippled.sh");
-        System.out.println("t2");
 
         processBuilder.redirectErrorStream(true);
-        System.out.println("t3");
 
         Process p = processBuilder.start();
-        System.out.println("t4");
 
         try {
             int rc = p.waitFor();
-            System.out.println("Process ended with rc =" + rc);
-
-            System.out.println("t5");
         } catch (InterruptedException ex) {
             p.destroy();
-            System.out.println("t6");
         }
-
-        System.out.println(p.isAlive());
-        System.out.println("t77");
-
     }
 
     private ResponseObject retrieveAccounts() throws IOException {
@@ -80,15 +68,15 @@ public class RippledTestDriver extends TestDriver {
 
         public void prepTest() throws Exception {
             startServer();
-        System.out.println("PROPOSE WALLETS");
+//        System.out.println("PROPOSE WALLETS");
         ResponseObject accounts = retrieveAccounts();
-        System.out.println(accounts.getResponseCode());
-        System.out.println(accounts.getResponseObject());
-        System.out.println("SENDING FROM GENESIS ACCOUNT");
+//        System.out.println(accounts.getResponseCode());
+//        System.out.println(accounts.getResponseObject());
+//        System.out.println("SENDING FROM GENESIS ACCOUNT");
         ResponseObject createAccounts = createAccounts(accounts.getResponseObject());
-        System.out.println(createAccounts.getResponseCode());
-        System.out.println(createAccounts.getResponseObject());
-        System.out.println("REPLACE ACCOUNTS IN REQUEST");
+//        System.out.println(createAccounts.getResponseCode());
+//        System.out.println(createAccounts.getResponseObject());
+//        System.out.println("REPLACE ACCOUNTS IN REQUEST");
         this.accounts = accounts.getResponseObject();
     }
 
