@@ -2,14 +2,14 @@ package search.objective;
 
 import connection.ResponseObject;
 import test_drivers.TestDriver;
-import util.Pair;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import search.Generator;
 import search.Individual;
 import search.clustering.AgglomerativeClustering2;
+import util.Pair;
 import util.Triple;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;

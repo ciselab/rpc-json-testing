@@ -59,11 +59,13 @@ public class TestWriter {
             "    @Test\n" +
             "    public void test () {\n" +
             "        try {\n" +
-            "                testDriver.prepTest();\n";
+            "            testDriver.prepTest();\n" +
+            "            String method;\n" +
+            "            JSONObject request;\n\n";
 
         for (Chromosome chromosome : individual.getDna()) {
-            test += "            String method = \"" + chromosome.getHTTPMethod() + "\";\n" +
-                "            JSONObject request = new JSONObject(\"" + chromosome.toRequest().toString().replace("\\", "\\\\").replace("\"", "\\\"")  + "\");\n" +
+            test += "            method = \"" + chromosome.getHTTPMethod() + "\";\n" +
+                "            request = new JSONObject(\"" + chromosome.toRequest().toString().replace("\\", "\\\\").replace("\"", "\\\"")  + "\");\n" +
                 "            testDriver.runTest(method, request);\n\n";
         }
 
