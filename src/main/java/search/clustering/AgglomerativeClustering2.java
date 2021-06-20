@@ -1,6 +1,5 @@
 package search.clustering;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,15 +22,14 @@ public class AgglomerativeClustering2 {
     }
 
     /**
-     * Computes the cost of the newValue.
+     * Clusters individuals.
      * @param values feature vectors of the current population
-     * @return
      */
     public void cluster(List<List<Object>> values) {
         List<List<List<Object>>> clusters = new ArrayList<>();
         List<List<List<List<Object>>>> inBetweenClusters = new ArrayList<>();
 
-        // Create a cluster for each data point
+        // Create a cluster for each featore vector
         for (List<Object> datapoint : values) {
             List<List<Object>> cluster = new ArrayList<>();
             cluster.add(datapoint);
@@ -114,6 +112,7 @@ public class AgglomerativeClustering2 {
 
         double maxJump = 0.0;
         int maxJumpIndex = 0;
+
         for (int i = 0; i < similarityJumps.size() - 1; i++) {
             double dissimilarityCurrent = (1.0 / similarityJumps.get(i)) - 1.0;
             double dissimilarityNext = (1.0 / similarityJumps.get(i + 1)) - 1.0;

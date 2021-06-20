@@ -3,6 +3,7 @@ import org.json.JSONObject;
 import search.BasicEA;
 import search.Generator;
 import search.Individual;
+import search.objective.DiversityBasedFitness;
 import search.objective.Fitness;
 //import search.objective.PairwiseFitness;
 import search.objective.RandomFitness;

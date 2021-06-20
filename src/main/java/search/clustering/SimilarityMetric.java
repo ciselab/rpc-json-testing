@@ -24,6 +24,18 @@ public class SimilarityMetric {
     }
 
     /**
+     * Gives the Euclidean similarity of two feature vectors
+     * @param a cluster a
+     * @param b cluster b
+     * @return the average Euclidean similarity
+     */
+    public double calculateSimilaritySingle(List<Object> a, List<Object> b, List<Integer> weightVector) {
+        Double distance = calculateFeatureVectorDistance(a, b, weightVector);
+
+        return 1.0 / (1.0 + distance);
+    }
+
+    /**
      * Calculates euclidean distance of 2 feature vectors
      * @param a
      * @param b

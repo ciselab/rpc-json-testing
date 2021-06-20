@@ -1,6 +1,5 @@
 package search.clustering;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +7,7 @@ public class AgglomerativeClustering {
 
     private SimilarityMetric metric;
 
+    // Each value in the feature vector has a certain weight/importance
     private List<Integer> weightVector;
 
     // clusters, cluster, featureVector (of different types)
@@ -25,9 +25,9 @@ public class AgglomerativeClustering {
     }
 
     /**
-     * Returns the cost of the newValue
-     * @param newValue
-     * @return
+     * Computes the cost of the newValue.
+     * @param newValue feature vector of an individual
+     * @return minimum distance to any cluster of an individual
      */
     public double cluster(List<Object> newValue) {
         int oldNumberOfClusters = clusters.size();
@@ -49,7 +49,7 @@ public class AgglomerativeClustering {
 
         this.values.add(newValue);
 
-
+        // Create a new cluster for each feature vector
         for (List<Object> datapoint : values) {
             List<List<Object>> cluster = new ArrayList<>();
             cluster.add(datapoint);
@@ -130,10 +130,11 @@ public class AgglomerativeClustering {
             similarityMatrix.add(new ArrayList<>());
         }
 
-//        System.out.println(similarityJumps);
         double maxJump = 0;
         int maxJumpIndex = 0;
+
         List<Double> jumps = new ArrayList<>();
+
         for (int i = 0; i < similarityJumps.size() - 1; i++) {
             double dissimilarityCurrent = (1.0 / similarityJumps.get(i)) - 1.0;
             double dissimilarityNext = (1.0 / similarityJumps.get(i + 1)) - 1.0;
@@ -147,10 +148,7 @@ public class AgglomerativeClustering {
             jumps.add(jump);
         }
 
-//        System.out.println(jumps);
-
         this.clusters = inBetweenClusters.get(maxJumpIndex);
-
 
         // check if number of clusters stayed the same (i.e. no new input vector)
         if (this.clusters.size() == oldNumberOfClusters) {
@@ -163,15 +161,16 @@ public class AgglomerativeClustering {
         }
 
         // a cluster was added!
-//        return 0; // TODO
         int clusterOfNewValue = -1;
 
+        // retrieve cluster index of newValue
         for (int i = 0; i < clusters.size(); i++) {
             if (clusters.get(i).contains(newValue)) {
                 clusterOfNewValue = i;
             }
         }
 
+        // in the case the value is nowhere to be found while it should be in a cluster
         if (clusterOfNewValue == -1) {
             throw new RuntimeException("Should not be possible");
         }
