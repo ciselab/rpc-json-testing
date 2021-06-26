@@ -38,7 +38,7 @@ public class StringGene extends ValueGene<String> {
             }
 
             // Option 2: pick one of the other enum values with a certain probability
-            if (this.getSchema().getEnums() != null && probability < 0.6) {
+            if (this.getSchema().getEnums() != null && (probability < 0.6 || !getSchema().isMutable())) {
                 List<String> options = new ArrayList<>();
                 Collections.addAll(options, getSchema().getEnums());
 

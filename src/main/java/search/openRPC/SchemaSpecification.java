@@ -38,7 +38,10 @@ public class SchemaSpecification {
 
     private List<SchemaSpecification> arrayItemSchemaSpecification;
 
+    private boolean isMutable;
+
     public SchemaSpecification(JSONObject schema) {
+        isMutable = true;
 
         if (schema.has("type")) {
             this.type = schema.getString("type");
@@ -56,10 +59,14 @@ public class SchemaSpecification {
 
             if (schema.has("enum")) {
                 JSONArray options = schema.getJSONArray("enum");
+
                 enums = new String[options.length()];
 
                 for (int i = 0; i < options.length(); i++) {
                     enums[i] = options.getString(i);
+                    if (options.getString(i).equals("__ACCOUNT__")) {
+                        this.isMutable = false;
+                    }
                 }
             }
         } else if (type.equals("object")) {
@@ -123,5 +130,9 @@ public class SchemaSpecification {
 
     public List<SchemaSpecification> getArrayItemSchemaSpecification() {
         return new ArrayList<>(arrayItemSchemaSpecification);
+    }
+
+    public boolean isMutable() {
+        return isMutable;
     }
 }
