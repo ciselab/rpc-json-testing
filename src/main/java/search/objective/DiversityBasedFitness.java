@@ -38,6 +38,8 @@ public class DiversityBasedFitness extends Fitness {
 
     private double ARCHIVE_THRESHOLD = 0.8;
 
+    private int serverErrors = 0;
+
     public DiversityBasedFitness(TestDriver testDriver) {
         super(testDriver);
         this.clusteringPerResponseStructure = new HashMap<>();
@@ -108,6 +110,11 @@ public class DiversityBasedFitness extends Fitness {
             population.get(i).setFitness(fitness);
 
             // decide whether to add individual to the archive
+            if (responses.get(i).getResponseCode() > 499) {
+                System.out.println("Individual with response code: " + responses.get(i).getResponseCode());
+                serverErrors += 1;
+                this.addToArchive(population.get(i));
+            }
             if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
                 this.addToArchive(population.get(i));
             }
@@ -121,6 +128,8 @@ public class DiversityBasedFitness extends Fitness {
             }
         }
         generationCount += 1;
+
+        System.out.println("Number of 5xx errors: " + serverErrors);
     }
 
     /**

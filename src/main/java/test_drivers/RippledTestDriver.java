@@ -80,8 +80,8 @@ public class RippledTestDriver extends TestDriver {
         this.accounts = accounts.getResponseObject();
     }
 
-    private JSONObject replaceAccountStrings(JSONObject request, JSONObject accounts) {
-        return new JSONObject(request.toString().replace("__ACCOUNT__", accounts.getJSONObject("result").getString("account_id")));
+    protected JSONObject replaceAccountStrings(JSONObject request, String account) {
+        return new JSONObject(request.toString().replace("__ACCOUNT__", account));
     }
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
@@ -89,7 +89,7 @@ public class RippledTestDriver extends TestDriver {
             throw new Exception("No accounts found! Please call prepTest before runTest!!");
         }
 
-        request = replaceAccountStrings(request, accounts);
+        request = replaceAccountStrings(request,  accounts.getJSONObject("result").getString("account_id"));
 
         return getClient().createRequest(method, request);
     }

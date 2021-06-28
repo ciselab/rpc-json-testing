@@ -11,24 +11,15 @@ public class RippledTestDriverTestNet extends RippledTestDriver {
     }
 
     @Override
+    public void prepTest() throws Exception {
+
+    }
+
+    @Override
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
-        // TODO find a different way (hardcode accounts)
-//        startServer();
-//        System.out.println("PROPOSE WALLETS");
-//        ResponseObject accounts = retrieveAccounts();
-//        System.out.println(accounts.getResponseCode());
-//        System.out.println(accounts.getResponseObject());
-//        System.out.println("SENDING FROM GENESIS ACCOUNT");
-//        ResponseObject createAccounts = createAccounts(accounts.getResponseObject());
-//        System.out.println(createAccounts.getResponseCode());
-//        System.out.println(createAccounts.getResponseObject());
-//        System.out.println("REPLACE ACCOUNTS IN REQUEST");
-//        request = replaceAccountStrings(request, accounts.getResponseObject());
+        request = replaceAccountStrings(request, "rhZq6BoEYNWD7gGDw6gieyBwF8Z9JHoWzK");
 
-        System.out.println("MAKE REQUEST");
-        ResponseObject responseObject = getClient().createRequest(method, request);
-
-        return responseObject;
+        return getClient().createRequest(method, request);
     }
 
 }

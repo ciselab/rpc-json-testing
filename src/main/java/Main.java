@@ -102,10 +102,13 @@ public class Main {
                     System.out.println("Using 7: ResponseStructureFitness3");
                     fitness = new ResponseStructureFitness3(testDriver);
                     break;
+                case "8":
+                    System.out.println("Using 8: DiversityBasedFitness");
+                    fitness = new ResponseStructureFitness3(testDriver);
+                    break;
                 default:
                     System.out.println("No or invalid argument specified. Using default fitness: RandomFitness");
                     fitness = new RandomFitness(testDriver);
-//                    fitness = new PairwiseFitness(testDriver);
             }
             System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime/60) + " hour(s)");
 

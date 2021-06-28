@@ -60,9 +60,14 @@ public class Client {
             jsonOutputString = "{}";
         }
 
+        JSONObject response = new JSONObject(jsonOutputString);
+
         con.disconnect();
 
-        return new ResponseObject(con.getResponseCode(), new JSONObject(jsonOutputString));
+//        System.out.println(request.toString(2));
+//        System.out.println(response.toString(2));
+
+        return new ResponseObject(con.getResponseCode(), response);
     }
 
 //    public CompletableFuture<JSONObject> sendRequest(int id, JSONObject jsonObject) {
