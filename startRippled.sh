@@ -1,10 +1,25 @@
-# kill current rippled server at port 5005
-kill $(lsof -t -i:5005 -sTCP:LISTEN) # THE LISTEN PART IS VERY IMPORTANT BECAUSE OTHERWISE YOU WILL ALSO KILL THE JAVA PROCESS!!
-sleep 0.5
+#!/bin/bash
 
+
+# kill current rippled server at port 5005
+id=$(lsof -t -i:5005 -sTCP:LISTEN) # Without the LISTEN part the Jaca process will be killed as well
+
+echo "killing: $id"
+kill "$id"
+
+while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" != "" ]; do
+ echo "waiting at kill...  -$(lsof -t -i:5005 -sTCP:LISTEN)-"
+ sleep 0.1
+done
+
+echo "starting server at port 5005"
 # start rippled server again
 cd /rippled-1.6.0/build/cmake/coverage
 ./rippled -a --start -v --debug &
-sleep 0.5
+
+while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" == "" ]; do
+ echo "waiting at server... $(lsof -t -i:5005 -sTCP:LISTEN)"
+ sleep 0.1
+done
 
 exit 0
