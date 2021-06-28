@@ -55,7 +55,9 @@ public class Client {
             jsonOutputString = response.toString();
         }
         catch(IOException e) {
-//            e.printStackTrace();
+            System.out.println(method);
+            System.out.println(request.toString(2));
+            e.printStackTrace();
             //TODO: fix this 400 error exception
             jsonOutputString = "{}";
         }
