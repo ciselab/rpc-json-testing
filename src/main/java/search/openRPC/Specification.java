@@ -95,7 +95,11 @@ public class Specification {
             for (Iterator it = object.keys(); it.hasNext(); ) {
                 String key = (String) it.next();
 
-                if (key.equals("schema")) {
+                if (key.equals("result")) {
+                    // nothing should be done with the result object (for now at least)
+                    continue;
+                }
+                else if (key.equals("schema")) {
                     // value
                     this.schemas.put(path + separator + key, extractTypes(object.getJSONObject(key)));
                 } else if (object.get(key) instanceof JSONObject) {
