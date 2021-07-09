@@ -152,7 +152,7 @@ public class Main {
 
             // Write tests for the best individuals
             String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
-            TestWriter testWriter = new TestWriter(url_ripple, testDirectory, "RippledTestDriver");
+            TestWriter testWriter = new TestWriter(url_ganache, testDirectory, "GanacheTestDriver");
 
             // Write archive size and best fitness values of each generation to file
             FileWriter writer = new FileWriter("archiveSize_bestFitnessValues.txt");
