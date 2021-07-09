@@ -90,12 +90,8 @@ public class SchemaSpecification {
         } else if (type.equals("array")) {
             length = schema.has("length") ? schema.getLong("length") : MAX_ARRAY_SIZE;
             if (schema.has("items")) {
-                System.out.println(schema.toString(2));
                 arrayItemSchemaSpecification = extractTypes(schema.getJSONObject("items"));
             }
-//            if (schema.has("length")) {
-//                length = schema.getLong("length");
-//            }
         }
     }
 
