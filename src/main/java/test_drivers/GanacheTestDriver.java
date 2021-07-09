@@ -45,7 +45,7 @@ public class GanacheTestDriver extends TestDriver {
         accounts = new ArrayList<>();
         keys = new ArrayList<>();
         try {
-            File myObj = new File("output.txt");
+            File myObj = new File("/ganache-cli/output.txt");
             Scanner myReader = new Scanner(myObj);
 
             boolean scanningAccounts = false;
