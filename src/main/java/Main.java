@@ -14,6 +14,7 @@ import search.objective.ResponseStructureFitness2;
 import search.objective.ResponseStructureFitness3;
 import search.objective.StatusCodeFitness;
 import search.openRPC.Specification;
+import test_drivers.GanacheTestDriver;
 import test_drivers.RippledTestDriver;
 import test_drivers.RippledTestDriverTestNet;
 import test_drivers.TestDriver;
@@ -50,7 +51,8 @@ public class Main {
         File jar = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         String directory = jar.getParentFile().getAbsolutePath();
 
-        String filepath = directory + System.getProperty("file.separator") + "ripple-openrpc.json";
+//        String filepath = directory + System.getProperty("file.separator") + "ripple-openrpc.json";
+        String filepath = directory + System.getProperty("file.separator") + "ethereum-openrpc.json";
 
         Specification specification = null;
 
@@ -66,11 +68,16 @@ public class Main {
         try {
             // The url for the Ripple JSON-RPC API ledger (testnet)
 //            String url_ripple = "https://s.altnet.rippletest.net:51234";
-            String url_ripple = "http://127.0.0.1:5005";
+//            String url_ripple = "http://127.0.0.1:5005";
+            String url_ganache = "http://127.0.0.1:8545";
 
-            URL url = new URL(url_ripple);
+//            URL url = new URL(url_ripple);
+            URL url = new URL(url_ganache);
+
             Client client = new Client(url);
-            TestDriver testDriver = new RippledTestDriver(client);
+//            TestDriver testDriver = new RippledTestDriver(client);
+//            TestDriver testDriver = new RippledTestDriverTestNet(client);
+            TestDriver testDriver = new GanacheTestDriver(client);
             Fitness fitness;
 
             switch (fitnessFunction) {

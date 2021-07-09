@@ -15,7 +15,8 @@ done
 echo "starting server at port 8545"
 # start ganache server again
 cd /ganache-cli
-npm run start &
+rm -f output.txt
+npm run start > output.txt &
 
 while [ "$(lsof -t -i:8545 -sTCP:LISTEN)" == "" ]; do
  echo "waiting at server... $(lsof -t -i:8545 -sTCP:LISTEN)"
