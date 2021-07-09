@@ -50,8 +50,10 @@ public class GanacheTestDriver extends TestDriver {
 
             boolean scanningAccounts = false;
             boolean scanningKeys = false;
+            System.out.println("File exists! Start reading");
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
+                System.out.println(data);
 
                 if (data.length() == 0) {
                     scanningAccounts = false;
