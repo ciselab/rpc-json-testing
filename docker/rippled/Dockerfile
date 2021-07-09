@@ -29,9 +29,9 @@ RUN git clone https://lisv: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@github.com/S
 	mvn clean install -DskipTests && \
 	cp src/main/resources/ripple-openrpc.json target/
 	
-# Give permission to run scripts
-RUN cd blockchain-testing/docker && chmod +x script.sh
-RUN cd blockchain-testing && chmod +x startRippled.sh
+# Give permission to run scripts.
+RUN cd blockchain-testing/docker/rippled && chmod +x script.sh
+RUN cd blockchain-testing/scripts && chmod +x startRippled.sh
 
 ENTRYPOINT ["blockchain-testing/docker/script.sh"]
 CMD ["1", "60"]

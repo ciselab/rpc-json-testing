@@ -1,0 +1,10 @@
+{
+  "all": true,
+  "include": [
+    "node_modules/ganache-core/**/*.js"
+  ],
+  "exclude": [
+    "node_modules/ganache-core/node_modules/**"
+  ],
+  "excludeNodeModules": false
+}

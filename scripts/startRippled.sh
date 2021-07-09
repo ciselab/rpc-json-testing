@@ -2,7 +2,7 @@
 
 
 # kill current rippled server at port 5005
-id=$(lsof -t -i:5005 -sTCP:LISTEN) # Without the LISTEN part the Jaca process will be killed as well
+id=$(lsof -t -i:5005 -sTCP:LISTEN) # without the LISTEN part the Java process will be killed as well
 
 echo "killing: $id"
 kill "$id"

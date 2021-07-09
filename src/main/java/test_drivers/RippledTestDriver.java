@@ -18,7 +18,7 @@ public class RippledTestDriver extends TestDriver {
     public void startServer() throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder();
 
-        processBuilder.command("/blockchain-testing/startRippled.sh");
+        processBuilder.command("/blockchain-testing/scripts/startRippled.sh");
 
         processBuilder.redirectErrorStream(true);
 
