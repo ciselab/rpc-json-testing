@@ -2,16 +2,11 @@ package test_drivers;
 
 import connection.Client;
 import connection.ResponseObject;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
+import org.json.JSONObject;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -50,22 +45,22 @@ public class GanacheTestDriver extends TestDriver {
 
             boolean scanningAccounts = false;
             boolean scanningKeys = false;
-            System.out.println("File exists! Start reading");
+            System.out.println("File exists! Start reading.");
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
-                System.out.println("--------- Start of the streamdata:");
-                System.out.println(data);
-                System.out.println("--------- END of the streamdata:");
+                System.out.println(">>>");
+                System.out.print(data);
+                System.out.print("<<<");
 
+                System.out.println("The length of the line = " + data.length());
                 if (data.length() == 0) {
-                    System.out.println("The length of the line = " + data.length());
                     scanningAccounts = false;
                     scanningKeys = false;
                     continue;
                 }
 
                 if (data.contains("Available Accounts")) {
-                    System.out.println("Data actually contains the accounts!");
+                    System.out.println("Available Accounts is reached");
                     scanningAccounts = true;
                     myReader.nextLine();
                     continue;
@@ -76,7 +71,7 @@ public class GanacheTestDriver extends TestDriver {
                     accounts.add(data.split(" ")[1]);
                 }
 
-                if (data.contains("Private Keys")) {
+                if (data.contains("Private Keys is reached")) {
                     scanningKeys = true;
                     myReader.nextLine();
                     continue;
@@ -87,6 +82,7 @@ public class GanacheTestDriver extends TestDriver {
                     keys.add(data.split(" ")[1]);
                 }
             }
+            System.out.println("Scanner is closing");
             myReader.close();
         } catch (FileNotFoundException e) {
             System.out.println("File not found!");
@@ -104,8 +100,8 @@ public class GanacheTestDriver extends TestDriver {
     }
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
-        if (accounts == null) {
-            throw new Exception("No accounts found! Please call prepTest before runTest!!");
+        if (accounts == null || accounts.size() == 0) {
+            throw new Exception("No accounts found! Something went wrong.");
         }
 
         System.out.println("The list: " + accounts.toString());
