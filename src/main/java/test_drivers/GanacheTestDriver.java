@@ -58,6 +58,7 @@ public class GanacheTestDriver extends TestDriver {
                 System.out.println("--------- END of the streamdata:");
 
                 if (data.length() == 0) {
+                    System.out.println("The length of the line = " + data.length());
                     scanningAccounts = false;
                     scanningKeys = false;
                     continue;
@@ -71,6 +72,7 @@ public class GanacheTestDriver extends TestDriver {
                 }
 
                 if (scanningAccounts) {
+                    System.out.println("Account that is added: " + data.split(" ")[1]);
                     accounts.add(data.split(" ")[1]);
                 }
 
@@ -81,6 +83,7 @@ public class GanacheTestDriver extends TestDriver {
                 }
 
                 if (scanningKeys) {
+                    System.out.println("Private key that is added: " + data.split(" ")[1]);
                     keys.add(data.split(" ")[1]);
                 }
             }
@@ -105,6 +108,7 @@ public class GanacheTestDriver extends TestDriver {
             throw new Exception("No accounts found! Please call prepTest before runTest!!");
         }
 
+        System.out.println("The list: " + accounts.toString());
         request = replaceAccountStrings(request,  accounts.get(0));
 
         // TODO something with private keys as well
