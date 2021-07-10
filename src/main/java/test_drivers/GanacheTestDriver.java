@@ -48,7 +48,7 @@ public class GanacheTestDriver extends TestDriver {
             System.out.println("File exists! Start reading.");
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
-                System.out.println(">>>");
+                System.out.print(">>>");
                 System.out.print(data);
                 System.out.print("<<<");
 
@@ -100,7 +100,7 @@ public class GanacheTestDriver extends TestDriver {
     }
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
-        if (accounts == null || accounts.size() == 0) {
+        if (accounts == null) {
             throw new Exception("No accounts found! Something went wrong.");
         }
 
