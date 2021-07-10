@@ -111,7 +111,7 @@ public class Main {
                     break;
                 case "8":
                     System.out.println("Using 8: DiversityBasedFitness");
-                    fitness = new ResponseStructureFitness3(testDriver);
+                    fitness = new DiversityBasedFitness(testDriver);
                     break;
                 default:
                     System.out.println("No or invalid argument specified. Using default fitness: RandomFitness");

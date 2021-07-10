@@ -53,7 +53,9 @@ public class GanacheTestDriver extends TestDriver {
             System.out.println("File exists! Start reading");
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
+                System.out.println("--------- Start of the streamdata:");
                 System.out.println(data);
+                System.out.println("--------- END of the streamdata:");
 
                 if (data.length() == 0) {
                     scanningAccounts = false;
@@ -62,6 +64,7 @@ public class GanacheTestDriver extends TestDriver {
                 }
 
                 if (data.contains("Available Accounts")) {
+                    System.out.println("Data actually contains the accounts!");
                     scanningAccounts = true;
                     myReader.nextLine();
                     continue;
