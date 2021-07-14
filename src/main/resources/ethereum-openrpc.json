@@ -1582,7 +1582,7 @@
       "Address": {
         "title": "address",
         "type": "string",
-        "pattern": "^0x[a-fA-F\\d]{40}$"
+        "pattern": "^__ACCOUNT__$"
       },
       "Addresses": {
         "title": "addresses",
