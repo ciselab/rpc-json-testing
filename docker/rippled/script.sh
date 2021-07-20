@@ -22,7 +22,7 @@ done
 
 # compute test coverage achieved by running the tool
 cd rippled-1.6.0
-gcovr -b -r -s ./ -o final_coverage_total.txt
+gcovr -s -b -r ./ -o final_coverage_total.txt
 echo "This run was based on server: " $3", fitness function:" $1 ", and time:" $2 "minutes." >> final_coverage_total.txt cat final_coverage_total.txt
 
 # reset coverage and run the generated tests
@@ -43,7 +43,7 @@ done
 
 # compute test coverage achieved by running the generated tests
 cd rippled-1.6.0
-gcovr -b -r -s ./ -o final_coverage_archive.txt
+gcovr -s -b -r ./ -o final_coverage_archive.txt
 echo "These archive tests were based on server: " $3", fitness function:" $1 ", and time:" $2 "minutes." >> final_coverage_archive.txt cat final_coverage_archive.txt
 
 exit
