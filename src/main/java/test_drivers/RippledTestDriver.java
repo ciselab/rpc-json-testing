@@ -129,7 +129,7 @@ public class RippledTestDriver extends TestDriver {
     public String retrieveCoverage() throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
-        pb.command("/blockchain-testing/scripts/RippledCoverage.sh");
+        pb.command("/blockchain-testing/scripts/coverageRippled.sh");
 
         pb.redirectErrorStream(true);
 

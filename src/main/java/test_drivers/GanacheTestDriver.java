@@ -140,7 +140,7 @@ public class GanacheTestDriver extends TestDriver {
     public String retrieveCoverage() throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
-        pb.command("/blockchain-testing/scripts/GanacheCoverage.sh");
+        pb.command("/blockchain-testing/scripts/coverageGanache.sh");
 
         pb.redirectErrorStream(true);
 

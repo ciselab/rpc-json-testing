@@ -10,5 +10,12 @@ docker run -it --name rippled_tool_container_$3_$1_$2 rippled_tool:V1.0.0 $1 $2 
 mkdir exp_$3_$1_$2
 docker cp rippled_tool_container_$3_$1_$2:/rippled-1.6.0/final_coverage_total.txt ./exp_$3_$1_$2/
 docker cp rippled_tool_container_$3_$1_$2:/rippled-1.6.0/final_coverage_archive.txt ./exp_$3_$1_$2/
+
+docker cp rippled_tool_container_$3_$1_$2:/blockchain-testing/coverage_over_time.txt ./exp_$3_$1_$2/
+docker cp rippled_tool_container_$3_$1_$2:/blockchain-testing/fitness_progress.txt ./exp_$3_$1_$2/
+docker cp rippled_tool_container_$3_$1_$2:/blockchain-testing/status_codes_total.txt ./exp_$3_$1_$2/
+docker cp rippled_tool_container_$3_$1_$2:/blockchain-testing/status_codes_archive.txt ./exp_$3_$1_$2/
+docker cp rippled_tool_container_$3_$1_$2:/blockchain-testing/archive_size.txt ./exp_$3_$1_$2/
+docker cp rippled_tool_container_$3_$1_$2:/blockchain-testing/best_fitness_values.txt ./exp_$3_$1_$2/
+
 docker cp rippled_tool_container_$3_$1_$2:/blockchain-testing/src/test/java/generated/. ./exp_$3_$1_$2/tests/
-docker cp rippled_tool_container_$3_$1_$2:/blockchain-testing/archiveSize_bestFitnessValues.txt ./exp_$3_$1_$2/

@@ -38,6 +38,7 @@ RUN git clone https://lisv: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@github.com/S
 # Give permission to run scripts.
 RUN cd blockchain-testing/docker/ganache && chmod +x script.sh
 RUN cd blockchain-testing/scripts && chmod +x startGanache.sh
+RUN cd blockchain-testing/scripts && chmod +x coverageGanache.sh
 
 ENTRYPOINT ["blockchain-testing/docker/ganache/script.sh"]
 CMD ["1", "60", "g"]
