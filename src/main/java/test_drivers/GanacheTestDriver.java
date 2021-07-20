@@ -23,7 +23,7 @@ public class GanacheTestDriver extends TestDriver {
     private Long previousTimeStored;
     Long DELTA = (long) 60 * 1000;
 
-    public GanacheTestDriver(Client client) throws IOException {
+    public GanacheTestDriver(Client client) {
         super(client);
         sk = new StatisticsKeeper();
         previousTimeStored = System.currentTimeMillis();
@@ -130,11 +130,7 @@ public class GanacheTestDriver extends TestDriver {
 
             double branchcoverage = Double.parseDouble(results[2]);
             double linecoverage = Double.parseDouble(results[4]);
-            try {
-                sk.recordCoverage(currentTime, branchcoverage, linecoverage);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            sk.recordCoverage(currentTime, branchcoverage, linecoverage);
         }
     }
 
