@@ -13,6 +13,7 @@ while [ "$(lsof -t -i:8545 -sTCP:LISTEN)" != "" ]; do
 done
 
 echo "computing coverage"
+cd /
 cd ganache-cli
 nyc report --reporter=lcov --reporter=text
 
