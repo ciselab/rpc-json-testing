@@ -19,6 +19,7 @@ public class RippledTestDriver extends TestDriver {
 
     public RippledTestDriver(Client client) {
         super(client);
+        sk = new StatisticsKeeper();
         previousTimeStored = System.currentTimeMillis();
     }
 
@@ -111,20 +112,21 @@ public class RippledTestDriver extends TestDriver {
             previousTimeStored = currentTime;
 
             String cov = retrieveCoverage();
-            System.out.println(cov);
             String[] results = cov.split(" ");
 
-            System.out.println(results.toString());
+            System.out.println(results[0]);
+            System.out.println(results[3]);
+            System.out.println(results[4]);
+            System.out.println(results[7]);
             double linescovered = Double.parseDouble(results[0].replace("(", ""));
             double linetotal = Double.parseDouble(results[3].replace(")", ""));
             double branchescovered = Double.parseDouble(results[4].replace("(", ""));
             double branchtotal = Double.parseDouble(results[7].replace(")", ""));
 
-            try {
-                sk.recordCoverage(currentTime, branchescovered/branchtotal, linescovered/linetotal);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            double lineCovPer = linescovered/linetotal;
+            double branchCovPer = branchescovered/branchtotal;
+
+            sk.recordCoverage(currentTime, branchCovPer, lineCovPer);
         }
     }
 

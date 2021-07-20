@@ -64,7 +64,6 @@ public class Client {
         } catch (ConnectException e) {
             e.printStackTrace();
             // TODO sometimes there occurs a Connection refused error here but I do not know why
-            System.out.println("what comes out of this? " + con.getResponseCode());
             jsonOutputString = "{}";
             responseCode = -1;
         } catch (IOException e) {

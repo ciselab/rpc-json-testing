@@ -26,6 +26,7 @@ public class GanacheTestDriver extends TestDriver {
     public GanacheTestDriver(Client client) throws IOException {
         super(client);
         sk = new StatisticsKeeper();
+        previousTimeStored = System.currentTimeMillis();
     }
 
     public void startServer() throws IOException {
@@ -171,22 +172,5 @@ public class GanacheTestDriver extends TestDriver {
 
         return coverage;
     }
-
-//    public static  List<String> runShell(String shStr) throws Exception {
-//        List<String> strList = new ArrayList<String>();
-//
-//        Process process;
-//        process = Runtime.getRuntime().exec(new String[] {"/bin/sh","-c",shStr},null,null);
-//        InputStreamReader ir = new InputStreamReader(process
-//            .getInputStream());
-//        LineNumberReader input = new LineNumberReader(ir);
-//        String line;
-//        process.waitFor();
-//        while ((line = input.readLine()) != null) {
-//            strList.add(line);
-//        }
-//
-//        return strList;
-//    }
 
 }
