@@ -126,8 +126,8 @@ public class GanacheTestDriver extends TestDriver {
         if (currentTime - previousTimeStored >= DELTA) {
             previousTimeStored = currentTime;
 
-            String[] results = retrieveCoverage().split("|");
-            
+            String[] results = retrieveCoverage().split("\\|");
+
             System.out.println(results[2]);
             System.out.println(results[4]);
 
