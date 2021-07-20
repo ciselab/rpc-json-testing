@@ -123,7 +123,7 @@ public class RippledTestDriver extends TestDriver {
             double lineCovPer = linescovered/linetotal;
             double branchCovPer = branchescovered/branchtotal;
 
-            System.out.println("Intermediate coverage results at time: " + currentTime + "= branch cov: " + branchCovPer + " and line cov: " + lineCovPer);
+            System.out.println("Intermediate coverage results at time: " + currentTime + " = branch cov: " + branchCovPer + " and line cov: " + lineCovPer);
 
             sk.recordCoverage(currentTime, branchCovPer, lineCovPer);
         }

@@ -128,12 +128,11 @@ public class GanacheTestDriver extends TestDriver {
 
             String[] results = retrieveCoverage().split("\\|");
 
-            System.out.println(results[2]);
-            System.out.println(results[4]);
-
-            double branchcoverage = Double.parseDouble(results[2]);
-            double linecoverage = Double.parseDouble(results[4]);
+            double branchcoverage = Double.parseDouble(results[2].trim());
+            double linecoverage = Double.parseDouble(results[4].trim());
             sk.recordCoverage(currentTime, branchcoverage, linecoverage);
+
+            System.out.println("Intermediate coverage results at time: " + currentTime + " = branch cov: " + branchcoverage + " and line cov: " + linecoverage);
         }
     }
 
