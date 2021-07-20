@@ -21,7 +21,7 @@ done
 cd ganache-cli
 # reset coverage?
 nyc report --reporter=lcov --reporter=text
-echo "This run was based on server: " $3", fitness function:" $1 ", and time:" $2 "minutes." >> final_coverage_total.txt cat final_coverage_total.txt
+echo "These results are based on server: " $3", fitness function:" $1 ", and time:" $2 "minutes." >> final_coverage_total.txt cat final_coverage_total.txt
 cd ..
 
 # reset coverage and run the generated tests

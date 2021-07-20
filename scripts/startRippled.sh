@@ -12,6 +12,9 @@ while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" != "" ]; do
  sleep 0.1
 done
 
+# delete db files
+rm -rf /var/lib/rippled/db
+
 echo "starting server at port 5005"
 # start rippled server again
 cd /

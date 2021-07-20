@@ -31,6 +31,8 @@ import static util.IO.writeFile;
 
 public class Main {
 
+    final static int POPULATION_SIZE = 50;
+
     private static ArrayList<Double> bestFitness = new ArrayList<>();
 
     public static void main(String args[]) {
@@ -139,7 +141,7 @@ public class Main {
             System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime/60) + " hour(s)");
 
             BasicEA ea = new BasicEA(fitness, generator);
-            List<Individual> population = ea.generatePopulation(50);
+            List<Individual> population = ea.generatePopulation(POPULATION_SIZE);
 
             // Stopping criterium = time
             Long startTime = System.currentTimeMillis();
