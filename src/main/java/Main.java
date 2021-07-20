@@ -1,5 +1,4 @@
 import connection.Client;
-import info.StatisticsKeeper;
 import org.json.JSONObject;
 import search.BasicEA;
 import search.Generator;
@@ -19,16 +18,16 @@ import test_drivers.RippledTestDriver;
 import test_drivers.RippledTestDriverTestNet;
 import test_drivers.TestDriver;
 import test_generation.TestWriter;
-import util.IO;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import static util.IO.readFile;
+import static util.IO.writeFile;
 
 public class Main {
 
@@ -70,7 +69,7 @@ public class Main {
 
         Specification specification = null;
         try {
-            String data = IO.readFile(filepath);
+            String data = readFile(filepath);
             specification = new Specification(new JSONObject(data));
         } catch (IOException e) {
             e.printStackTrace();
@@ -160,7 +159,16 @@ public class Main {
             }
 
             // Information on how the fitness function is progressing
-            fitness.storeInformation();
+            writeFile(fitness.storeInformation(), "fitness_progress");
+            // Information on status codes that occurred
+            writeFile(fitness.getStatusCodesTotal().toString(), "status_codes_total");
+            writeFile(fitness.getStatusCodesArchive().toString(), "status_codes_archive");
+            // Information on the amount of tests in the archive
+            List<Individual> archive = fitness.getArchive();
+            String testInArchive = "Amount of tests in the archive: " + archive.size();
+            writeFile(testInArchive, "archive_size");
+            // Write best fitness values of each generation to file
+            writeFile(bestFitness.toString(), "best_fitness_values.txt");
 
             // Stopping criterium = generations
 //            for (int i = 0; i < 20; i++) {
@@ -175,21 +183,10 @@ public class Main {
                 if (!file.isDirectory())
                     file.delete();
             }
-            List<Individual> archive = fitness.getArchive();
             System.out.println("Tests in the archive: " + archive.size());
             for (int i = 0; i < archive.size(); i++) {
                 testWriter.writeTest(archive.get(i), "ind" + i + "Test");
             }
-
-            // Write archive size and best fitness values of each generation to file
-            FileWriter writer = new FileWriter("archiveSize_bestFitnessValues.txt");
-            File directory_tests = new File(testDirectory);
-            int fileCount = Objects.requireNonNull(directory_tests.list()).length;
-            writer.write("Amount of tests in the archive: " + fileCount + "\n");
-            for(Double fit: bestFitness) {
-                writer.write(fit + System.lineSeparator());
-            }
-            writer.close();
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
