@@ -145,6 +145,7 @@ public class Main {
             Long startTime = System.currentTimeMillis();
             int generation = 0;
             while (System.currentTimeMillis() - startTime < (runningTime*60*1000)) {
+                System.out.println("Starting generation: " + generation);
                 generation += 1;
                 population = ea.nextGeneration(population);
 

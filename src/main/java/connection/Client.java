@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -58,14 +59,14 @@ public class Client {
                 response.append(responseLine.trim());
             }
             jsonOutputString = response.toString();
-        }
-        catch(IOException e) {
-//            System.out.println(method);
-//            System.out.println(request.toString(2));
+        } catch (ConnectException e) {
+            // TODO sometimes there occurs a Connection refused error here but I do not know why
+            e.printStackTrace();
+            jsonOutputString = "{}";
+        } catch (IOException e) {
 //            e.printStackTrace();
             //TODO: do something for responses without a response object (perhaps create extra field for statuscode or responsemessage)
-            System.out.println("No response body! Status code = " + con.getResponseCode());
-//            System.out.println("Response Message = " + con.getResponseMessage());
+            System.out.println("IOException occurred; no response body! Status code was " + con.getResponseCode());
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("responseMessage", con.getResponseMessage());
             jsonOutputString = jsonObject.toString();
@@ -74,9 +75,6 @@ public class Client {
         JSONObject response = new JSONObject(jsonOutputString);
 
         con.disconnect();
-
-//        System.out.println(request.toString(2));
-//        System.out.println(response.toString(2));
 
         return new ResponseObject(con.getResponseCode(), response);
     }

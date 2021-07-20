@@ -110,12 +110,14 @@ public class RippledTestDriver extends TestDriver {
         if (currentTime - previousTimeStored >= DELTA) {
             previousTimeStored = currentTime;
 
-            String[] results = retrieveCoverage().split(" ");
+            String cov = retrieveCoverage();
+            System.out.println(cov);
+            String[] results = cov.split(" ");
 
-            double linescovered = Double.parseDouble(results[3].replace("(", ""));
-            double linetotal = Double.parseDouble(results[6].replace(")", ""));
-            double branchescovered = Double.parseDouble(results[9].replace("(", ""));
-            double branchtotal = Double.parseDouble(results[12].replace(")", ""));
+            double linescovered = Double.parseDouble(results[2].replace("(", ""));
+            double linetotal = Double.parseDouble(results[5].replace(")", ""));
+            double branchescovered = Double.parseDouble(results[8].replace("(", ""));
+            double branchtotal = Double.parseDouble(results[11].replace(")", ""));
 
             try {
                 sk.recordCoverage(currentTime, branchescovered/branchtotal, linescovered/linetotal);
