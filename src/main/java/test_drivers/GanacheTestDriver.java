@@ -3,10 +3,14 @@ package test_drivers;
 import connection.Client;
 import connection.ResponseObject;
 
+import info.StatisticsKeeper;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -15,9 +19,13 @@ public class GanacheTestDriver extends TestDriver {
 
     private List<String> accounts;
     private List<String> keys;
+    private StatisticsKeeper sk;
+    private Long previousTimeStored;
+    Long DELTA = (long) 60 * 1000;
 
-    public GanacheTestDriver(Client client) {
+    public GanacheTestDriver(Client client) throws IOException {
         super(client);
+        sk = new StatisticsKeeper();
     }
 
     public void startServer() throws IOException {
@@ -45,14 +53,10 @@ public class GanacheTestDriver extends TestDriver {
 
             boolean scanningAccounts = false;
             boolean scanningKeys = false;
-            System.out.println("File exists! Start reading.");
+
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
-                System.out.print(">>>");
-                System.out.print(data);
-                System.out.print("<<<");
 
-                System.out.println("The length of the line = " + data.length());
                 if (data.length() == 0) {
                     scanningAccounts = false;
                     scanningKeys = false;
@@ -60,14 +64,12 @@ public class GanacheTestDriver extends TestDriver {
                 }
 
                 if (data.contains("Available Accounts")) {
-                    System.out.println("Available Accounts is reached");
                     scanningAccounts = true;
                     myReader.nextLine();
                     continue;
                 }
 
                 if (scanningAccounts) {
-                    System.out.println("Account that is added: " + data.split(" ")[1]);
                     accounts.add(data.split(" ")[1]);
                 }
 
@@ -78,11 +80,9 @@ public class GanacheTestDriver extends TestDriver {
                 }
 
                 if (scanningKeys) {
-                    System.out.println("Private key that is added: " + data.split(" ")[1]);
                     keys.add(data.split(" ")[1]);
                 }
             }
-            System.out.println("Scanner is closing");
             myReader.close();
         } catch (FileNotFoundException e) {
             System.out.println("File not found!");
@@ -91,6 +91,7 @@ public class GanacheTestDriver extends TestDriver {
     }
 
     public void prepTest() throws Exception {
+        checkCoverage();    // Check whether coverage needs to be documented.
         startServer();
         retrieveAccounts();
     }
@@ -99,16 +100,93 @@ public class GanacheTestDriver extends TestDriver {
         return new JSONObject(request.toString().replace("__ACCOUNT__", account));
     }
 
+    /**
+     * Before this method prepTust is run.
+     * @param method
+     * @param request
+     * @return the responseObject (status code + response)
+     * @throws Exception
+     */
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
+
         if (accounts == null) {
             throw new Exception("No accounts found! Something went wrong.");
         }
 
-        System.out.println("The list: " + accounts.toString());
         request = replaceAccountStrings(request,  accounts.get(0));
 
         // TODO something with private keys as well
         return getClient().createRequest(method, request);
     }
+
+    public void checkCoverage() throws IOException {
+        // Check whether coverage should be measured
+        Long currentTime = System.currentTimeMillis();
+        if (currentTime - previousTimeStored >= DELTA) {
+            previousTimeStored = currentTime;
+
+            String[] results = retrieveCoverage().split("|");
+
+            double branchcoverage = Double.parseDouble(results[2]);
+            double linecoverage = Double.parseDouble(results[4]);
+            try {
+                sk.recordCoverage(currentTime, branchcoverage, linecoverage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public String retrieveCoverage() throws IOException {
+        ProcessBuilder pb = new ProcessBuilder();
+
+        pb.command("/blockchain-testing/scripts/GanacheCoverage.sh");
+
+        pb.redirectErrorStream(true);
+
+        Process p = pb.start();
+
+        String coverage = "";
+        try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(p.getInputStream()))) {
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("All files")) {
+                    System.out.println("File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Lines ");
+                    System.out.println(line);
+                    coverage = line;
+                    break;
+                }
+                System.out.println(line);
+            }
+        }
+
+        try {
+            p.waitFor();
+        } catch (InterruptedException e) {
+            p.destroy();
+        }
+
+        return coverage;
+    }
+
+//    public static  List<String> runShell(String shStr) throws Exception {
+//        List<String> strList = new ArrayList<String>();
+//
+//        Process process;
+//        process = Runtime.getRuntime().exec(new String[] {"/bin/sh","-c",shStr},null,null);
+//        InputStreamReader ir = new InputStreamReader(process
+//            .getInputStream());
+//        LineNumberReader input = new LineNumberReader(ir);
+//        String line;
+//        process.waitFor();
+//        while ((line = input.readLine()) != null) {
+//            strList.add(line);
+//        }
+//
+//        return strList;
+//    }
 
 }

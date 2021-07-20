@@ -2,14 +2,20 @@ package test_drivers;
 
 import connection.Client;
 import connection.ResponseObject;
+import info.StatisticsKeeper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class RippledTestDriver extends TestDriver {
 
     private JSONObject accounts;
+    private StatisticsKeeper sk;
+    private Long previousTimeStored;
+    Long DELTA = (long) 60 * 1000;
 
     public RippledTestDriver(Client client) {
         super(client);
@@ -66,8 +72,10 @@ public class RippledTestDriver extends TestDriver {
         return getClient().createRequest("POST", request);
     }
 
-        public void prepTest() throws Exception {
-            startServer();
+    public void prepTest() throws Exception {
+        checkCoverage(); // check whether coverage should be stored
+
+        startServer();
 //        System.out.println("PROPOSE WALLETS");
         ResponseObject accounts = retrieveAccounts();
 //        System.out.println(accounts.getResponseCode());
@@ -85,6 +93,7 @@ public class RippledTestDriver extends TestDriver {
     }
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
+
         if (accounts == null) {
             throw new Exception("No accounts found! Please call prepTest before runTest!!");
         }
@@ -92,6 +101,62 @@ public class RippledTestDriver extends TestDriver {
         request = replaceAccountStrings(request,  accounts.getJSONObject("result").getString("account_id"));
 
         return getClient().createRequest(method, request);
+    }
+
+    public void checkCoverage() throws IOException {
+        // Check whether coverage should be measured
+        Long currentTime = System.currentTimeMillis();
+
+        if (currentTime - previousTimeStored >= DELTA) {
+            previousTimeStored = currentTime;
+
+            String[] results = retrieveCoverage().split(" ");
+
+            double linescovered = Double.parseDouble(results[2].replace("(", ""));
+            double linetotal = Double.parseDouble(results[5].replace(")", ""));
+            double branchescovered = Double.parseDouble(results[8].replace("(", ""));
+            double branchtotal = Double.parseDouble(results[11].replace(")", ""));
+
+            try {
+                sk.recordCoverage(currentTime, branchescovered/branchtotal, linescovered/linetotal);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public String retrieveCoverage() throws IOException {
+        ProcessBuilder pb = new ProcessBuilder();
+
+        pb.command("/blockchain-testing/scripts/RippledCoverage.sh");
+
+        pb.redirectErrorStream(true);
+
+        Process p = pb.start();
+
+        String coverage = "";
+        try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(p.getInputStream()))) {
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("lines:") || (line.contains("branches:"))) {
+                    System.out.println("The right line:");
+                    System.out.println(line);
+                    coverage = coverage + " " + line;
+                }
+                System.out.println(line);
+            }
+        }
+
+        try {
+            p.waitFor();
+        } catch (InterruptedException e) {
+            p.destroy();
+        }
+
+        return coverage;
     }
 
 }
