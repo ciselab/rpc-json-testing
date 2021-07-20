@@ -76,6 +76,7 @@ public class Client {
 
         con.disconnect();
 
+        System.out.println("Check if everything has response code: " + con.getResponseCode());
         return new ResponseObject(con.getResponseCode(), response);
     }
 

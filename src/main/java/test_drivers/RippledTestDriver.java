@@ -114,10 +114,10 @@ public class RippledTestDriver extends TestDriver {
             System.out.println(cov);
             String[] results = cov.split(" ");
 
-            double linescovered = Double.parseDouble(results[2].replace("(", ""));
-            double linetotal = Double.parseDouble(results[5].replace(")", ""));
-            double branchescovered = Double.parseDouble(results[8].replace("(", ""));
-            double branchtotal = Double.parseDouble(results[11].replace(")", ""));
+            double linescovered = Double.parseDouble(results[1].replace("(", ""));
+            double linetotal = Double.parseDouble(results[4].replace(")", ""));
+            double branchescovered = Double.parseDouble(results[5].replace("(", ""));
+            double branchtotal = Double.parseDouble(results[8].replace(")", ""));
 
             try {
                 sk.recordCoverage(currentTime, branchescovered/branchtotal, linescovered/linetotal);
@@ -144,11 +144,13 @@ public class RippledTestDriver extends TestDriver {
 
             while ((line = reader.readLine()) != null) {
                 if (line.contains("lines:") || (line.contains("branches:"))) {
-                    System.out.println("The right line:");
                     System.out.println(line);
+
+                    line = line.substring(line.indexOf("(") + 1);
+                    line = line.substring(0, line.indexOf(")"));
+
                     coverage = coverage + " " + line;
-                } else {
-                    System.out.println(line);
+                    System.out.println(coverage);
                 }
             }
         }
