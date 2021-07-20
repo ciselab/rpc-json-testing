@@ -127,6 +127,9 @@ public class GanacheTestDriver extends TestDriver {
             previousTimeStored = currentTime;
 
             String[] results = retrieveCoverage().split("|");
+            
+            System.out.println(results[2]);
+            System.out.println(results[4]);
 
             double branchcoverage = Double.parseDouble(results[2]);
             double linecoverage = Double.parseDouble(results[4]);

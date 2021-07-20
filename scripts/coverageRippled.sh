@@ -13,8 +13,7 @@ while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" != "" ]; do
 done
 
 echo "computing coverage"
-cd /
-cd rippled-1.6.0
+cd /rippled-1.6.0
 gcovr -s -r ./
 
 exit 0

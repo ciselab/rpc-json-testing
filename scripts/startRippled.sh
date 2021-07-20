@@ -17,7 +17,6 @@ rm -rf /var/lib/rippled/db
 
 echo "starting server at port 5005"
 # start rippled server again
-cd /
 cd /rippled-1.6.0/build/cmake/coverage
 ./rippled -a --start -v --debug &
 
