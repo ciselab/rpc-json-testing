@@ -9,7 +9,7 @@ cd ..
 cd blockchain-testing
 # the first argument is the fitness function used (1-8), the second arg is the time the experiment will run (in mins) and the third arg is the server used (g or r).
 java -jar target/blockchain-testing-1.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3
-cd ..
+cd /
 
 # kill current rippled server at port 5005
 id=$(lsof -t -i:5005 -sTCP:LISTEN)
@@ -27,10 +27,10 @@ echo "This run was based on server: " $3", fitness function:" $1 ", and time:" $
 
 # reset coverage and run the generated tests
 find . -type f -name "*.gcda" -delete 
-cd ..
+cd /
 cd blockchain-testing
 mvn clean test -Dtest=generated.ind*
-cd ..
+cd /
 
 # kill current rippled server at port 5005
 id=$(lsof -t -i:5005 -sTCP:LISTEN)
