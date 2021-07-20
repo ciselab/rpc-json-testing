@@ -19,6 +19,7 @@ public class RippledTestDriver extends TestDriver {
 
     public RippledTestDriver(Client client) {
         super(client);
+        previousTimeStored = System.currentTimeMillis();
     }
 
     public void startServer() throws IOException {
