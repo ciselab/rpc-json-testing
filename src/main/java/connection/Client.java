@@ -62,7 +62,8 @@ public class Client {
             jsonOutputString = response.toString();
             responseCode = con.getResponseCode();
         } catch (ConnectException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            System.out.println("ConnectException occurred! Looking into this. For now it gets statusCode -1 assigned so program does not crash.");
             // TODO sometimes there occurs a Connection refused error here but I do not know why
             jsonOutputString = "{}";
             responseCode = -1;

@@ -109,15 +109,12 @@ public class RippledTestDriver extends TestDriver {
         Long currentTime = System.currentTimeMillis();
 
         if (currentTime - previousTimeStored >= DELTA) {
+            System.out.println((currentTime - previousTimeStored)/(1000*60) + " minutes have passed. Coverage is recorded.");
             previousTimeStored = currentTime;
 
             String cov = retrieveCoverage();
             String[] results = cov.split(" ");
 
-            System.out.println(results[0]);
-            System.out.println(results[3]);
-            System.out.println(results[4]);
-            System.out.println(results[7]);
             double linescovered = Double.parseDouble(results[0].replace("(", ""));
             double linetotal = Double.parseDouble(results[3].replace(")", ""));
             double branchescovered = Double.parseDouble(results[4].replace("(", ""));
@@ -125,6 +122,8 @@ public class RippledTestDriver extends TestDriver {
 
             double lineCovPer = linescovered/linetotal;
             double branchCovPer = branchescovered/branchtotal;
+
+            System.out.println("Intermediate coverage results for time " + currentTime + " , branch cov: " + branchCovPer + ", and line cov: " + lineCovPer);
 
             sk.recordCoverage(currentTime, branchCovPer, lineCovPer);
         }

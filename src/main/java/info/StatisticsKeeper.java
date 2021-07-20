@@ -29,12 +29,14 @@ public class StatisticsKeeper {
         // Append coverage to file immediately
         try {
             FileWriter writer = new FileWriter("coverage_over_time.txt", true);
-            for (int i = 0; i < coverageOverTime.size(); i++) {
-                Long t = coverageOverTime.get(i).getKey();
-                double bc = coverageOverTime.get(i).getValue();
-                double lc = coverageOverTime.get(i).getValue2();
-                writer.write("Time: " + t + ", branch coverage: " + bc +  ", line coverage: " + lc + System.lineSeparator());
-            }
+            // For when coverage should be written to file all at once
+//            for (int i = 0; i < coverageOverTime.size(); i++) {
+//                Long t = coverageOverTime.get(i).getKey();
+//                double bc = coverageOverTime.get(i).getValue();
+//                double lc = coverageOverTime.get(i).getValue2();
+//                writer.write("Time: " + t + ", branch coverage: " + bc +  ", line coverage: " + lc + System.lineSeparator());
+//            }
+            writer.write("Time: " + time + ", branch coverage: " + branchCoverage +  ", line coverage: " + lineCoverage + System.lineSeparator());
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();

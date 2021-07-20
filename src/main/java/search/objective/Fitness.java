@@ -77,11 +77,11 @@ public abstract class Fitness {
 
                 responses.add(responseObject);
 
-                if (!statusCodesTotal.containsValue(responseObject.getResponseCode())) {
+                if (!statusCodesTotal.containsKey(responseObject.getResponseCode())) {
                     statusCodesTotal.put(responseObject.getResponseCode(), 0);
                 }
-                int count = statusCodesTotal.get(responseObject.getResponseCode()) + 1;
-                statusCodesTotal.put(responseObject.getResponseCode(), count);
+                statusCodesTotal.put(responseObject.getResponseCode(), statusCodesTotal.get(responseObject.getResponseCode()) + 1);
+                
             } catch (Exception e) {
 //                System.out.println(individual.toTotalJSONObject().toString(2));
                 e.printStackTrace();
