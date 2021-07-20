@@ -48,6 +48,7 @@ public class Client {
         }
 
         String jsonOutputString;
+        int responseCode;
 
         // Wait for response
         try {
@@ -59,25 +60,28 @@ public class Client {
                 response.append(responseLine.trim());
             }
             jsonOutputString = response.toString();
+            responseCode = con.getResponseCode();
         } catch (ConnectException e) {
-            // TODO sometimes there occurs a Connection refused error here but I do not know why
             e.printStackTrace();
+            // TODO sometimes there occurs a Connection refused error here but I do not know why
+            System.out.println("what comes out of this? " + con.getResponseCode());
             jsonOutputString = "{}";
+            responseCode = -1;
         } catch (IOException e) {
 //            e.printStackTrace();
             //TODO: do something for responses without a response object (perhaps create extra field for statuscode or responsemessage)
-            System.out.println("IOException occurred; no response body! Status code was " + con.getResponseCode());
+            System.out.println("IOException occurred! No response body but status code was " + con.getResponseCode());
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("responseMessage", con.getResponseMessage());
             jsonOutputString = jsonObject.toString();
+            responseCode = con.getResponseCode();
         }
 
         JSONObject response = new JSONObject(jsonOutputString);
 
         con.disconnect();
 
-        System.out.println("Check if everything has response code: " + con.getResponseCode());
-        return new ResponseObject(con.getResponseCode(), response);
+        return new ResponseObject(responseCode, response);
     }
 
 //    public CompletableFuture<JSONObject> sendRequest(int id, JSONObject jsonObject) {
