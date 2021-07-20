@@ -2,6 +2,7 @@ package search.objective;
 
 import connection.ResponseObject;
 import search.clustering.AgglomerativeClustering3;
+import search.clustering.Cluster;
 import test_drivers.TestDriver;
 import search.Generator;
 import search.Individual;
@@ -37,8 +38,6 @@ public class DiversityBasedFitness extends Fitness {
     final private int NEW_CLUSTERS_AFTER_GEN = 10;
 
     private double ARCHIVE_THRESHOLD = 0.8;
-
-    private int serverErrors = 0;
 
     public DiversityBasedFitness(TestDriver testDriver) {
         super(testDriver);
@@ -110,13 +109,11 @@ public class DiversityBasedFitness extends Fitness {
             population.get(i).setFitness(fitness);
 
             // decide whether to add individual to the archive
-            if (responses.get(i).getResponseCode() > 499) {
-                System.out.println("Individual with response code: " + responses.get(i).getResponseCode());
-                serverErrors += 1;
-                this.addToArchive(population.get(i));
+            if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
+                this.addToArchive(population.get(i), responses.get(i));
             }
-            if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i));
+            else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                this.addToArchive(population.get(i), responses.get(i));
             }
         }
         if (generationCount % NEW_CLUSTERS_AFTER_GEN == 0) {
@@ -129,7 +126,43 @@ public class DiversityBasedFitness extends Fitness {
         }
         generationCount += 1;
 
-        System.out.println("Number of 5xx errors: " + serverErrors);
+//        storeInformation();
+
+    }
+
+    @Override
+    public ArrayList<String> storeInformation() {
+        ArrayList<String> info = new ArrayList<>();
+
+        info.add("Methods covered: " + clusteringPerResponseStructure.keySet().size());
+        for (String method: clusteringPerResponseStructure.keySet()) {
+            info.add("\t" + method + ": ");
+            info.add("\t\tStatusses covered: " + statuses.get(method).size() + ", namely: " + statuses.get(method).toString());
+
+            info.add("\t\tStructures covered: " + clusteringPerResponseStructure.get(method).keySet().size());
+
+            for (String structure : clusteringPerResponseStructure.get(method).keySet()) {
+                info.add("\t\t\tClusters: " + clusteringPerResponseStructure.get(method).get(structure).getClusters().size());
+
+                List<Integer> clusterSize = new ArrayList<>();
+
+                StringBuilder individuals = new StringBuilder();
+
+                for (Cluster cluster : clusteringPerResponseStructure.get(method).get(structure).getClusters()) {
+                    clusterSize.add(cluster.size());
+                    // printing
+                    for (List<Object> vector: cluster.getMembers()) {
+                        individuals.append("\t\t\t\t\t").append(vector.toString()).append("\n");
+                    }
+                    individuals.append("\n");
+                }
+
+                info.add("\t\t\t\t" + clusterSize.toString());
+                info.add(individuals.toString());
+
+            }
+        }
+        return info;
     }
 
     /**
@@ -208,36 +241,6 @@ public class DiversityBasedFitness extends Fitness {
             }
         }
         return new Pair<>(featureVector, weightVector);
-    }
-
-    public void printResults() {
-        System.out.println("Methods covered: " + clusteringPerResponseStructure.keySet().size());
-        for (String method: clusteringPerResponseStructure.keySet()) {
-            System.out.println("\t" + method + ": ");
-            System.out.println("\t\tStatusses covered: " + statuses.get(method).size());
-            System.out.println("\t\tStructures covered: " + clusteringPerResponseStructure.get(method).keySet().size());
-
-            for (String structure : clusteringPerResponseStructure.get(method).keySet()) {
-                System.out.println("\t\t\tClusters: " + clusteringPerResponseStructure.get(method).get(structure).getClusters().size());
-
-                List<Integer> clusterSize = new ArrayList<>();
-
-                StringBuilder individuals = new StringBuilder();
-
-//                for (Cluster cluster : clusteringPerResponseStructure.get(method).get(structure).getClusters()) {
-//                    clusterSize.add(cluster.size());
-//                    // printing
-//                    for (List<Object> vector: cluster) {
-//                        individuals.append("\t\t\t\t\t").append(vector.toString()).append("\n");
-//                    }
-//                    individuals.append("\n");
-//                }
-
-                System.out.println("\t\t\t\t" + clusterSize.toString());
-                System.out.println(individuals);
-
-            }
-        }
     }
 
 }

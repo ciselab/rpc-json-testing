@@ -5,6 +5,7 @@ import search.Generator;
 import search.Individual;
 import test_drivers.TestDriver;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,11 +41,20 @@ public class StatusCodeFitness extends Fitness {
             // If statuscode is relatively rare, add to archive.
             ARCHIVE_THRESHOLD = Math.min((100 / statusFrequencyTable.size()), ARCHIVE_THRESHOLD);
             // Decide whether to add individual to the archive
-            if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(ind)) {
-                this.addToArchive(ind);
+            if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(ind)) {
+                this.addToArchive(ind, responses.get(i));
             }
-
+            else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(ind)) {
+                this.addToArchive(ind, responses.get(i));
+            }
         }
-//        System.out.println(statusFrequencyTable);
+
+    }
+
+    @Override
+    public ArrayList<String> storeInformation() {
+        ArrayList<String> info = new ArrayList<>();
+        info.add(statusFrequencyTable.toString());
+        return info;
     }
 }

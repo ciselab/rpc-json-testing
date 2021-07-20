@@ -40,36 +40,6 @@ public class ResponseFitnessClustering extends Fitness {
         this.statuses = new HashMap<>();
     }
 
-    public void printResults() {
-        System.out.println("Methods covered: " + clusteringPerResponseStructure.keySet().size());
-        for (String method: clusteringPerResponseStructure.keySet()) {
-            System.out.println("\t" + method + ": ");
-            System.out.println("\t\tStatusses covered: " + statuses.get(method).size());
-            System.out.println("\t\tStructures covered: " + clusteringPerResponseStructure.get(method).keySet().size());
-
-            for (String structure : clusteringPerResponseStructure.get(method).keySet()) {
-                System.out.println("\t\t\tClusters: " + clusteringPerResponseStructure.get(method).get(structure).getClusters().size());
-
-                List<Integer> clusterSize = new ArrayList<>();
-
-                StringBuilder individuals = new StringBuilder();
-
-                for (List<List<Object>> cluster : clusteringPerResponseStructure.get(method).get(structure).getClusters()) {
-                    clusterSize.add(cluster.size());
-                    // printing
-                    for (List<Object> vector: cluster) {
-                        individuals.append("\t\t\t\t\t").append(vector.toString()).append("\n");
-                    }
-                    individuals.append("\n");
-                }
-
-                System.out.println("\t\t\t\t" + clusterSize.toString());
-                System.out.println(individuals);
-
-            }
-        }
-    }
-
     @Override
     public void evaluate(Generator generator, List<Individual> population) {
 
@@ -117,11 +87,46 @@ public class ResponseFitnessClustering extends Fitness {
             population.get(i).setFitness(fitness);
 
             // decide whether to add individual to the archive
-            if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i));
+            if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
+                this.addToArchive(population.get(i), responses.get(i));
             }
-
+            else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                this.addToArchive(population.get(i), responses.get(i));
+            }
         }
+    }
+
+    @Override
+    public ArrayList<String> storeInformation() {
+        ArrayList<String> info = new ArrayList<>();
+
+        info.add("Methods covered: " + clusteringPerResponseStructure.keySet().size());
+        for (String method: clusteringPerResponseStructure.keySet()) {
+            info.add("\t" + method + ": ");
+            info.add("\t\tStatusses covered: " + statuses.get(method).size() + ", namely: " + statuses.get(method).toString());
+            info.add("\t\tStructures covered: " + clusteringPerResponseStructure.get(method).keySet().size());
+
+            for (String structure : clusteringPerResponseStructure.get(method).keySet()) {
+                info.add("\t\t\tClusters: " + clusteringPerResponseStructure.get(method).get(structure).getClusters().size());
+
+                List<Integer> clusterSize = new ArrayList<>();
+
+                StringBuilder individuals = new StringBuilder();
+
+                for (List<List<Object>> cluster : clusteringPerResponseStructure.get(method).get(structure).getClusters()) {
+                    clusterSize.add(cluster.size());
+                    for (List<Object> vector: cluster) {
+                        individuals.append("\t\t\t\t\t").append(vector.toString()).append("\n");
+                    }
+                    individuals.append("\n");
+                }
+
+                info.add("\t\t\t\t" + clusterSize.toString());
+                info.add(individuals.toString());
+
+            }
+        }
+        return info;
     }
 
     /**

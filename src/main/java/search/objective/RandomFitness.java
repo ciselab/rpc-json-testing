@@ -5,6 +5,7 @@ import search.Generator;
 import search.Individual;
 import test_drivers.TestDriver;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static util.RandomSingleton.getRandom;
@@ -32,9 +33,14 @@ public class RandomFitness extends Fitness {
 
             // decide whether to add individual to the archive
             if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(individual)) {
-                this.addToArchive(individual);
+                this.addToArchive(individual, responseObjects.get(i));
             }
         }
+    }
+
+    @Override
+    public ArrayList<String> storeInformation() {
+        return null;
     }
 
 }

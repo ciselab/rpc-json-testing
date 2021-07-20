@@ -8,6 +8,8 @@ import search.Individual;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -42,10 +44,28 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
             population.get(i).setFitness(fitness);
 
             // decide whether to add individual to the archive
-            if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i));
+            if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
+                this.addToArchive(population.get(i), responses.get(i));
+            }
+            else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                this.addToArchive(population.get(i), responses.get(i));
             }
         }
+    }
+
+    @Override
+    public ArrayList<String> storeInformation() {
+        ArrayList<String> info = new ArrayList<>();
+
+        info.add("Map: " + valuePerKeyCount);
+        for (String key : valuePerKeyCount.keySet()) {
+            info.add("Method: " + key);
+            for (String key2 : valuePerKeyCount.get(key).keySet()) {
+                info.add("\t\tParameter: " + key2);
+                info.add("\t\t\tCategory count: " + valuePerKeyCount.get(key).get(key2).toString());
+            }
+        }
+        return info;
     }
 
     /**

@@ -5,6 +5,7 @@ import search.Generator;
 import search.Individual;
 import test_drivers.TestDriver;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,12 +48,21 @@ public class ResponseStructureFitness2 extends Fitness {
 
 //            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.
             // decide whether to add individual to the archive
-            if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i));
+            if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
+                this.addToArchive(population.get(i), responses.get(i));
+            }
+            else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                this.addToArchive(population.get(i), responses.get(i));
             }
         }
 
-//        System.out.println("Map: " + structureFrequencyTable.keySet().size());
+    }
+
+    @Override
+    public ArrayList<String>  storeInformation() {
+        ArrayList<String> info = new ArrayList<>();
+        info.add("Map: " + structureFrequencyTable.keySet().size());
+        return info;
     }
 
 }

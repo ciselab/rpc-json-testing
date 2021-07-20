@@ -10,22 +10,28 @@ import search.Individual;
 import test_drivers.TestDriver;
 import util.Pair;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 public abstract class Fitness {
 
     private TestDriver testDriver;
     private List<Individual> archive;
+    private Map<Integer, Integer> statusCodesTotal;
+    private Map<Integer, Integer> statusCodesArchive;
 
     public Fitness(TestDriver testDriver) {
         this.testDriver = testDriver;
         this.archive = new ArrayList<>();
+        this.statusCodesTotal = new HashMap<>();
+        this.statusCodesArchive = new HashMap<>();
     }
 
     /**
@@ -34,6 +40,11 @@ public abstract class Fitness {
      * @param population
      */
     public abstract void evaluate(Generator generator, List<Individual> population);
+
+    /**
+     * Store information regarding the process of the run.
+     */
+    public abstract List<String> storeInformation();
 
     /**
      * Get all responses from current generation of requests (i.e. individuals).
@@ -50,14 +61,12 @@ public abstract class Fitness {
             Individual individual = population.get(i);
             long start = System.nanoTime();
             try {
-                System.out.println("Preparing tests");
+//                System.out.println("Preparing tests");
                 testDriver.prepTest();
 
                 ResponseObject responseObject = null;
 
-                System.out.println("Running tests");
                 for (int j = 0; j < individual.getDna().size(); j++) {
-                    System.out.println("Running test: " + j);
                     Chromosome chromosome = individual.getDna().get(j);
                     responseObject = testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest());
                 }
@@ -66,10 +75,15 @@ public abstract class Fitness {
                     throw new Exception("Individual with zero chromosomes!!!");
                 }
 
-                System.out.println("Test done");
                 responses.add(responseObject);
+
+                if (!statusCodesTotal.containsValue(responseObject.getResponseCode())) {
+                    statusCodesTotal.put(responseObject.getResponseCode(), 0);
+                }
+                int count = statusCodesTotal.get(responseObject.getResponseCode()) + 1;
+                statusCodesTotal.put(responseObject.getResponseCode(), count);
             } catch (Exception e) {
-                System.out.println(individual.toTotalJSONObject().toString(2));
+//                System.out.println(individual.toTotalJSONObject().toString(2));
                 e.printStackTrace();
             }
 
@@ -219,9 +233,22 @@ public abstract class Fitness {
         return archive;
     }
 
-    public void addToArchive(Individual ind) {
+    public void addToArchive(Individual ind, ResponseObject res) {
         archive.add(ind);
+
+        if (!statusCodesArchive.containsValue(res.getResponseCode())) {
+            statusCodesArchive.put(res.getResponseCode(), 0);
+        }
+        int count = statusCodesArchive.get(res.getResponseCode()) + 1;
+        statusCodesArchive.put(res.getResponseCode(), count);
     }
 
+    public Map<Integer, Integer> getStatusCodesTotal() {
+        return statusCodesTotal;
+    }
+
+    public Map<Integer, Integer> getStatusCodesArchive() {
+        return statusCodesArchive;
+    }
 
 }
