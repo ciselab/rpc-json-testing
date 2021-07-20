@@ -33,5 +33,5 @@ RUN git clone https://lisv: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@github.com/S
 RUN cd blockchain-testing/docker/rippled && chmod +x script.sh
 RUN cd blockchain-testing/scripts && chmod +x startRippled.sh
 
-ENTRYPOINT ["blockchain-testing/docker/script.sh"]
-CMD ["1", "60"]
+ENTRYPOINT ["blockchain-testing/docker/rippled/script.sh"]
+CMD ["1", "60", "r"]
