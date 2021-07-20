@@ -43,6 +43,9 @@ public class Client {
             OutputStream os = con.getOutputStream();
             byte[] input = jsonInputString.getBytes("utf-8");
             os.write(input, 0, input.length);
+        } catch (ConnectException e) {
+//            e.printStackTrace();
+            System.out.println("ConnectException occurred while trying to get output stream! Looking into this.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,7 +66,7 @@ public class Client {
             responseCode = con.getResponseCode();
         } catch (ConnectException e) {
 //            e.printStackTrace();
-            System.out.println("ConnectException occurred! Looking into this. For now it gets statusCode -1 assigned so program does not crash.");
+            System.out.println("ConnectException occurred while trying to get input stream! Looking into this. For now it gets statusCode -1 assigned so program does not crash.");
             // TODO sometimes there occurs a Connection refused error here but I do not know why
             jsonOutputString = "{}";
             responseCode = -1;

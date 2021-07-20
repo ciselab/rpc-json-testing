@@ -146,13 +146,9 @@ public class RippledTestDriver extends TestDriver {
 
             while ((line = reader.readLine()) != null) {
                 if (line.contains("lines:") || (line.contains("branches:"))) {
-                    System.out.println(line);
-
                     line = line.substring(line.indexOf("(") + 1);
                     line = line.substring(0, line.indexOf(")"));
-
                     coverage = coverage + " " + line;
-                    System.out.println(coverage);
                 }
             }
         }

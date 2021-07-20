@@ -81,9 +81,8 @@ public abstract class Fitness {
                     statusCodesTotal.put(responseObject.getResponseCode(), 0);
                 }
                 statusCodesTotal.put(responseObject.getResponseCode(), statusCodesTotal.get(responseObject.getResponseCode()) + 1);
-                
+
             } catch (Exception e) {
-//                System.out.println(individual.toTotalJSONObject().toString(2));
                 e.printStackTrace();
             }
 
@@ -236,11 +235,10 @@ public abstract class Fitness {
     public void addToArchive(Individual ind, ResponseObject res) {
         archive.add(ind);
 
-        if (!statusCodesArchive.containsValue(res.getResponseCode())) {
+        if (!statusCodesArchive.containsKey(res.getResponseCode())) {
             statusCodesArchive.put(res.getResponseCode(), 0);
         }
-        int count = statusCodesArchive.get(res.getResponseCode()) + 1;
-        statusCodesArchive.put(res.getResponseCode(), count);
+        statusCodesArchive.put(res.getResponseCode(), statusCodesArchive.get(res.getResponseCode()) + 1);
     }
 
     public Map<Integer, Integer> getStatusCodesTotal() {
