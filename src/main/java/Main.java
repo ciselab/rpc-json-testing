@@ -1,11 +1,11 @@
 import connection.Client;
+import info.StatisticsKeeper;
 import org.json.JSONObject;
 import search.BasicEA;
 import search.Generator;
 import search.Individual;
 import search.objective.DiversityBasedFitness;
 import search.objective.Fitness;
-//import search.objective.PairwiseFitness;
 import search.objective.RandomFitness;
 import search.objective.ResponseFitnessClustering;
 import search.objective.ResponseFitnessClustering2;
@@ -35,11 +35,15 @@ public class Main {
     private static ArrayList<Double> bestFitness = new ArrayList<>();
 
     public static void main(String args[]) {
-        String fitnessFunction = "";
-        int runningTime = 60; //default value
+
+        // Read the arguments (fitness function used, running time, server).
+        String fitnessFunction = "8";
+        int runningTime = 30; //default value
+        String server = "";
         try {
             fitnessFunction = args[0]; // 1, 2, 3, 4, 5, 6, 7 or 8, default is 1
             runningTime = Integer.parseInt(args[1]); // time in minutes, default is 1 hour
+            server = args[2];
         }
         catch (ArrayIndexOutOfBoundsException e){
             System.out.println("Argument(s) not specified. Default value(s) used.");
@@ -48,38 +52,53 @@ public class Main {
             System.out.println("Time limit argument is not an integer. Default time limit used: 24 hours.");
         }
 
+        // Set the specification and the url for the server to be used.
         File jar = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         String directory = jar.getParentFile().getAbsolutePath();
-
-//        String filepath = directory + System.getProperty("file.separator") + "ripple-openrpc.json";
-        String filepath = directory + System.getProperty("file.separator") + "ethereum-openrpc.json";
+        String filepath;
+        String url_server;
+        if (server.equals("g")) {
+            filepath = directory + System.getProperty("file.separator") + "ethereum-openrpc.json";
+            url_server = "http://127.0.0.1:8545";
+        } else if (server.equals("r")) {
+            filepath = directory + System.getProperty("file.separator") + "ripple-openrpc.json";
+            url_server = "http://127.0.0.1:5005";
+        } else {
+            filepath = directory + System.getProperty("file.separator") + "ripple-openrpc.json";
+            url_server = "https://s.altnet.rippletest.net:51234"; // The url for the Ripple JSON-RPC API ledger (testnet)
+        }
 
         Specification specification = null;
-
         try {
             String data = IO.readFile(filepath);
             specification = new Specification(new JSONObject(data));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         Generator generator = new Generator(specification);
 
         try {
-            // The url for the Ripple JSON-RPC API ledger (testnet)
-//            String url_ripple = "https://s.altnet.rippletest.net:51234";
-//            String url_ripple = "http://127.0.0.1:5005";
-            String url_ganache = "http://127.0.0.1:8545";
-
-//            URL url = new URL(url_ripple);
-            URL url = new URL(url_ganache);
-
+            URL url = new URL(url_server);
             Client client = new Client(url);
-//            TestDriver testDriver = new RippledTestDriver(client);
-//            TestDriver testDriver = new RippledTestDriverTestNet(client);
-            TestDriver testDriver = new GanacheTestDriver(client);
-            Fitness fitness;
 
+            TestDriver testDriver;
+            String testDriverString;
+            if (server.equals("g")) {
+                System.out.println("Using g: Ganache server");
+                testDriver = new GanacheTestDriver(client);
+                testDriverString = "GanacheTestDriver";
+            } else if (server.equals("r")) {
+                System.out.println("Using r: Rippled server");
+                testDriver = new RippledTestDriver(client);
+                testDriverString = "RippledTestDriver";
+            } else {
+                System.out.println("No or invalid argument specified for server. Using default server: Rippled TestNet");
+                testDriver = new RippledTestDriverTestNet(client);
+                testDriverString = "RippledTestDriverTestNet";
+            }
+
+            // Create the selected fitness function object.
+            Fitness fitness;
             switch (fitnessFunction) {
                 case "1":
                     System.out.println("Using 1: RandomFitness");
@@ -114,23 +133,23 @@ public class Main {
                     fitness = new DiversityBasedFitness(testDriver);
                     break;
                 default:
-                    System.out.println("No or invalid argument specified. Using default fitness: RandomFitness");
+                    System.out.println("No or invalid argument specified for fitness. Using default fitness: RandomFitness");
                     fitness = new RandomFitness(testDriver);
             }
+
             System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime/60) + " hour(s)");
 
             BasicEA ea = new BasicEA(fitness, generator);
             List<Individual> population = ea.generatePopulation(50);
 
-            // stopping criterium: time
+            // Stopping criterium = time
             Long startTime = System.currentTimeMillis();
             int generation = 0;
             while (System.currentTimeMillis() - startTime < (runningTime*60*1000)) {
                 generation += 1;
-                long start = System.nanoTime();
                 population = ea.nextGeneration(population);
 
-                // keeping records of the highest fitness in each generation
+                // Keeping records of the highest fitness in each generation.
                 double maxFitness = 0;
                 for (Individual ind : population) {
                     if (ind.getFitness() > maxFitness) {
@@ -138,45 +157,39 @@ public class Main {
                     }
                 }
                 bestFitness.add(maxFitness);
-                System.out.println("Generation: " + generation + " : " + maxFitness);
-
-//                System.out.println("Generation time: " + ((System.nanoTime() - start) / 1000000d));
-
             }
 
-            // stopping criterium: generations
+            // Information on how the fitness function is progressing
+            fitness.storeInformation();
+
+            // Stopping criterium = generations
 //            for (int i = 0; i < 20; i++) {
 //                System.out.println("Generation: " + i);
 //                population = ea.nextGeneration(population);
 //            }
 
-            // Write tests for the best individuals
+            // Delete old test files and write archive to tests
             String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
-            TestWriter testWriter = new TestWriter(url_ganache, testDirectory, "GanacheTestDriver");
-
-            // Write archive size and best fitness values of each generation to file
-            FileWriter writer = new FileWriter("archiveSize_bestFitnessValues.txt");
-
-            File directory_tests = new File(testDirectory);
-            int fileCount = Objects.requireNonNull(directory_tests.list()).length;
-            writer.write("Amount of tests in the archive: " + fileCount + "\n");
-
-            for(Double fit: bestFitness) {
-                writer.write(fit + System.lineSeparator());
-            }
-            writer.close();
-
-            // Delete old test files
+            TestWriter testWriter = new TestWriter(url_server, testDirectory, testDriverString);
             for (File file : new java.io.File(testDirectory).listFiles()) {
                 if (!file.isDirectory())
                     file.delete();
             }
-
             List<Individual> archive = fitness.getArchive();
             System.out.println("Tests in the archive: " + archive.size());
             for (int i = 0; i < archive.size(); i++) {
                 testWriter.writeTest(archive.get(i), "ind" + i + "Test");
             }
+
+            // Write archive size and best fitness values of each generation to file
+            FileWriter writer = new FileWriter("archiveSize_bestFitnessValues.txt");
+            File directory_tests = new File(testDirectory);
+            int fileCount = Objects.requireNonNull(directory_tests.list()).length;
+            writer.write("Amount of tests in the archive: " + fileCount + "\n");
+            for(Double fit: bestFitness) {
+                writer.write(fit + System.lineSeparator());
+            }
+            writer.close();
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
