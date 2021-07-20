@@ -63,8 +63,12 @@ public class Client {
             System.out.println(method);
             System.out.println(request.toString(2));
             e.printStackTrace();
-            //TODO: fix this 400 error exception
-            jsonOutputString = "{}";
+            //TODO: do something for responses without a response object (perhaps create extra field for statuscode or responsemessage)
+            System.out.println("No response object! Status code = " + con.getResponseCode());
+            System.out.println("Response Message = " + con.getResponseMessage());
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("responseMessage", con.getResponseMessage());
+            jsonOutputString = jsonObject.toString();
         }
 
         JSONObject response = new JSONObject(jsonOutputString);
