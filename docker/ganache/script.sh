@@ -2,7 +2,11 @@
 
 # Reset coverage
 cd /ganache-cli
-npm run start_clean
+npm run start_clean > temp.txt &
+while [ "$(wc -l < temp.txt)" -lt "46" ]; do
+ echo "waiting for server to have started... $(lsof -t -i:8545 -sTCP:LISTEN)"
+ sleep 0.1
+done
 # Kill the process
 id=$(lsof -t -i:8545 -sTCP:LISTEN)
 echo "killing: $id"
@@ -31,7 +35,11 @@ echo "These results are based on server: " $3", fitness function:" $1 ", and tim
 
 # Reset coverage before running the tests.
 cd /ganache-cli
-npm run start_clean
+npm run start_clean > temp.txt &
+while [ "$(wc -l < temp.txt)" -lt "46" ]; do
+ echo "waiting for server to have started... $(lsof -t -i:8545 -sTCP:LISTEN)"
+ sleep 0.1
+done
 # Kill the process
 id=$(lsof -t -i:8545 -sTCP:LISTEN)
 echo "killing: $id"
