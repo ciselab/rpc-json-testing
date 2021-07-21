@@ -153,12 +153,9 @@ public class GanacheTestDriver extends TestDriver {
 
             while ((line = reader.readLine()) != null) {
                 if (line.contains("All files")) {
-                    System.out.println("File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Lines ");
-                    System.out.println(line);
                     coverage = line;
                     break;
                 }
-                System.out.println(line);
             }
         }
 

@@ -33,7 +33,7 @@ public class RippledTestDriver extends TestDriver {
         Process p = processBuilder.start();
 
         try {
-            int rc = p.waitFor();
+            p.waitFor();
         } catch (InterruptedException ex) {
             p.destroy();
         }
@@ -120,8 +120,8 @@ public class RippledTestDriver extends TestDriver {
             double branchescovered = Double.parseDouble(results[4].replace("(", ""));
             double branchtotal = Double.parseDouble(results[7].replace(")", ""));
 
-            double lineCovPer = linescovered/linetotal;
-            double branchCovPer = branchescovered/branchtotal;
+            double lineCovPer = linescovered / linetotal;
+            double branchCovPer = branchescovered / branchtotal;
 
             System.out.println("Intermediate coverage results at time: " + currentTime + " = branch cov: " + branchCovPer + " and line cov: " + lineCovPer);
 
@@ -138,7 +138,7 @@ public class RippledTestDriver extends TestDriver {
 
         Process p = pb.start();
 
-        String coverage = "";
+        StringBuilder coverage = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(
             new InputStreamReader(p.getInputStream()))) {
 
@@ -148,7 +148,7 @@ public class RippledTestDriver extends TestDriver {
                 if (line.contains("lines:") || (line.contains("branches:"))) {
                     line = line.substring(line.indexOf("(") + 1);
                     line = line.substring(0, line.indexOf(")"));
-                    coverage = coverage + " " + line;
+                    coverage.append(" ").append(line);
                 }
             }
         }
@@ -159,7 +159,7 @@ public class RippledTestDriver extends TestDriver {
             p.destroy();
         }
 
-        return coverage.trim();
+        return coverage.toString().trim();
     }
 
 }
