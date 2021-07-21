@@ -109,7 +109,6 @@ public class RippledTestDriver extends TestDriver {
         Long currentTime = System.currentTimeMillis();
 
         if (currentTime - previousTimeStored >= DELTA) {
-            System.out.println((currentTime - previousTimeStored)/(1000*60) + " minute has passed. Coverage is recorded.");
             previousTimeStored = currentTime;
 
             String cov = retrieveCoverage();
