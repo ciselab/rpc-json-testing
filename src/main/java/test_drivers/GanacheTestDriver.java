@@ -21,7 +21,7 @@ public class GanacheTestDriver extends TestDriver {
     private List<String> keys;
     private StatisticsKeeper sk;
     private Long previousTimeStored;
-    Long DELTA = (long) 60 * 1000;
+    Long DELTA = (long) 5 * 60 * 1000;
 
     public GanacheTestDriver(Client client) {
         super(client);

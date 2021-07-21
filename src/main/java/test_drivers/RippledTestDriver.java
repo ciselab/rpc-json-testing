@@ -15,7 +15,7 @@ public class RippledTestDriver extends TestDriver {
     private JSONObject accounts;
     private StatisticsKeeper sk;
     private Long previousTimeStored;
-    Long DELTA = (long) 60 * 1000;
+    Long DELTA = (long) 5 * 60 * 1000;
 
     public RippledTestDriver(Client client) {
         super(client);
