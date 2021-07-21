@@ -2,7 +2,7 @@
 
 # Reset coverage
 cd /ganache-cli
-cd npm run start_clean
+npm run start_clean
 # Kill the process
 id=$(lsof -t -i:8545 -sTCP:LISTEN)
 echo "killing: $id"
@@ -31,7 +31,7 @@ echo "These results are based on server: " $3", fitness function:" $1 ", and tim
 
 # Reset coverage before running the tests.
 cd /ganache-cli
-cd npm run start_clean
+npm run start_clean
 # Kill the process
 id=$(lsof -t -i:8545 -sTCP:LISTEN)
 echo "killing: $id"
