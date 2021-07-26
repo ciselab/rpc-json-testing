@@ -78,6 +78,8 @@ public class Main {
         }
         Generator generator = new Generator(specification);
 
+        Long runTime = new Long(runningTime * 60 * 1000);
+
         try {
             URL url = new URL(url_server);
             Client client = new Client(url);
@@ -86,15 +88,15 @@ public class Main {
             String testDriverString;
             if (server.equals("g")) {
                 System.out.println("Using g: Ganache server");
-                testDriver = new GanacheTestDriver(client);
+                testDriver = new GanacheTestDriver(client, runTime);
                 testDriverString = "GanacheTestDriver";
             } else if (server.equals("r")) {
                 System.out.println("Using r: Rippled server");
-                testDriver = new RippledTestDriver(client);
+                testDriver = new RippledTestDriver(client, runTime);
                 testDriverString = "RippledTestDriver";
             } else {
                 System.out.println("No or invalid argument specified for server. Using default server: Rippled TestNet");
-                testDriver = new RippledTestDriverTestNet(client);
+                testDriver = new RippledTestDriverTestNet(client, runTime);
                 testDriverString = "RippledTestDriverTestNet";
             }
 
@@ -144,9 +146,8 @@ public class Main {
             List<Individual> population = ea.generatePopulation(POPULATION_SIZE);
 
             // Stopping criterium = time
-            Long startTime = System.currentTimeMillis();
             int generation = 0;
-            while (System.currentTimeMillis() - startTime < (runningTime*60*1000)) {
+            while (testDriver.shouldContinue()) {
                 System.out.println("Starting generation: " + generation);
                 generation += 1;
                 population = ea.nextGeneration(population);

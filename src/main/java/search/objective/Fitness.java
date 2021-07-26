@@ -10,8 +10,6 @@ import search.Individual;
 import test_drivers.TestDriver;
 import util.Pair;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -58,35 +56,44 @@ public abstract class Fitness {
         double averageEvalTime = 0;
 
         for (int i = 0; i < population.size(); i++) {
-            Individual individual = population.get(i);
-            long start = System.nanoTime();
-            try {
+
+            if (testDriver.shouldContinue()) {
+
+                Individual individual = population.get(i);
+                long start = System.nanoTime();
+                try {
 //                System.out.println("Preparing tests");
-                testDriver.prepTest();
+                    testDriver.prepTest();
 
-                ResponseObject responseObject = null;
+                    ResponseObject responseObject = null;
 
-                for (int j = 0; j < individual.getDna().size(); j++) {
-                    Chromosome chromosome = individual.getDna().get(j);
-                    responseObject = testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest());
+                    for (int j = 0; j < individual.getDna().size(); j++) {
+                        Chromosome chromosome = individual.getDna().get(j);
+                        responseObject = testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest());
+                    }
+
+                    if (responseObject == null) {
+                        throw new Exception("Individual with zero chromosomes!!!");
+                    }
+
+                    responses.add(responseObject);
+
+                    System.out.println("Status code of response on individual " + i + " is " + responseObject.getResponseCode());
+
+                    if (!statusCodesTotal.containsKey(responseObject.getResponseCode())) {
+                        statusCodesTotal.put(responseObject.getResponseCode(), 0);
+                    }
+                    statusCodesTotal.put(responseObject.getResponseCode(), statusCodesTotal.get(responseObject.getResponseCode()) + 1);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
-                if (responseObject == null) {
-                    throw new Exception("Individual with zero chromosomes!!!");
-                }
+                averageEvalTime += (System.nanoTime() - start);
 
-                responses.add(responseObject);
-
-                if (!statusCodesTotal.containsKey(responseObject.getResponseCode())) {
-                    statusCodesTotal.put(responseObject.getResponseCode(), 0);
-                }
-                statusCodesTotal.put(responseObject.getResponseCode(), statusCodesTotal.get(responseObject.getResponseCode()) + 1);
-
-            } catch (Exception e) {
-                e.printStackTrace();
+                testDriver.checkWhetherToStop();
             }
 
-            averageEvalTime += (System.nanoTime() - start);
         }
 
         averageEvalTime /= (population.size() * 1000000);
@@ -247,6 +254,10 @@ public abstract class Fitness {
 
     public Map<Integer, Integer> getStatusCodesArchive() {
         return statusCodesArchive;
+    }
+
+    public TestDriver getTestDriver() {
+        return testDriver;
     }
 
 }

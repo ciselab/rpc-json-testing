@@ -37,40 +37,42 @@ public class ResponseStructureFitness3 extends Fitness {
 
         List<ResponseObject> responses = getResponses(population);
 
-        for (int i = 0; i < population.size(); i++) {
-            String structureString = stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString();
-            if (!structureFrequencyTable.containsKey(structureString)) {
-                structureFrequencyTable.put(structureString, 0);
+        if (getTestDriver().shouldContinue()) {
+
+            for (int i = 0; i < population.size(); i++) {
+                String structureString = stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString();
+                if (!structureFrequencyTable.containsKey(structureString)) {
+                    structureFrequencyTable.put(structureString, 0);
+                }
+                structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
             }
-            structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
-        }
 
-        double totalFitness = 0;
+            double totalFitness = 0;
 
-        for (int i = 0; i < population.size(); i++) {
-            String structureString = stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString();
+            for (int i = 0; i < population.size(); i++) {
+                String structureString = stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString();
 
-            int inputComplexity = calculateComplexity(population.get(i).toTotalJSONObject());
-            int outputComplexity = calculateComplexity(responses.get(i).getResponseObject());
+                int inputComplexity = calculateComplexity(population.get(i).toTotalJSONObject());
+                int outputComplexity = calculateComplexity(responses.get(i).getResponseObject());
 
-            double exploitationFitness = 1.0 / (1.0 + (double) structureFrequencyTable.get(structureString));
-            // every key should be mutated at least once
-            double explorationFitness = (inputComplexity + outputComplexity);
+                double exploitationFitness = 1.0 / (1.0 + (double) structureFrequencyTable.get(structureString));
+                // every key should be mutated at least once
+                double explorationFitness = (inputComplexity + outputComplexity);
 
-            double fitness = exploitationFitness * explorationFitness;
-            totalFitness += fitness;
-            population.get(i).setFitness(fitness);
+                double fitness = exploitationFitness * explorationFitness;
+                totalFitness += fitness;
+                population.get(i).setFitness(fitness);
 
 //            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.
-            // decide whether to add individual to the archive
-            if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i), responses.get(i));
+                // decide whether to add individual to the archive
+                if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
+                    this.addToArchive(population.get(i), responses.get(i));
+                } else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                    this.addToArchive(population.get(i), responses.get(i));
+                }
             }
-            else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i), responses.get(i));
-            }
-        }
 
+        }
     }
 
     @Override

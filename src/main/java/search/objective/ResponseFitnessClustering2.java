@@ -50,79 +50,82 @@ public class ResponseFitnessClustering2 extends Fitness {
 
         List<ResponseObject> responses = getResponses(population);
 
-        // Map with API methods as key and a map as value. This second map has skeletons as key and a list of feature vectors as value.
-        Map<String, Map<String, List<List<Object>>>> allFeatureVectors = new HashMap<>();
+        if (getTestDriver().shouldContinue()) {
 
-        for (int i = 0; i < population.size(); i++) {
-            String method = population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod();
-            JSONObject request = population.get(i).toTotalJSONObject();
-            JSONObject response = responses.get(i).getResponseObject();
+            // Map with API methods as key and a map as value. This second map has skeletons as key and a list of feature vectors as value.
+            Map<String, Map<String, List<List<Object>>>> allFeatureVectors = new HashMap<>();
 
-            JSONObject stripped = stripValues(request, response);
-            String strippedString = stripped.toString();
+            for (int i = 0; i < population.size(); i++) {
+                String method = population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod();
+                JSONObject request = population.get(i).toTotalJSONObject();
+                JSONObject response = responses.get(i).getResponseObject();
 
-            Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripped);
+                JSONObject stripped = stripValues(request, response);
+                String strippedString = stripped.toString();
 
-            // If the response is an empty object just give it a fitness of zero
-            if (featureAndWeightVector.getKey().size() == 0) {
-                population.get(i).setFitness(0);
-                continue;
-            }
+                Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripped);
 
-            // Add key and value for the used method if it does not exist yet.
-            if (!allFeatureVectors.containsKey(method)) {
-                allFeatureVectors.put(method, new HashMap<>());
-            }
-            // Add key and value for the found response skeleton if it does not exist yet.
-            if (!allFeatureVectors.get(method).containsKey(strippedString)) {
-                allFeatureVectors.get(method).put(strippedString, new ArrayList<>());
-            }
-            // Add the feature vector to the right place in the map.
-            allFeatureVectors.get(method).get(strippedString).add(featureAndWeightVector.getKey());
+                // If the response is an empty object just give it a fitness of zero
+                if (featureAndWeightVector.getKey().size() == 0) {
+                    population.get(i).setFitness(0);
+                    continue;
+                }
 
-            if (!clusteringPerResponseStructure.containsKey(method)) {
-                clusteringPerResponseStructure.put(method, new HashMap<>());
-                statuses.put(method, new HashSet<>());
-            }
+                // Add key and value for the used method if it does not exist yet.
+                if (!allFeatureVectors.containsKey(method)) {
+                    allFeatureVectors.put(method, new HashMap<>());
+                }
+                // Add key and value for the found response skeleton if it does not exist yet.
+                if (!allFeatureVectors.get(method).containsKey(strippedString)) {
+                    allFeatureVectors.get(method).put(strippedString, new ArrayList<>());
+                }
+                // Add the feature vector to the right place in the map.
+                allFeatureVectors.get(method).get(strippedString).add(featureAndWeightVector.getKey());
 
-            statuses.get(method).add(responses.get(i).getResponseCode());
+                if (!clusteringPerResponseStructure.containsKey(method)) {
+                    clusteringPerResponseStructure.put(method, new HashMap<>());
+                    statuses.put(method, new HashSet<>());
+                }
 
-            if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
-                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering2(featureAndWeightVector.getValue()));
-            }
+                statuses.get(method).add(responses.get(i).getResponseCode());
 
-            AgglomerativeClustering2 clustering = clusteringPerResponseStructure.get(method).get(strippedString);
+                if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
+                    clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering2(featureAndWeightVector.getValue()));
+                }
 
-            // calculate the minimum distance of the individual to the clusters
-            double cost = clustering.calculateMaxSimilarity(featureAndWeightVector.getKey());
+                AgglomerativeClustering2 clustering = clusteringPerResponseStructure.get(method).get(strippedString);
 
-            double fitness = 1.0 / (1 + cost);
+                // calculate the minimum distance of the individual to the clusters
+                double cost = clustering.calculateMaxSimilarity(featureAndWeightVector.getKey());
 
-            // TODO not use this hack for worst output
-            if (population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("random") ||
-                population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_info") ||
-                population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_state")) {
-                fitness = 0;
-            }
+                double fitness = 1.0 / (1 + cost);
 
-            population.get(i).setFitness(fitness);
+                // TODO not use this hack for worst output
+                if (population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("random") ||
+                    population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_info") ||
+                    population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_state")) {
+                    fitness = 0;
+                }
 
-            // decide whether to add individual to the archive
-            if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i), responses.get(i));
-            }
-            else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i), responses.get(i));
-            }
-        }
-        if (generationCount % NEW_CLUSTERS_AFTER_GEN == 0) {
-            for (String method : allFeatureVectors.keySet()) {
-                for (String responseStructure : allFeatureVectors.get(method).keySet()) {
-                    clusteringPerResponseStructure.get(method).get(responseStructure).cluster(allFeatureVectors.get(method).get(responseStructure));
+                population.get(i).setFitness(fitness);
+
+                // decide whether to add individual to the archive
+                if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
+                    this.addToArchive(population.get(i), responses.get(i));
+                } else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                    this.addToArchive(population.get(i), responses.get(i));
                 }
             }
+            if (generationCount % NEW_CLUSTERS_AFTER_GEN == 0) {
+                for (String method : allFeatureVectors.keySet()) {
+                    for (String responseStructure : allFeatureVectors.get(method).keySet()) {
+                        clusteringPerResponseStructure.get(method).get(responseStructure).cluster(allFeatureVectors.get(method).get(responseStructure));
+                    }
+                }
+            }
+            generationCount += 1;
+
         }
-        generationCount += 1;
     }
 
     @Override

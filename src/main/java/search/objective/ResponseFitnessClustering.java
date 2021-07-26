@@ -45,54 +45,57 @@ public class ResponseFitnessClustering extends Fitness {
 
         List<ResponseObject> responses = getResponses(population);
 
-        for (int i = 0; i < population.size(); i++) {
-            String method = population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod();
-            JSONObject request = population.get(i).toTotalJSONObject();
-            JSONObject response = responses.get(i).getResponseObject();
+        if (getTestDriver().shouldContinue()) {
 
-            JSONObject stripped = stripValues(request, response);
-            String strippedString = stripped.toString();
+            for (int i = 0; i < population.size(); i++) {
+                String method = population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod();
+                JSONObject request = population.get(i).toTotalJSONObject();
+                JSONObject response = responses.get(i).getResponseObject();
 
-            Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripped);
+                JSONObject stripped = stripValues(request, response);
+                String strippedString = stripped.toString();
 
-            // If empty object just give it a fitness of zero
-            if (featureAndWeightVector.getKey().size() == 0) {
-                population.get(i).setFitness(0);
-                continue;
+                Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripped);
+
+                // If empty object just give it a fitness of zero
+                if (featureAndWeightVector.getKey().size() == 0) {
+                    population.get(i).setFitness(0);
+                    continue;
+                }
+
+                if (!clusteringPerResponseStructure.containsKey(method)) {
+                    clusteringPerResponseStructure.put(method, new HashMap<>());
+                    statuses.put(method, new HashSet<>());
+                }
+
+                statuses.get(method).add(responses.get(i).getResponseCode());
+
+
+                if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
+                    clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering(featureAndWeightVector.getValue()));
+                }
+
+                AgglomerativeClustering clustering = clusteringPerResponseStructure.get(method).get(strippedString);
+
+                double cost = clustering.cluster(featureAndWeightVector.getKey());
+
+                double fitness = 1.0 / (1 + cost);
+                // TODO not use this hack for worst output
+                if (population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("random") ||
+                    population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_info") ||
+                    population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_state")) {
+                    fitness = 0;
+                }
+                population.get(i).setFitness(fitness);
+
+                // decide whether to add individual to the archive
+                if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
+                    this.addToArchive(population.get(i), responses.get(i));
+                } else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                    this.addToArchive(population.get(i), responses.get(i));
+                }
             }
 
-            if (!clusteringPerResponseStructure.containsKey(method)) {
-                clusteringPerResponseStructure.put(method, new HashMap<>());
-                statuses.put(method, new HashSet<>());
-            }
-
-            statuses.get(method).add(responses.get(i).getResponseCode());
-
-
-            if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
-                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering(featureAndWeightVector.getValue()));
-            }
-
-            AgglomerativeClustering clustering = clusteringPerResponseStructure.get(method).get(strippedString);
-
-            double cost = clustering.cluster(featureAndWeightVector.getKey());
-
-            double fitness = 1.0 / (1 + cost);
-            // TODO not use this hack for worst output
-            if (population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("random") ||
-                population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_info") ||
-                population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_state")) {
-                fitness = 0;
-            }
-            population.get(i).setFitness(fitness);
-
-            // decide whether to add individual to the archive
-            if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i), responses.get(i));
-            }
-            else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i), responses.get(i));
-            }
         }
     }
 

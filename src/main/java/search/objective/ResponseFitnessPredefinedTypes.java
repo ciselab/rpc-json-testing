@@ -36,20 +36,23 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
 
         List<ResponseObject> responses = getResponses(population);
 
-        for (int i = 0; i < population.size(); i++) {
-            Double fitness = recordValueTypesAndGetFitness(population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod(), responses.get(i).getResponseObject()); // population and responses are in the same order
+        if (getTestDriver().shouldContinue()) {
 
-            fitness = 1.0 / (1 + fitness);
+            for (int i = 0; i < population.size(); i++) {
+                Double fitness = recordValueTypesAndGetFitness(population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod(), responses.get(i).getResponseObject()); // population and responses are in the same order
 
-            population.get(i).setFitness(fitness);
+                fitness = 1.0 / (1 + fitness);
 
-            // decide whether to add individual to the archive
-            if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i), responses.get(i));
+                population.get(i).setFitness(fitness);
+
+                // decide whether to add individual to the archive
+                if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
+                    this.addToArchive(population.get(i), responses.get(i));
+                } else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                    this.addToArchive(population.get(i), responses.get(i));
+                }
             }
-            else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i), responses.get(i));
-            }
+
         }
     }
 

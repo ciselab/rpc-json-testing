@@ -17,8 +17,8 @@ public class RippledTestDriver extends TestDriver {
     private Long previousTimeStored;
     final private Long DELTA = (long) 5 * 60 * 1000;
 
-    public RippledTestDriver(Client client) {
-        super(client);
+    public RippledTestDriver(Client client, Long runTime) {
+        super(client, runTime);
         sk = new StatisticsKeeper();
         previousTimeStored = System.currentTimeMillis();
     }

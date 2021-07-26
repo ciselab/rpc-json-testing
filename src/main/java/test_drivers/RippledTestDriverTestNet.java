@@ -6,8 +6,8 @@ import org.json.JSONObject;
 
 public class RippledTestDriverTestNet extends RippledTestDriver {
 
-    public RippledTestDriverTestNet(Client client) {
-        super(client);
+    public RippledTestDriverTestNet(Client client, Long runTime) {
+        super(client, runTime);
     }
 
     @Override

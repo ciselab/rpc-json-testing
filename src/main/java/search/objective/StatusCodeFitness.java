@@ -25,30 +25,32 @@ public class StatusCodeFitness extends Fitness {
 
         List<ResponseObject> responses = getResponses(population);
 
-        for (int i = 0; i < population.size(); i++) {
-            int responseCode = responses.get(i).getResponseCode();
-            if (!statusFrequencyTable.containsKey(responseCode)) {
-                statusFrequencyTable.put(responseCode, 0);
-            }
-            statusFrequencyTable.put(responseCode, statusFrequencyTable.get(responseCode)+1);
+        if (getTestDriver().shouldContinue()) {
 
-            // If statuscode occurs only once in a large population, it is more rare than if it occurs once in a small population.
-            double fitness = 1 / statusFrequencyTable.get(responses.get(i).getResponseCode());
+            for (int i = 0; i < population.size(); i++) {
+                int responseCode = responses.get(i).getResponseCode();
+                if (!statusFrequencyTable.containsKey(responseCode)) {
+                    statusFrequencyTable.put(responseCode, 0);
+                }
+                statusFrequencyTable.put(responseCode, statusFrequencyTable.get(responseCode) + 1);
 
-            Individual ind = population.get(i);
-            ind.setFitness(fitness);
+                // If statuscode occurs only once in a large population, it is more rare than if it occurs once in a small population.
+                double fitness = 1 / statusFrequencyTable.get(responses.get(i).getResponseCode());
 
-            // If statuscode is relatively rare, add to archive.
-            ARCHIVE_THRESHOLD = Math.min((100 / statusFrequencyTable.size()), ARCHIVE_THRESHOLD);
-            // Decide whether to add individual to the archive
-            if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(ind)) {
-                this.addToArchive(ind, responses.get(i));
+                Individual ind = population.get(i);
+                ind.setFitness(fitness);
+
+                // If statuscode is relatively rare, add to archive.
+                ARCHIVE_THRESHOLD = Math.min((100 / statusFrequencyTable.size()), ARCHIVE_THRESHOLD);
+                // Decide whether to add individual to the archive
+                if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(ind)) {
+                    this.addToArchive(ind, responses.get(i));
+                } else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(ind)) {
+                    this.addToArchive(ind, responses.get(i));
+                }
             }
-            else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(ind)) {
-                this.addToArchive(ind, responses.get(i));
-            }
+
         }
-
     }
 
     @Override

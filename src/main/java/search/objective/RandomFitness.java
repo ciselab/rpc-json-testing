@@ -25,22 +25,27 @@ public class RandomFitness extends Fitness {
         // Call methods
         List<ResponseObject> responseObjects = getResponses(population);
 
-        for (int i = 0; i < population.size(); i++) {
-            Individual individual = population.get(i);
+        if (getTestDriver().shouldContinue()) {
 
-            double fitness = getRandom().nextGaussian();
-            individual.setFitness(fitness);
+            for (int i = 0; i < population.size(); i++) {
+                Individual individual = population.get(i);
 
-            // decide whether to add individual to the archive
-            if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(individual)) {
-                this.addToArchive(individual, responseObjects.get(i));
+                double fitness = getRandom().nextGaussian();
+                individual.setFitness(fitness);
+
+                // decide whether to add individual to the archive
+                if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(individual)) {
+                    this.addToArchive(individual, responseObjects.get(i));
+                }
             }
+
         }
+
     }
 
     @Override
     public ArrayList<String> storeInformation() {
-        return null;
+        return new ArrayList<>();
     }
 
 }

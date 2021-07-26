@@ -32,30 +32,32 @@ public class ResponseStructureFitness2 extends Fitness {
 
         List<ResponseObject> responses = getResponses(population);
 
-        // Fill in hashmap with structure frequency
-        for (int i = 0; i < population.size(); i++) {
+        if (getTestDriver().shouldContinue()) {
 
-            String structureString = stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString();
+            // Fill in hashmap with structure frequency
+            for (int i = 0; i < population.size(); i++) {
 
-            if (!structureFrequencyTable.containsKey(structureString)) {
-                structureFrequencyTable.put(structureString, 0);
-            }
-            structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
+                String structureString = stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString();
 
-            // Evaluate individual compared to the map
-            double fitness = (double) 1 / structureFrequencyTable.get(stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString());
-            population.get(i).setFitness(fitness);
+                if (!structureFrequencyTable.containsKey(structureString)) {
+                    structureFrequencyTable.put(structureString, 0);
+                }
+                structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
+
+                // Evaluate individual compared to the map
+                double fitness = (double) 1 / structureFrequencyTable.get(stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString());
+                population.get(i).setFitness(fitness);
 
 //            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.
-            // decide whether to add individual to the archive
-            if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i), responses.get(i));
+                // decide whether to add individual to the archive
+                if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
+                    this.addToArchive(population.get(i), responses.get(i));
+                } else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                    this.addToArchive(population.get(i), responses.get(i));
+                }
             }
-            else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                this.addToArchive(population.get(i), responses.get(i));
-            }
-        }
 
+        }
     }
 
     @Override
