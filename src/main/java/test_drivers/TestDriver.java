@@ -21,6 +21,7 @@ public abstract class TestDriver {
     public void checkWhetherToStop() {
         if (System.currentTimeMillis() - startTime >= runTime) {
             this.greenLightSignal = false;
+            System.out.println("Stop signal is given! The run time of the experiment is up.");
         }
     }
 

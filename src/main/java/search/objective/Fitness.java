@@ -57,8 +57,6 @@ public abstract class Fitness {
 
         for (int i = 0; i < population.size(); i++) {
 
-            testDriver.checkWhetherToStop();
-
             if (testDriver.shouldContinue()) {
 
                 Individual individual = population.get(i);
@@ -80,6 +78,8 @@ public abstract class Fitness {
 
                     responses.add(responseObject);
 
+                    System.out.println("Status code of response on individual " + i + " is " + responseObject.getResponseCode());
+
                     if (!statusCodesTotal.containsKey(responseObject.getResponseCode())) {
                         statusCodesTotal.put(responseObject.getResponseCode(), 0);
                     }
@@ -91,7 +91,9 @@ public abstract class Fitness {
 
                 averageEvalTime += (System.nanoTime() - start);
 
+                testDriver.checkWhetherToStop();
             }
+
         }
 
         averageEvalTime /= (population.size() * 1000000);
