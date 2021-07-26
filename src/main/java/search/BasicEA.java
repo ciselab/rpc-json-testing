@@ -17,6 +17,9 @@ public class BasicEA {
 
     private List<Individual> population;
 
+    final private int REQUESTS_GENERATOR_LIMIT = 5;
+    final private int MUTATIONS_PER_INDIVIDUAL = 3;
+
     public BasicEA(Fitness fitness, Generator generator) {
         this.fitness = fitness;
         this.generator = generator;
@@ -31,7 +34,7 @@ public class BasicEA {
     }
 
     public Individual generateRandomIndividual() {
-        int nRequests = RandomSingleton.getRandom().nextInt(5) + 1;
+        int nRequests = RandomSingleton.getRandom().nextInt(REQUESTS_GENERATOR_LIMIT) + 1;
         List<Chromosome> dna = new ArrayList<>();
 
         for (int i = 0; i < nRequests; i++) {
@@ -48,13 +51,10 @@ public class BasicEA {
         // TODO generate offspring (mutation and crossover)
         List<Individual> offspring = new ArrayList<>();
 
-        int mutations = 3;
-
         for (int i = 0; i < population.size(); i++) {
-//            System.out.println("Ind: " + population.get(i).toRequest());
             String parent = population.get(i).toTotalJSONObject().toString();
             Individual mutant = population.get(i);
-            for (int j = 0; j < mutations; j++) {
+            for (int j = 0; j < MUTATIONS_PER_INDIVIDUAL; j++) {
                 mutant = mutant.mutate(generator);
             }
 

@@ -6,9 +6,12 @@ import search.openRPC.SchemaSpecification;
 import static util.RandomSingleton.getRandom;
 
 public class LongGene extends ValueGene<Long> {
+
     public LongGene(SchemaSpecification schema, Long value) {
         super(schema, value);
     }
+
+    final private double BOUNDARY_CASE_PROB = 0.15;
 
     /**
      * Mutate the Long value using polynomial mutation (based on EvoMaster implementation).
@@ -18,6 +21,8 @@ public class LongGene extends ValueGene<Long> {
     @Override
     public Gene mutate(Generator generator) {
         double random = getRandom().nextDouble();
+
+        // TODO remove changing entire gene.
         if (random < 0.95) {
             // Get minimum and maximum value of the parameter range
             SchemaSpecification schema = getSchema();
@@ -26,7 +31,7 @@ public class LongGene extends ValueGene<Long> {
             Long ub = schema.getMax();
 
             // With some probability use the boundary cases for the value
-            if (random < 0.15) {
+            if (random < BOUNDARY_CASE_PROB) {
                 if (getRandom().nextDouble() < 0.5) {
                     return new LongGene(this.getSchema(), (long) lb);
                 } else {

@@ -35,9 +35,9 @@ public class DiversityBasedFitness extends Fitness {
 
     // Count the number of generations
     private int generationCount;
-    final private int NEW_CLUSTERS_AFTER_GEN = 10;
 
-    private double ARCHIVE_THRESHOLD = 0.8;
+    final private int NEW_CLUSTERS_AFTER_GEN = 10;
+    final private double ARCHIVE_THRESHOLD = 0.8;
 
     public DiversityBasedFitness(TestDriver testDriver) {
         super(testDriver);

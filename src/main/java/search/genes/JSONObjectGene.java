@@ -21,6 +21,10 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
 
     private Map<StringGene, Gene> children;
 
+    final private double ADD_NONREQUIRED_CHILD_PROB = 0.1;
+    final private double REMOVE_CHILD_PROB = 0.1;
+    final private double REPLACE_CHILD_PROB = 0.2;
+
     public JSONObjectGene(SchemaSpecification schema) {
         super(schema);
         this.children = new HashMap<>();
@@ -86,11 +90,11 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
         // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
         double choice = getRandom().nextDouble();
 
-        if ((choice <= 0.1 || keys.isEmpty()) && clone.addRandomNonRequiredChild(generator)) {
+        if ((choice <= ADD_NONREQUIRED_CHILD_PROB || keys.isEmpty()) && clone.addRandomNonRequiredChild(generator)) {
             return clone;
-        } else if (choice <= 0.2 && clone.removeRandomChild()) {
+        } else if (choice <= (ADD_NONREQUIRED_CHILD_PROB+REMOVE_CHILD_PROB) && clone.removeRandomChild()) {
             return clone;
-        } else if (choice <= 0.4 && !keys.isEmpty()) {
+        } else if (choice <= (ADD_NONREQUIRED_CHILD_PROB+REMOVE_CHILD_PROB+REPLACE_CHILD_PROB) && !keys.isEmpty()) {
             // replace random child
             int index = getRandomIndex(keys);
             StringGene key = keys.get(index);

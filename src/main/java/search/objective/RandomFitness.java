@@ -14,7 +14,7 @@ import static util.RandomSingleton.getRandom;
  * RandomFitness creates random fitness values for individuals (based on Gaussian distribution).
  */
 public class RandomFitness extends Fitness {
-    private double ARCHIVE_THRESHOLD = 2.5;
+    final private double ARCHIVE_THRESHOLD = 2.5;
 
     public RandomFitness(TestDriver testDriver) {
         super(testDriver);

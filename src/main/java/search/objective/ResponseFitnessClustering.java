@@ -32,7 +32,7 @@ public class ResponseFitnessClustering extends Fitness {
     private Map<String, Map<String, AgglomerativeClustering>> clusteringPerResponseStructure;
     private Map<String, Set<Integer>> statuses;
 
-    private double ARCHIVE_THRESHOLD = 0.8;
+    final private double ARCHIVE_THRESHOLD = 0.8;
 
     public ResponseFitnessClustering(TestDriver testDriver) {
         super(testDriver);

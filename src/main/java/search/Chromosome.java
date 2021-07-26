@@ -12,6 +12,9 @@ public class Chromosome {
     private String method;
     private ArrayGene genes;
 
+    final private double MUTATE_HTTP_METHOD_PROB = 0.01;
+    final private double MUTATE_API_METHOD_PROB = 0.99;
+
     public Chromosome(String httpMethod, String method, ArrayGene genes) {
         this.httpMethod = httpMethod;
         this.method = method;
@@ -31,10 +34,10 @@ public class Chromosome {
      * @return mutated individual
      */
     public Chromosome mutate(Generator generator) {
-        if (getRandom().nextDouble() < 0.01) {
+        if (getRandom().nextDouble() < MUTATE_HTTP_METHOD_PROB) {
             // mutate http method
             return new Chromosome(generator.generateHTTPMethod(), method, genes.copy());
-        } else if (getRandom().nextDouble() < 0.1) {
+        } else if (getRandom().nextDouble() < (MUTATE_HTTP_METHOD_PROB + MUTATE_API_METHOD_PROB)) {
             // mutate method (this is actually not mutation but just a new individual)
             String methodName = generator.getRandomMethod();
             ArrayGene method = generator.generateMethod(methodName);

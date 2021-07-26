@@ -23,6 +23,10 @@ public class Generator {
 
     private Specification specification;
 
+    final private double HTTP_METHOD_GET_PROB = 0.75;
+    final private double INCLUDE_PARAM_PROB = 0.25;
+    final private double SKIP_NONREQUIRED_KEY_PROB = 0.75;
+
     public Generator(Specification specification) {
         this.specification = specification;
     }
@@ -65,10 +69,9 @@ public class Generator {
         arrayGene.addChild(objectGene);
 
         for (ParamSpecification param : params) {
-            // TODO this value is rather random and should be specified in some properties/config file
-            if (param.isRequired() || getRandom().nextDouble() < 0.25) {
+            if (param.isRequired() || getRandom().nextDouble() < INCLUDE_PARAM_PROB) {
                 List<SchemaSpecification> schemaOptions = specification.getSchemas().get(param.getPath());
-                // if there is only one possible schema, this will be the type
+                // If there is only one possible schema, this will be the type.
                 int index = getRandom().nextInt(schemaOptions.size());
 
                 SchemaSpecification specification = schemaOptions.get(index);
@@ -106,7 +109,7 @@ public class Generator {
 
                 for (String key : children.keySet()) {
                     // if a key is not required there is 75 % chance to be skipped
-                    if (!required.contains(key) && getRandom().nextDouble() >= 0.25) {
+                    if (!required.contains(key) && getRandom().nextDouble() <= SKIP_NONREQUIRED_KEY_PROB) {
                         continue;
                     }
 
@@ -167,7 +170,7 @@ public class Generator {
     public String generateHTTPMethod() {
         String[] methods = new String[]{"POST", "GET"};
         String method = methods[0];
-        if (getRandom().nextDouble() > 0.75) {
+        if (getRandom().nextDouble() > HTTP_METHOD_GET_PROB) {
             method = methods[1];
         }
         return method;

@@ -24,7 +24,7 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
     // MAP<METHOD, MAP<PATH-TO-PARAM, MAP<CATEGORY, COUNT>>>
     private Map<String, Map<String, Map<Type, Integer>>> valuePerKeyCount;
 
-    private double ARCHIVE_THRESHOLD = 0.8;
+    final private double ARCHIVE_THRESHOLD = 0.8;
 
     public ResponseFitnessPredefinedTypes(TestDriver testDriver) {
         super(testDriver);

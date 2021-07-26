@@ -20,7 +20,7 @@ public class ResponseStructureFitness2 extends Fitness {
 
     private Map<String, Integer> structureFrequencyTable;
 
-    private double ARCHIVE_THRESHOLD = 0.8;
+    final private double ARCHIVE_THRESHOLD = 0.8;
 
     public ResponseStructureFitness2(TestDriver testDriver) {
         super(testDriver);

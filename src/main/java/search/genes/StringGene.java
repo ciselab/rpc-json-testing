@@ -13,11 +13,15 @@ import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomIndex;
 
 public class StringGene extends ValueGene<String> {
-    final private double FRACTION = 0.2;
+
     final private String REGEX_CHARACTERS = "\\^$.|?*+()[]{}";
     final private String CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // TODO possibleChars should likely contain more options to cover a bigger scope
     final private String NUMBERS = "0123456789";
     final private String LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    final private double FRACTION = 0.2;
+
+    final private double OTHER_ENUM_PROB = 0.6;
 
     public StringGene(SchemaSpecification schema, String value) {
         super(schema, value);
@@ -31,6 +35,7 @@ public class StringGene extends ValueGene<String> {
 
         double probability = getRandom().nextDouble();
 
+        // TODO remove changing entire gene.
         if (probability < 0.95) {
             // Option 1: always just create new stringGene because there are no chars to mutate
             if (this.getValue().length() == 0) {
@@ -38,7 +43,7 @@ public class StringGene extends ValueGene<String> {
             }
 
             // Option 2: pick one of the other enum values with a certain probability
-            if (this.getSchema().getEnums() != null && (probability < 0.6 || !getSchema().isMutable())) {
+            if (this.getSchema().getEnums() != null && (probability < OTHER_ENUM_PROB || !getSchema().isMutable())) {
                 List<String> options = new ArrayList<>();
                 Collections.addAll(options, getSchema().getEnums());
 
