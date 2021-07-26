@@ -7,12 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StatisticsKeeper {
-    private long startTime;
 
     private List<Triple<Long, Double, Double>> coverageOverTime;
 
     public StatisticsKeeper() {
-        this.startTime = System.nanoTime();
         this.coverageOverTime = new ArrayList<>();
     }
 
@@ -41,10 +39,6 @@ public class StatisticsKeeper {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public long getStartTime() {
-        return startTime;
     }
 
 }

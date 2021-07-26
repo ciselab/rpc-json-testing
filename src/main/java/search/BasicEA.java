@@ -2,7 +2,6 @@ package search;
 
 import search.genes.ArrayGene;
 import search.objective.Fitness;
-import search.openRPC.Specification;
 import util.RandomSingleton;
 
 import java.util.ArrayList;
@@ -14,11 +13,11 @@ public class BasicEA {
 
     private Fitness fitness;
     private Generator generator;
-
-    private List<Individual> population;
-
+    
     final private int REQUESTS_GENERATOR_LIMIT = 5;
     final private int MUTATIONS_PER_INDIVIDUAL = 3;
+
+    final private int TOURNAMENT_SIZE = 4;
 
     public BasicEA(Fitness fitness, Generator generator) {
         this.fitness = fitness;
@@ -74,7 +73,7 @@ public class BasicEA {
         fitness.evaluate(generator, offspring);
 
 //        return elitistSelection(offspring);
-        return tournamentSelection(offspring, 4);
+        return tournamentSelection(offspring, TOURNAMENT_SIZE);
     }
 
     private List<Individual> tournamentSelection(List<Individual> population, int tournamentSize) {

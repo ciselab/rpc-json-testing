@@ -4,6 +4,8 @@ import java.util.List;
 
 public class SimilarityMetric {
 
+    final private double THRESHOLD_DIFFERENT_FEATURES = 0.5;
+
     /**
      * Gives the average Euclidean similarity of the clusters
      * @param a cluster a
@@ -75,7 +77,7 @@ public class SimilarityMetric {
             }
         }
         // If half of the features in the vector are not different, two vectors are not different enough and distance should be 0.
-        if (differentFeatures / a.size() < 5) {
+        if (differentFeatures / a.size() < THRESHOLD_DIFFERENT_FEATURES) {
             return 0;
         }
         return Math.sqrt(distance);

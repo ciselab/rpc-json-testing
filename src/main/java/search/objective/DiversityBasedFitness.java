@@ -138,7 +138,7 @@ public class DiversityBasedFitness extends Fitness {
         info.add("Methods covered: " + clusteringPerResponseStructure.keySet().size());
         for (String method: clusteringPerResponseStructure.keySet()) {
             info.add("\t" + method + ": ");
-            info.add("\t\tStatusses covered: " + statuses.get(method).size() + ", namely: " + statuses.get(method).toString());
+            info.add("\t\tStatuses covered: " + statuses.get(method).size() + ", namely: " + statuses.get(method).toString());
 
             info.add("\t\tStructures covered: " + clusteringPerResponseStructure.get(method).keySet().size());
 
