@@ -23,8 +23,8 @@ public class GanacheTestDriver extends TestDriver {
     private Long previousTimeStored;
     Long DELTA = (long) 5 * 60 * 1000;
 
-    public GanacheTestDriver(Client client) {
-        super(client);
+    public GanacheTestDriver(Client client, Long runTime) {
+        super(client, runTime);
         sk = new StatisticsKeeper();
         previousTimeStored = System.currentTimeMillis();
     }
