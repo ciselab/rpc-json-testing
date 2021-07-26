@@ -29,6 +29,12 @@ public class GanacheTestDriver extends TestDriver {
         previousTimeStored = System.currentTimeMillis();
     }
 
+    public GanacheTestDriver(Client client) {
+        super(client);
+        sk = new StatisticsKeeper();
+        previousTimeStored = System.currentTimeMillis();
+    }
+
     public void startServer() throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
