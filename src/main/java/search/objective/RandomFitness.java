@@ -45,7 +45,7 @@ public class RandomFitness extends Fitness {
 
     @Override
     public ArrayList<String> storeInformation() {
-        return null;
+        return new ArrayList<>();
     }
 
 }
