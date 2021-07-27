@@ -163,14 +163,14 @@ public class Main {
             }
 
             // Information on how the fitness function is progressing
-            writeFile(fitness.storeInformation(), "fitness_progress");
+            writeFile(fitness.storeInformation(), "fitness_progress.txt");
             // Information on status codes that occurred
-            writeFile(fitness.getStatusCodesTotal().toString(), "status_codes_total");
-            writeFile(fitness.getStatusCodesArchive().toString(), "status_codes_archive");
+            writeFile(fitness.getStatusCodesTotal().toString(), "status_codes_total.txt");
+            writeFile(fitness.getStatusCodesArchive().toString(), "status_codes_archive.txt");
             // Information on the amount of tests in the archive
             List<Individual> archive = fitness.getArchive();
-            String testInArchive = "Amount of tests in the archive: " + archive.size();
-            writeFile(testInArchive, "archive_size");
+            String testInArchive = "Amount of tests in the archive: " + archive.size() + ", stopped at generation: " + generation;
+            writeFile(testInArchive, "archive_size.txt");
             // Write best fitness values of each generation to file
             writeFile(bestFitness.toString(), "best_fitness_values.txt");
 
