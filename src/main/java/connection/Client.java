@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.SocketException;
 import java.net.URL;
 
 /**
@@ -65,13 +66,18 @@ public class Client {
             jsonOutputString = response.toString();
             responseCode = con.getResponseCode();
         } catch (ConnectException e) {
-//            e.printStackTrace();
-            System.out.println("ConnectException occurred while trying to get input stream! Looking into this. For now it gets statusCode -1 assigned so program does not crash.");
+            e.printStackTrace();
+            System.out.println("ConnectException! Response gets assigned statusCode -1.");
             // TODO sometimes there occurs a Connection refused error here but I do not know why
             jsonOutputString = "{}";
             responseCode = -1;
+        } catch (SocketException e) {
+            e.printStackTrace();
+            System.out.println("SocketException! Response gets assigned statusCode -2.");
+            jsonOutputString = "{}";
+            responseCode = -2;
         } catch (IOException e) {
-//            e.printStackTrace();
+            e.printStackTrace();
             //TODO: do something for responses without a response object (perhaps create extra field for statuscode or responsemessage)
             System.out.println("IOException occurred! No response body but status code was " + con.getResponseCode());
             JSONObject jsonObject = new JSONObject();

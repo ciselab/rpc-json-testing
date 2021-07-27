@@ -73,6 +73,9 @@ public abstract class Fitness {
                     }
 
                     if (responseObject == null) {
+                        ResponseObject ro = new ResponseObject(-999, new JSONObject());
+                        responses.add(ro);
+                        System.out.println("ResponseObject is null. This should never be the case!");
                         throw new Exception("Individual with zero chromosomes!!!");
                     }
 
