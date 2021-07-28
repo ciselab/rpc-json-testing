@@ -66,20 +66,23 @@ public class Client {
             jsonOutputString = response.toString();
             responseCode = con.getResponseCode();
         } catch (ConnectException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             System.out.println("ConnectException! Response gets assigned statusCode -1.");
+            System.out.println("Request was: " + jsonInputString);
             // TODO sometimes there occurs a Connection refused error here but I do not know why
             jsonOutputString = "{}";
             responseCode = -1;
         } catch (SocketException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             System.out.println("SocketException! Response gets assigned statusCode -2.");
+            System.out.println("Request was: " + jsonInputString);
             jsonOutputString = "{}";
             responseCode = -2;
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             //TODO: do something for responses without a response object (perhaps create extra field for statuscode or responsemessage)
             System.out.println("IOException occurred! No response body but status code was " + con.getResponseCode());
+            System.out.println("Request was: " + jsonInputString);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("responseMessage", con.getResponseMessage());
             jsonOutputString = jsonObject.toString();
