@@ -63,6 +63,9 @@ public class StringGene extends ValueGene<String> {
 //            }
 
             // Option 4: mutate characters in the string
+//            if (this.getValue().equals("__ACCOUNT__")) {
+//                return this;
+//            }
             String mutatedValue = mutateCharacters(this.getValue());
             return new StringGene(this.getSchema(), mutatedValue);
 

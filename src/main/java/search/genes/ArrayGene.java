@@ -81,6 +81,18 @@ public class ArrayGene extends NestedGene<JSONArray> {
         } else {
             // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
             int index = getRandom().nextInt(clone.children.size());
+
+            // Choose another gene if the chosen gene is the ACCOUNT tag
+            if (clone.children.get(index) instanceof StringGene) {
+                if (((StringGene) clone.children.get(index)).getValue().equals("__ACCOUNT__")) {
+                    int newIndex = getRandom().nextInt(clone.children.size());
+                    while (newIndex == index && clone.children.size() > 1) {
+                        newIndex = getRandom().nextInt(clone.children.size());
+                    }
+                    index = newIndex;
+                }
+            }
+
             Gene child = clone.children.get(index);
             clone.children.set(index, child.mutate(generator));
         }
