@@ -10,6 +10,11 @@ public class RippledTestDriverTestNet extends RippledTestDriver {
         super(client, runTime);
     }
 
+    public RippledTestDriverTestNet(Client client) {
+        super(client);
+    }
+
+
     @Override
     public void prepTest() throws Exception {
 

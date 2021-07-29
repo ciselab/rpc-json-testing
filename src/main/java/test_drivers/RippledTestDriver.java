@@ -23,6 +23,12 @@ public class RippledTestDriver extends TestDriver {
         previousTimeStored = System.currentTimeMillis();
     }
 
+    public RippledTestDriver(Client client) {
+        super(client);
+        sk = new StatisticsKeeper();
+        previousTimeStored = System.currentTimeMillis();
+    }
+
     public void startServer() throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder();
 

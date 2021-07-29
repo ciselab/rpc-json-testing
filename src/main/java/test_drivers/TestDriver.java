@@ -18,6 +18,10 @@ public abstract class TestDriver {
         this.greenLightSignal = true;
     }
 
+    public TestDriver (Client client) {
+        this(client, (5 * 60 * 1000L));
+    }
+
     public void checkWhetherToStop() {
         if (System.currentTimeMillis() - startTime >= runTime) {
             this.greenLightSignal = false;
