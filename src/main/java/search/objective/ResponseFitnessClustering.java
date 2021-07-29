@@ -5,6 +5,7 @@ import test_drivers.TestDriver;
 import search.Generator;
 import search.Individual;
 import search.clustering.AgglomerativeClustering;
+import util.Configuration;
 import util.Pair;
 import util.Triple;
 
@@ -31,8 +32,6 @@ public class ResponseFitnessClustering extends Fitness {
     // MAP<METHOD, MAP<STRUCTURE, LIST<PREVIOUS VALUES>>>
     private Map<String, Map<String, AgglomerativeClustering>> clusteringPerResponseStructure;
     private Map<String, Set<Integer>> statuses;
-
-    final private double ARCHIVE_THRESHOLD = 0.8;
 
     public ResponseFitnessClustering(TestDriver testDriver) {
         super(testDriver);
@@ -91,7 +90,7 @@ public class ResponseFitnessClustering extends Fitness {
                 // decide whether to add individual to the archive
                 if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
-                } else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                } else if (fitness >= Configuration.getARCHIVE_THRESHOLD() && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
                 }
             }

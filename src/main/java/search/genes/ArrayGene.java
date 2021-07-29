@@ -3,6 +3,7 @@ package search.genes;
 import org.json.JSONArray;
 import search.Generator;
 import search.openRPC.SchemaSpecification;
+import util.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,6 @@ import static util.RandomSingleton.getRandom;
 public class ArrayGene extends NestedGene<JSONArray> {
 
     private List<Gene> children;
-    final private double REMOVE_ELEMENT_PROB = 0.1;
-    final private double ADD_ELEMENT_PROB = 0.1;
 
     public ArrayGene(SchemaSpecification schema) {
         super(schema);
@@ -71,10 +70,10 @@ public class ArrayGene extends NestedGene<JSONArray> {
 
         double choice = getRandom().nextDouble();
 
-        if (clone.children.size() < this.getSchema().getLength() && (clone.children.size() == 0 || choice <= ADD_ELEMENT_PROB)) {
+        if (clone.children.size() < this.getSchema().getLength() && (clone.children.size() == 0 || choice <= Configuration.getAddElementProb())) {
             // add a child
             clone.children.add(generator.generateValueGene(children.get(0)));
-        } else if (clone.children.size() > 1 && choice <= (REMOVE_ELEMENT_PROB + ADD_ELEMENT_PROB)) {
+        } else if (clone.children.size() > 1 && choice <= (Configuration.getRemoveElementProb() + Configuration.getAddElementProb())) {
             // remove a child
             int index = getRandom().nextInt(clone.children.size());
             clone.children.remove(index);

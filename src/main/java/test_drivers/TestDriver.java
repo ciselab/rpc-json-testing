@@ -19,6 +19,7 @@ public abstract class TestDriver {
     }
 
     public TestDriver (Client client) {
+        // runtime is set on 5 minutes, necessary for tests
         this(client, (5 * 60 * 1000L));
     }
 

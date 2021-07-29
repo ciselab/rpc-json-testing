@@ -2,6 +2,7 @@ package search;
 
 import org.json.JSONObject;
 import search.genes.ArrayGene;
+import util.Configuration;
 
 import java.util.Objects;
 
@@ -11,9 +12,6 @@ public class Chromosome {
     private String httpMethod;
     private String method;
     private ArrayGene genes;
-
-    final private double MUTATE_HTTP_METHOD_PROB = 0.01;
-    final private double MUTATE_API_METHOD_PROB = 0.99;
 
     public Chromosome(String httpMethod, String method, ArrayGene genes) {
         this.httpMethod = httpMethod;
@@ -34,10 +32,10 @@ public class Chromosome {
      * @return mutated individual
      */
     public Chromosome mutate(Generator generator) {
-        if (getRandom().nextDouble() < MUTATE_HTTP_METHOD_PROB) {
+        if (getRandom().nextDouble() < Configuration.getMUTATE_HTTP_METHOD_PROB()) {
             // mutate http method
             return new Chromosome(generator.generateHTTPMethod(), method, genes.copy());
-        } else if (getRandom().nextDouble() < (MUTATE_HTTP_METHOD_PROB + MUTATE_API_METHOD_PROB)) {
+        } else if (getRandom().nextDouble() < (Configuration.getMUTATE_HTTP_METHOD_PROB() + Configuration.getMUTATE_API_METHOD_PROB())) {
             // mutate method (this is actually not mutation but just a new individual)
             String methodName = generator.getRandomMethod();
             ArrayGene method = generator.generateMethod(methodName);

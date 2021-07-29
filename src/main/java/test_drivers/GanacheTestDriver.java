@@ -5,6 +5,7 @@ import connection.ResponseObject;
 
 import info.StatisticsKeeper;
 import org.json.JSONObject;
+import util.Configuration;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,7 +22,6 @@ public class GanacheTestDriver extends TestDriver {
     private List<String> keys;
     private StatisticsKeeper sk;
     private Long previousTimeStored;
-    final private Long DELTA = (long) 5 * 60 * 1000;
 
     public GanacheTestDriver(Client client, Long runTime) {
         super(client, runTime);
@@ -129,7 +129,7 @@ public class GanacheTestDriver extends TestDriver {
     public void checkCoverage() throws IOException {
         // Check whether coverage should be measured
         Long currentTime = System.currentTimeMillis();
-        if (currentTime - previousTimeStored >= DELTA) {
+        if (currentTime - previousTimeStored >= Configuration.getRECORDING_COVERAGE_TIME()) {
             previousTimeStored = currentTime;
 
             String[] results = retrieveCoverage().split("\\|");

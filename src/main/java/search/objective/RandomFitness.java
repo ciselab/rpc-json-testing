@@ -4,6 +4,7 @@ import connection.ResponseObject;
 import search.Generator;
 import search.Individual;
 import test_drivers.TestDriver;
+import util.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,6 @@ import static util.RandomSingleton.getRandom;
  * RandomFitness creates random fitness values for individuals (based on Gaussian distribution).
  */
 public class RandomFitness extends Fitness {
-    final private double ARCHIVE_THRESHOLD = 2.5;
 
     public RandomFitness(TestDriver testDriver) {
         super(testDriver);
@@ -34,7 +34,7 @@ public class RandomFitness extends Fitness {
                 individual.setFitness(fitness);
 
                 // decide whether to add individual to the archive
-                if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(individual)) {
+                if (fitness >= Configuration.getARCHIVE_THRESHOLD_RANDOM() && !getArchive().contains(individual)) {
                     this.addToArchive(individual, responseObjects.get(i));
                 }
             }

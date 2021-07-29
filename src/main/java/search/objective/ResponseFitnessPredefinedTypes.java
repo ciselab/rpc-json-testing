@@ -2,6 +2,7 @@ package search.objective;
 
 import connection.ResponseObject;
 import test_drivers.TestDriver;
+import util.Configuration;
 import util.Pair;
 import search.Generator;
 import search.Individual;
@@ -23,8 +24,6 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
 
     // MAP<METHOD, MAP<PATH-TO-PARAM, MAP<CATEGORY, COUNT>>>
     private Map<String, Map<String, Map<Type, Integer>>> valuePerKeyCount;
-
-    final private double ARCHIVE_THRESHOLD = 0.8;
 
     public ResponseFitnessPredefinedTypes(TestDriver testDriver) {
         super(testDriver);
@@ -48,7 +47,7 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
                 // decide whether to add individual to the archive
                 if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
-                } else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                } else if (fitness >= Configuration.getARCHIVE_THRESHOLD() && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
                 }
             }

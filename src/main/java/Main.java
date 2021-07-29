@@ -18,6 +18,7 @@ import test_drivers.RippledTestDriver;
 import test_drivers.RippledTestDriverTestNet;
 import test_drivers.TestDriver;
 import test_generation.TestWriter;
+import util.Configuration;
 
 import java.io.File;
 import java.io.IOException;
@@ -143,7 +144,7 @@ public class Main {
             System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime/60) + " hour(s)");
 
             BasicEA ea = new BasicEA(fitness, generator);
-            List<Individual> population = ea.generatePopulation(POPULATION_SIZE);
+            List<Individual> population = ea.generatePopulation(Configuration.getPOPULATION_SIZE());
 
             // Stopping criterium = time
             int generation = 0;

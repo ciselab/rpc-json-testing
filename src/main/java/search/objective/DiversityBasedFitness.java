@@ -6,6 +6,7 @@ import search.clustering.Cluster;
 import test_drivers.TestDriver;
 import search.Generator;
 import search.Individual;
+import util.Configuration;
 import util.Pair;
 import util.Triple;
 
@@ -35,9 +36,6 @@ public class DiversityBasedFitness extends Fitness {
 
     // Count the number of generations
     private int generationCount;
-
-    final private int NEW_CLUSTERS_AFTER_GEN = 10;
-    final private double ARCHIVE_THRESHOLD = 0.8;
 
     public DiversityBasedFitness(TestDriver testDriver) {
         super(testDriver);
@@ -113,11 +111,11 @@ public class DiversityBasedFitness extends Fitness {
                 // decide whether to add individual to the archive
                 if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
-                } else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                } else if (fitness >= Configuration.getARCHIVE_THRESHOLD() && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
                 }
             }
-            if (generationCount % NEW_CLUSTERS_AFTER_GEN == 0) {
+            if (generationCount % Configuration.getNEW_CLUSTERS_AFTER_GEN() == 0) {
                 for (String method : allFeatureVectors.keySet()) {
                     //TODO make sure all strings are in there
                     for (String responseStructure : allFeatureVectors.get(method).keySet()) {

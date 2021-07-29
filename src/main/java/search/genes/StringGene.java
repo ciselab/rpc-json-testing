@@ -3,6 +3,7 @@ package search.genes;
 import search.Generator;
 import search.openRPC.SchemaSpecification;
 import search.openRPC.Specification;
+import util.Configuration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,10 +19,6 @@ public class StringGene extends ValueGene<String> {
     final private String CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // TODO possibleChars should likely contain more options to cover a bigger scope
     final private String NUMBERS = "0123456789";
     final private String LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    final private double FRACTION = 0.2;
-
-    final private double OTHER_ENUM_PROB = 0.6;
 
     public StringGene(SchemaSpecification schema, String value) {
         super(schema, value);
@@ -43,7 +40,7 @@ public class StringGene extends ValueGene<String> {
             }
 
             // Option 2: pick one of the other enum values with a certain probability
-            if (this.getSchema().getEnums() != null && (probability < OTHER_ENUM_PROB || !getSchema().isMutable())) {
+            if (this.getSchema().getEnums() != null && (probability < Configuration.getOtherEnumProb() || !getSchema().isMutable())) {
                 List<String> options = new ArrayList<>();
                 Collections.addAll(options, getSchema().getEnums());
 
@@ -82,7 +79,7 @@ public class StringGene extends ValueGene<String> {
 
     public String mutateCharacters(String value) {
         // number of characters to change
-        int toChange = (int) Math.ceil(FRACTION * value.length());
+        int toChange = (int) Math.ceil(Configuration.getFractionStringToMutate() * value.length());
 
         // TODO length must always be higher than 0
         // select the position from which to start to change/add/delete a character
@@ -136,7 +133,7 @@ public class StringGene extends ValueGene<String> {
     // DOES NOT WORK PROPERLY YET!
     public String mutateRegex(String regex) {
         // number of characters to change
-        int toChange = (int) Math.ceil(FRACTION * regex.length());
+        int toChange = (int) Math.ceil(Configuration.getFractionStringToMutate() * regex.length());
 
         // select the position from which to start to change/add/delete a character
         int position = getRandom().nextInt(regex.length() - toChange);

@@ -5,6 +5,7 @@ import connection.ResponseObject;
 import info.StatisticsKeeper;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import util.Configuration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +16,6 @@ public class RippledTestDriver extends TestDriver {
     private JSONObject accounts;
     private StatisticsKeeper sk;
     private Long previousTimeStored;
-    final private Long DELTA = (long) 5 * 60 * 1000;
 
     public RippledTestDriver(Client client, Long runTime) {
         super(client, runTime);
@@ -114,7 +114,7 @@ public class RippledTestDriver extends TestDriver {
         // Check whether coverage should be measured
         Long currentTime = System.currentTimeMillis();
 
-        if (currentTime - previousTimeStored >= DELTA) {
+        if (currentTime - previousTimeStored >= Configuration.getRECORDING_COVERAGE_TIME()) {
             previousTimeStored = currentTime;
 
             String cov = retrieveCoverage();

@@ -2,6 +2,7 @@ package search.genes;
 
 import search.Generator;
 import search.openRPC.SchemaSpecification;
+import util.Configuration;
 
 import static util.RandomSingleton.getRandom;
 
@@ -10,8 +11,6 @@ public class LongGene extends ValueGene<Long> {
     public LongGene(SchemaSpecification schema, Long value) {
         super(schema, value);
     }
-
-    final private double BOUNDARY_CASE_PROB = 0.15;
 
     /**
      * Mutate the Long value using polynomial mutation (based on EvoMaster implementation).
@@ -31,7 +30,7 @@ public class LongGene extends ValueGene<Long> {
             Long ub = schema.getMax();
 
             // With some probability use the boundary cases for the value
-            if (random < BOUNDARY_CASE_PROB) {
+            if (random < Configuration.getBoundaryCaseProb()) {
                 if (getRandom().nextDouble() < 0.5) {
                     return new LongGene(this.getSchema(), (long) lb);
                 } else {

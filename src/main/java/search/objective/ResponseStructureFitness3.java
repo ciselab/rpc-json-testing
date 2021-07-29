@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import search.Generator;
 import search.Individual;
 import test_drivers.TestDriver;
+import util.Configuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +25,6 @@ public class ResponseStructureFitness3 extends Fitness {
     private static Integer STANDARD_NUMBER = 0;
 
     private Map<String, Integer> structureFrequencyTable;
-
-    final private double ARCHIVE_THRESHOLD = 0.8;
 
     public ResponseStructureFitness3(TestDriver testDriver) {
         super(testDriver);
@@ -67,7 +66,7 @@ public class ResponseStructureFitness3 extends Fitness {
                 // decide whether to add individual to the archive
                 if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
-                } else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                } else if (fitness >= Configuration.getARCHIVE_THRESHOLD() && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
                 }
             }

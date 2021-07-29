@@ -5,6 +5,7 @@ import test_drivers.TestDriver;
 import search.Generator;
 import search.Individual;
 import search.clustering.AgglomerativeClustering2;
+import util.Configuration;
 import util.Pair;
 import util.Triple;
 
@@ -34,9 +35,6 @@ public class ResponseFitnessClustering2 extends Fitness {
 
     // Count the number of generations
     private int generationCount;
-
-    final private int NEW_CLUSTERS_AFTER_GEN = 10;
-    final private double ARCHIVE_THRESHOLD = 0.8;
 
     public ResponseFitnessClustering2(TestDriver testDriver) {
         super(testDriver);
@@ -112,11 +110,11 @@ public class ResponseFitnessClustering2 extends Fitness {
                 // decide whether to add individual to the archive
                 if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
-                } else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
+                } else if (fitness >= Configuration.getARCHIVE_THRESHOLD() && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
                 }
             }
-            if (generationCount % NEW_CLUSTERS_AFTER_GEN == 0) {
+            if (generationCount % Configuration.getNEW_CLUSTERS_AFTER_GEN() == 0) {
                 for (String method : allFeatureVectors.keySet()) {
                     for (String responseStructure : allFeatureVectors.get(method).keySet()) {
                         clusteringPerResponseStructure.get(method).get(responseStructure).cluster(allFeatureVectors.get(method).get(responseStructure));

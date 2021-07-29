@@ -4,6 +4,7 @@ import connection.ResponseObject;
 import search.Generator;
 import search.Individual;
 import test_drivers.TestDriver;
+import util.Configuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,8 +13,6 @@ import java.util.Map;
 
 public class StatusCodeFitness extends Fitness {
     private Map<Integer, Integer> statusFrequencyTable;
-
-    private double ARCHIVE_THRESHOLD = 0.8;
 
     public StatusCodeFitness(TestDriver testDriver) {
         super(testDriver);
@@ -41,11 +40,11 @@ public class StatusCodeFitness extends Fitness {
                 ind.setFitness(fitness);
 
                 // If statuscode is relatively rare, add to archive.
-                ARCHIVE_THRESHOLD = Math.min((100 / statusFrequencyTable.size()), ARCHIVE_THRESHOLD);
+                double archive_threshold = Math.min((100 / statusFrequencyTable.size()), Configuration.getARCHIVE_THRESHOLD());
                 // Decide whether to add individual to the archive
                 if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(ind)) {
                     this.addToArchive(ind, responses.get(i));
-                } else if (fitness >= ARCHIVE_THRESHOLD && !getArchive().contains(ind)) {
+                } else if (fitness >= archive_threshold && !getArchive().contains(ind)) {
                     this.addToArchive(ind, responses.get(i));
                 }
             }

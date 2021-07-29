@@ -2,6 +2,7 @@ package search;
 
 import search.genes.ArrayGene;
 import search.objective.Fitness;
+import util.Configuration;
 import util.RandomSingleton;
 
 import java.util.ArrayList;
@@ -14,11 +15,6 @@ public class BasicEA {
     private Fitness fitness;
     private Generator generator;
     
-    final private int REQUESTS_GENERATOR_LIMIT = 5;
-    final private int MUTATIONS_PER_INDIVIDUAL = 3;
-
-    final private int TOURNAMENT_SIZE = 4;
-
     public BasicEA(Fitness fitness, Generator generator) {
         this.fitness = fitness;
         this.generator = generator;
@@ -33,7 +29,7 @@ public class BasicEA {
     }
 
     public Individual generateRandomIndividual() {
-        int nRequests = RandomSingleton.getRandom().nextInt(REQUESTS_GENERATOR_LIMIT) + 1;
+        int nRequests = RandomSingleton.getRandom().nextInt(Configuration.getREQUESTS_GENERATOR_LIMIT()) + 1;
         List<Chromosome> dna = new ArrayList<>();
 
         for (int i = 0; i < nRequests; i++) {
@@ -53,7 +49,7 @@ public class BasicEA {
         for (int i = 0; i < population.size(); i++) {
             String parent = population.get(i).toTotalJSONObject().toString();
             Individual mutant = population.get(i);
-            for (int j = 0; j < MUTATIONS_PER_INDIVIDUAL; j++) {
+            for (int j = 0; j < Configuration.getMUTATIONS_PER_INDIVIDUAL(); j++) {
                 mutant = mutant.mutate(generator);
             }
 
@@ -73,7 +69,7 @@ public class BasicEA {
         fitness.evaluate(generator, offspring);
 
 //        return elitistSelection(offspring);
-        return tournamentSelection(offspring, TOURNAMENT_SIZE);
+        return tournamentSelection(offspring, Configuration.getTOURNAMENT_SIZE());
     }
 
     private List<Individual> tournamentSelection(List<Individual> population, int tournamentSize) {
