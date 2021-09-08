@@ -141,6 +141,8 @@ public class DiversityBasedFitness extends Fitness {
             info.add("\t\tStructures covered: " + clusteringPerResponseStructure.get(method).keySet().size());
 
             for (String structure : clusteringPerResponseStructure.get(method).keySet()) {
+//                System.out.println(structure);
+                info.add(structure);
                 info.add("\t\t\tClusters: " + clusteringPerResponseStructure.get(method).get(structure).getClusters().size());
 
                 List<Integer> clusterSize = new ArrayList<>();

@@ -32,8 +32,6 @@ import static util.IO.writeFile;
 
 public class Main {
 
-    final static int POPULATION_SIZE = 50;
-
     private static ArrayList<Double> bestFitness = new ArrayList<>();
 
     public static void main(String args[]) {

@@ -99,12 +99,12 @@ public class AgglomerativeClustering3 {
                 }
             }
 
+            similarityJumps.add(maxSimilarity);
+
             if (index1 == -1) {
                 // nothing to merge
                 break;
             }
-
-            similarityJumps.add(maxSimilarity);
 
             assert index2 > index1;
 
@@ -145,8 +145,13 @@ public class AgglomerativeClustering3 {
 
         double maxJump = 0.0;
         int maxJumpIndex = 0;
+        boolean allSame = true;
 
         for (int i = 0; i < similarityJumps.size() - 1; i++) {
+            if (similarityJumps.get(0).equals(similarityJumps.get(i + 1))) {
+                allSame = false;
+            }
+
             double dissimilarityCurrent = (1.0 / similarityJumps.get(i)) - 1.0;
             double dissimilarityNext = (1.0 / similarityJumps.get(i + 1)) - 1.0;
 
@@ -155,6 +160,10 @@ public class AgglomerativeClustering3 {
                 maxJump = jump;
                 maxJumpIndex = i;
             }
+        }
+
+        if (allSame) {
+            maxJumpIndex = similarityJumps.size() - 1;
         }
 
         clusters = inBetweenClusters.get(maxJumpIndex);
