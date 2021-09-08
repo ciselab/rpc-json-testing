@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static util.Configuration.getChangeTypeProb;
 import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomIndex;
 
@@ -94,6 +95,26 @@ public class Generator {
         Long maximum = schema.getMax();
 
         String type = schema.getType();
+
+        // With some probably alter the type of the gene
+        // TODO arrays and objects, but how to define what should be in them
+        if (getRandom().nextDouble() < getChangeTypeProb()) {
+            int typeToBe = getRandom().nextInt(3);
+            if (typeToBe == 0) {
+                type = "string";
+            } else if (typeToBe == 1) {
+                type = "boolean";
+            } else if (typeToBe == 2) {
+                type = "integer";
+            } else if (typeToBe == 3) {
+                type = "array";
+                //TODO
+            } else if (typeToBe == 4) {
+                type = "object";
+                //TODO
+            }
+        }
+
         String pattern = schema.getPattern();
         String[] enumOptions = schema.getEnums();
 
@@ -131,6 +152,12 @@ public class Generator {
             case "boolean":
                 return new BooleanGene(schema, getRandom().nextBoolean());
             case "integer":
+                if (minimum == null) {
+                    minimum = Long.MIN_VALUE;
+                }
+                if (maximum == null) {
+                    maximum = Long.MAX_VALUE;
+                }
                 long generatedLong = minimum + (long) (getRandom().nextDouble() * (maximum - minimum));
                 return new LongGene(schema, generatedLong);
             case "string":

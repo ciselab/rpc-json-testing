@@ -33,6 +33,7 @@ public final class Configuration {
     private static double BOUNDARY_CASE_PROB = 0.15;
     private static double FRACTION_STRING_TO_MUTATE = 0.2;
     private static double OTHER_ENUM_PROB = 0.6;
+    private static double CHANGE_TYPE_PROB = 0.2;
 
     // - Mutation operators
     private static int MUTATIONS_PER_INDIVIDUAL = 3;
@@ -131,4 +132,7 @@ public final class Configuration {
         return OTHER_ENUM_PROB;
     }
 
+    public static double getChangeTypeProb() {
+        return CHANGE_TYPE_PROB;
+    }
 }
