@@ -73,7 +73,7 @@ public abstract class Fitness {
                     }
 
                     if (responseObject == null) {
-                        ResponseObject ro = new ResponseObject(-999, new JSONObject());
+                        ResponseObject ro = new ResponseObject("", new JSONObject(),-999, new JSONObject());
                         responses.add(ro);
                         System.out.println("ResponseObject is null. This should never be the case!");
                         throw new Exception("Individual with zero chromosomes!!!");
@@ -81,7 +81,7 @@ public abstract class Fitness {
 
                     responses.add(responseObject);
 
-                    System.out.println("Status code of response on individual " + i + " is " + responseObject.getResponseCode());
+//                    System.out.println("Status code of response on individual " + i + " is " + responseObject.getResponseCode());
 
                     if (!statusCodesTotal.containsKey(responseObject.getResponseCode())) {
                         statusCodesTotal.put(responseObject.getResponseCode(), 0);

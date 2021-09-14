@@ -40,7 +40,7 @@ public class StatusCodeFitness extends Fitness {
                 ind.setFitness(fitness);
 
                 // If statuscode is relatively rare, add to archive.
-                double archive_threshold = Math.min((100 / statusFrequencyTable.size()), Configuration.getARCHIVE_THRESHOLD());
+                double archive_threshold = Math.min((100 / statusFrequencyTable.size()), Configuration.ARCHIVE_THRESHOLD);
                 // Decide whether to add individual to the archive
                 if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(ind)) {
                     this.addToArchive(ind, responses.get(i));

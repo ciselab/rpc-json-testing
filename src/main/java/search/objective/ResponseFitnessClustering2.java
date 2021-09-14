@@ -110,11 +110,11 @@ public class ResponseFitnessClustering2 extends Fitness {
                 // decide whether to add individual to the archive
                 if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
-                } else if (fitness >= Configuration.getARCHIVE_THRESHOLD() && !getArchive().contains(population.get(i))) {
+                } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
                 }
             }
-            if (generationCount % Configuration.getNEW_CLUSTERS_AFTER_GEN() == 0) {
+            if (generationCount % Configuration.NEW_CLUSTERS_AFTER_GEN == 0) {
                 for (String method : allFeatureVectors.keySet()) {
                     for (String responseStructure : allFeatureVectors.get(method).keySet()) {
                         clusteringPerResponseStructure.get(method).get(responseStructure).cluster(allFeatureVectors.get(method).get(responseStructure));

@@ -6,6 +6,7 @@ import util.Configuration;
 
 import java.util.Objects;
 
+import static util.RandomSingleton.getChoiceWithChance;
 import static util.RandomSingleton.getRandom;
 
 public class Chromosome {
@@ -32,10 +33,11 @@ public class Chromosome {
      * @return mutated individual
      */
     public Chromosome mutate(Generator generator) {
-        if (getRandom().nextDouble() < Configuration.getMUTATE_HTTP_METHOD_PROB()) {
+        double choice = getRandom().nextDouble();
+        if (choice < Configuration.MUTATE_HTTP_METHOD_PROB) {
             // mutate http method
             return new Chromosome(generator.generateHTTPMethod(), method, genes.copy());
-        } else if (getRandom().nextDouble() < (Configuration.getMUTATE_HTTP_METHOD_PROB() + Configuration.getMUTATE_API_METHOD_PROB())) {
+        } else if (choice < (Configuration.MUTATE_HTTP_METHOD_PROB + Configuration.MUTATE_API_METHOD_PROB)) {
             // mutate method (this is actually not mutation but just a new individual)
             String methodName = generator.getRandomMethod();
             ArrayGene method = generator.generateMethod(methodName);

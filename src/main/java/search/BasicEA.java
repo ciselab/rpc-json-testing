@@ -29,7 +29,7 @@ public class BasicEA {
     }
 
     public Individual generateRandomIndividual() {
-        int nRequests = RandomSingleton.getRandom().nextInt(Configuration.getREQUESTS_GENERATOR_LIMIT()) + 1;
+        int nRequests = RandomSingleton.getRandom().nextInt(Configuration.REQUESTS_GENERATOR_LIMIT) + 1;
         List<Chromosome> dna = new ArrayList<>();
 
         for (int i = 0; i < nRequests; i++) {
@@ -69,7 +69,7 @@ public class BasicEA {
         fitness.evaluate(generator, offspring);
 
 //        return elitistSelection(offspring);
-        return tournamentSelection(offspring, Configuration.getTOURNAMENT_SIZE());
+        return tournamentSelection(offspring, Configuration.TOURNAMENT_SIZE);
     }
 
     private List<Individual> tournamentSelection(List<Individual> population, int tournamentSize) {

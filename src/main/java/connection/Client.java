@@ -93,7 +93,7 @@ public class Client {
 
         con.disconnect();
 
-        return new ResponseObject(responseCode, response);
+        return new ResponseObject(method, request, responseCode, response);
     }
 
 //    public CompletableFuture<JSONObject> sendRequest(int id, JSONObject jsonObject) {

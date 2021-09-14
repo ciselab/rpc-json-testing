@@ -3,6 +3,9 @@ package connection;
 import org.json.JSONObject;
 
 public class ResponseObject {
+    private String method;
+    private JSONObject requestObject;
+
     private int responseCode;
     private JSONObject responseObject;
 
@@ -11,9 +14,18 @@ public class ResponseObject {
      * @param responseCode
      * @param responseObject
      */
-    public ResponseObject(int responseCode, JSONObject responseObject) {
+    public ResponseObject(String method, JSONObject requestObject, int responseCode, JSONObject responseObject) {
+        this.requestObject = requestObject;
         this.responseCode = responseCode;
         this.responseObject = responseObject;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public JSONObject getRequestObject() {
+        return requestObject;
     }
 
     public int getResponseCode() {

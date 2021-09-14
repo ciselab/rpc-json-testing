@@ -38,17 +38,15 @@ public class Main {
 
         // Read the arguments (fitness function used, running time, server).
         String fitnessFunction = "8";
-        int runningTime = 30; //default value
+        int runningTime = 5; //default value
         String server = "";
         try {
             fitnessFunction = args[0]; // 1, 2, 3, 4, 5, 6, 7 or 8, default is 1
             runningTime = Integer.parseInt(args[1]); // time in minutes, default is 1 hour
             server = args[2];
-        }
-        catch (ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Argument(s) not specified. Default value(s) used.");
-        }
-        catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.out.println("Time limit argument is not an integer. Default time limit used: 24 hours.");
         }
 
@@ -139,15 +137,15 @@ public class Main {
                     fitness = new RandomFitness(testDriver);
             }
 
-            System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime/60) + " hour(s)");
+            System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime / 60) + " hour(s)");
 
             BasicEA ea = new BasicEA(fitness, generator);
-            List<Individual> population = ea.generatePopulation(Configuration.getPOPULATION_SIZE());
+            List<Individual> population = ea.generatePopulation(Configuration.POPULATION_SIZE);
 
             // Stopping criterium = time
             int generation = 0;
             while (testDriver.shouldContinue()) {
-                System.out.println("Starting generation: " + generation);
+                System.out.println("Starting generation: " + generation + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");
                 generation += 1;
                 population = ea.nextGeneration(population);
 
@@ -183,8 +181,9 @@ public class Main {
             String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
             TestWriter testWriter = new TestWriter(url_server, testDirectory, testDriverString);
             for (File file : new java.io.File(testDirectory).listFiles()) {
-                if (!file.isDirectory())
+                if (!file.isDirectory()) {
                     file.delete();
+                }
             }
             System.out.println("Tests in the archive: " + archive.size());
             for (int i = 0; i < archive.size(); i++) {

@@ -14,7 +14,7 @@ public class BooleanGene extends ValueGene<Boolean> {
 
     @Override
     public Gene mutate(Generator generator) {
-        if (getRandom().nextDouble() < Configuration.getBOOL_FLIP_PROB()) {
+        if (getRandom().nextDouble() < Configuration.BOOL_FLIP_PROB) {
             return new BooleanGene(this.getSchema(), !this.getValue());
         } else {
             // change gene (e.g. no longer boolean but string, or random boolean)

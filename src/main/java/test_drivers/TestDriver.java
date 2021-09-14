@@ -42,6 +42,10 @@ public abstract class TestDriver {
         return startTime;
     }
 
+    public Long getTimeLeft() {
+        return runTime - (System.currentTimeMillis() - startTime);
+    }
+
     public Boolean shouldContinue() {
         return greenLightSignal;
     }

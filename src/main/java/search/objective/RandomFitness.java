@@ -34,7 +34,7 @@ public class RandomFitness extends Fitness {
                 individual.setFitness(fitness);
 
                 // decide whether to add individual to the archive
-                if (fitness >= Configuration.getARCHIVE_THRESHOLD_RANDOM() && !getArchive().contains(individual)) {
+                if (fitness >= Configuration.ARCHIVE_THRESHOLD_RANDOM && !getArchive().contains(individual)) {
                     this.addToArchive(individual, responseObjects.get(i));
                 }
             }

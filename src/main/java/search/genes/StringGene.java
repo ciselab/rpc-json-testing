@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static util.RandomSingleton.getRandom;
+import static util.RandomSingleton.getRandomBool;
 import static util.RandomSingleton.getRandomIndex;
 
 public class StringGene extends ValueGene<String> {
@@ -30,17 +31,15 @@ public class StringGene extends ValueGene<String> {
             return this.copy();
         }
 
-        double probability = getRandom().nextDouble();
-
         // TODO remove changing entire gene.
-        if (probability < 0.95) {
+        if (getRandomBool(0.95)) {
             // Option 1: always just create new stringGene because there are no chars to mutate
             if (this.getValue().length() == 0) {
                 return getNewGene(generator);
             }
 
             // Option 2: pick one of the other enum values with a certain probability
-            if (this.getSchema().getEnums() != null && (probability < Configuration.getOtherEnumProb() || !getSchema().isMutable())) {
+            if (this.getSchema().getEnums() != null && (getRandomBool(Configuration.OTHER_ENUM_PROB) || !getSchema().isMutable())) {
                 List<String> options = new ArrayList<>();
                 Collections.addAll(options, getSchema().getEnums());
 
@@ -65,9 +64,10 @@ public class StringGene extends ValueGene<String> {
 //            }
 
             // Option 4: mutate characters in the string
-//            if (this.getValue().equals("__ACCOUNT__")) {
-//                return this;
-//            }
+            if (this.getValue().equals("__ACCOUNT__")) {
+                return this.copy();
+            }
+
             String mutatedValue = mutateCharacters(this.getValue());
             return new StringGene(this.getSchema(), mutatedValue);
 
@@ -79,7 +79,7 @@ public class StringGene extends ValueGene<String> {
 
     public String mutateCharacters(String value) {
         // number of characters to change
-        int toChange = (int) Math.ceil(Configuration.getFractionStringToMutate() * value.length());
+        int toChange = (int) Math.ceil(Configuration.FRACTION_STRING_TO_MUTATE * value.length());
 
         // TODO length must always be higher than 0
         // select the position from which to start to change/add/delete a character
@@ -133,7 +133,7 @@ public class StringGene extends ValueGene<String> {
     // DOES NOT WORK PROPERLY YET!
     public String mutateRegex(String regex) {
         // number of characters to change
-        int toChange = (int) Math.ceil(Configuration.getFractionStringToMutate() * regex.length());
+        int toChange = (int) Math.ceil(Configuration.FRACTION_STRING_TO_MUTATE * regex.length());
 
         // select the position from which to start to change/add/delete a character
         int position = getRandom().nextInt(regex.length() - toChange);

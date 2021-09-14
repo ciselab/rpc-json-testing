@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static util.RandomSingleton.getRandom;
+import static util.RandomSingleton.getRandomBool;
 
 public class Individual {
     private List<Chromosome> dna;

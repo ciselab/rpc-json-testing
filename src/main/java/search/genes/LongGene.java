@@ -5,6 +5,7 @@ import search.openRPC.SchemaSpecification;
 import util.Configuration;
 
 import static util.RandomSingleton.getRandom;
+import static util.RandomSingleton.getRandomBool;
 
 public class LongGene extends ValueGene<Long> {
 
@@ -19,10 +20,8 @@ public class LongGene extends ValueGene<Long> {
      */
     @Override
     public Gene mutate(Generator generator) {
-        double random = getRandom().nextDouble();
-
         // TODO remove changing entire gene.
-        if (random < 0.95) {
+        if (getRandomBool(0.95)) {
             // Get minimum and maximum value of the parameter range
             SchemaSpecification schema = getSchema();
 
@@ -30,7 +29,7 @@ public class LongGene extends ValueGene<Long> {
             Long ub = schema.getMax();
 
             // With some probability use the boundary cases for the value
-            if (random < Configuration.getBoundaryCaseProb()) {
+            if (getRandomBool(Configuration.BOUNDARY_CASE_PROB)) {
                 if (getRandom().nextDouble() < 0.5) {
                     return new LongGene(this.getSchema(), (long) lb);
                 } else {

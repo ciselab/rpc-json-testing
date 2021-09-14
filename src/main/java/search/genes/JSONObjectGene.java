@@ -87,11 +87,11 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
         // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
         double choice = getRandom().nextDouble();
 
-        if ((choice <= Configuration.getAddNonrequiredChildProb() || keys.isEmpty()) && clone.addRandomNonRequiredChild(generator)) {
+        if ((choice <= Configuration.ADD_NONREQUIRED_CHILD_PROB || keys.isEmpty()) && clone.addRandomNonRequiredChild(generator)) {
             return clone;
-        } else if (choice <= (Configuration.getAddNonrequiredChildProb()+Configuration.getRemoveChildProb()) && clone.removeRandomChild()) {
+        } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB) && clone.removeRandomChild()) {
             return clone;
-        } else if (choice <= (Configuration.getAddNonrequiredChildProb()+Configuration.getRemoveChildProb()+Configuration.getReplaceChildProb()) && !keys.isEmpty()) {
+        } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB + Configuration.REPLACE_CHILD_PROB) && !keys.isEmpty()) {
             // replace random child
             int index = getRandomIndex(keys);
             StringGene key = keys.get(index);

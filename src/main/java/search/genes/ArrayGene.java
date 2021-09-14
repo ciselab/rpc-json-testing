@@ -56,7 +56,13 @@ public class ArrayGene extends NestedGene<JSONArray> {
             // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
             int index = getRandom().nextInt(clone.children.size());
             Gene child = clone.children.get(index);
-            clone.children.set(index, child.mutate(generator));
+            child = child.mutate(generator);
+
+            while (child instanceof ArrayGene) {
+                child = child.mutate(generator);
+            }
+
+            clone.children.set(index, child);
             return clone;
         }
 
@@ -70,10 +76,16 @@ public class ArrayGene extends NestedGene<JSONArray> {
 
         double choice = getRandom().nextDouble();
 
-        if (clone.children.size() < this.getSchema().getLength() && (clone.children.size() == 0 || choice <= Configuration.getAddElementProb())) {
+        if (clone.children.size() < this.getSchema().getLength() && (clone.children.size() == 0 || choice <= Configuration.ADD_ELEMENT_PROB)) {
             // add a child
-            clone.children.add(generator.generateValueGene(children.get(0)));
-        } else if (clone.children.size() > 1 && choice <= (Configuration.getRemoveElementProb() + Configuration.getAddElementProb())) {
+            Gene child = generator.generateValueGene(children.get(0));
+
+            while (child instanceof ArrayGene) {
+                child = generator.generateValueGene(children.get(0));
+            }
+
+            clone.children.add(child);
+        } else if (clone.children.size() > 1 && choice <= (Configuration.REMOVE_ELEMENT_PROB + Configuration.ADD_ELEMENT_PROB)) {
             // remove a child
             int index = getRandom().nextInt(clone.children.size());
             clone.children.remove(index);
@@ -94,7 +106,13 @@ public class ArrayGene extends NestedGene<JSONArray> {
             }
 
             Gene child = clone.children.get(index);
-            clone.children.set(index, child.mutate(generator));
+            child = child.mutate(generator);
+
+            while (child instanceof ArrayGene) {
+                child = child.mutate(generator);
+            }
+
+            clone.children.set(index, child);
         }
 
         return clone;

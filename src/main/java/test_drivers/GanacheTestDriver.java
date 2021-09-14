@@ -129,7 +129,7 @@ public class GanacheTestDriver extends TestDriver {
     public void checkCoverage() throws IOException {
         // Check whether coverage should be measured
         Long currentTime = System.currentTimeMillis();
-        if (currentTime - previousTimeStored >= Configuration.getRECORDING_COVERAGE_TIME()) {
+        if (currentTime - previousTimeStored >= Configuration.RECORDING_COVERAGE_TIME) {
             previousTimeStored = currentTime;
 
             String[] results = retrieveCoverage().split("\\|");

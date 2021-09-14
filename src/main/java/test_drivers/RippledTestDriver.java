@@ -105,7 +105,7 @@ public class RippledTestDriver extends TestDriver {
             throw new Exception("No accounts found! Please call prepTest before runTest!!");
         }
 
-        request = replaceAccountStrings(request,  accounts.getJSONObject("result").getString("account_id"));
+        request = replaceAccountStrings(request, accounts.getJSONObject("result").getString("account_id"));
 
         return getClient().createRequest(method, request);
     }
@@ -114,7 +114,7 @@ public class RippledTestDriver extends TestDriver {
         // Check whether coverage should be measured
         Long currentTime = System.currentTimeMillis();
 
-        if (currentTime - previousTimeStored >= Configuration.getRECORDING_COVERAGE_TIME()) {
+        if (currentTime - previousTimeStored >= Configuration.RECORDING_COVERAGE_TIME) {
             previousTimeStored = currentTime;
 
             String cov = retrieveCoverage();
