@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static util.RandomSingleton.getRandom;
+import static util.RandomSingleton.getRandomBool;
+import static util.RandomSingleton.getRandomIndex;
 
 public class BasicEA {
 
@@ -43,24 +45,38 @@ public class BasicEA {
     }
 
     public List<Individual> nextGeneration(List<Individual> population) {
-        // TODO generate offspring (mutation and crossover)
         List<Individual> offspring = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
-            String parent = population.get(i).toTotalJSONObject().toString();
-            Individual mutant = population.get(i);
-            for (int j = 0; j < Configuration.getMUTATIONS_PER_INDIVIDUAL(); j++) {
+            if (getRandomBool(Configuration.ADD_NEW_RANDOM_INDIVIDUAL)) {
+                offspring.add(generateRandomIndividual());
+                continue;
+            }
+
+            Individual parent0 = population.get(i);
+            Individual parent1 = population.get(getRandomIndex(population));
+
+            String parent0String = parent0.toTotalJSONObject().toString();
+            String parent1String = parent1.toTotalJSONObject().toString();
+
+            Individual mutant;
+            if (Configuration.CROSSOVER_ENABLED) {
+                 mutant = parent0.crossover(parent1);
+            } else {
+                mutant = parent0;
+            }
+
+            for (int j = 0; j < Configuration.MUTATIONS_PER_INDIVIDUAL; j++) {
                 mutant = mutant.mutate(generator);
             }
 
             String mutantString = mutant.toTotalJSONObject().toString();
 
-            if (parent.equals(mutantString)) {
+            if (parent0String.equals(mutantString) || parent1String.equals(mutantString)) {
                 mutant = generateRandomIndividual();
             }
 
             offspring.add(mutant);
-
         }
 
         offspring.addAll(population);

@@ -135,6 +135,11 @@ public abstract class Fitness {
             while (it.hasNext()) {
                 String key = it.next();
 
+                if (requestKeyValuePairs.containsKey(key)) {
+                    // if the key was also in the request we leave it out of the feature vector
+                    continue;
+                }
+
                 Object smallerObject = object.get(key);
                 if (smallerObject instanceof JSONObject) {
                     JSONObject smallerStrippedObject = new JSONObject();
@@ -201,6 +206,8 @@ public abstract class Fitness {
                 String key = it.next();
 
                 Object smallerObject = object.get(key);
+                keyValuePairs.put(key, smallerObject);
+
                 if (smallerObject instanceof JSONObject) {
                     queue.add((JSONObject) object.get(key));
                 } else if (smallerObject instanceof JSONArray) {
@@ -223,15 +230,6 @@ public abstract class Fitness {
                         }
                         // TODO currently it is assuming no arrays in arrays
                     }
-                } else if (smallerObject instanceof String) {
-                    keyValuePairs.put(key, smallerObject);
-                } else if (smallerObject instanceof Number) {
-                    keyValuePairs.put(key, smallerObject);
-                } else if (smallerObject instanceof Boolean) {
-                    keyValuePairs.put(key, smallerObject);
-                } else {
-//                    System.out.println(smallerObject.toString());
-//                    System.out.println(smallerObject.getClass());
                 }
             }
         }

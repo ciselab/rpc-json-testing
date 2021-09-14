@@ -56,8 +56,9 @@ public class DiversityBasedFitness extends Fitness {
 
             for (int i = 0; i < population.size(); i++) {
                 String method = population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod();
-                JSONObject request = population.get(i).toTotalJSONObject();
-                JSONObject response = responses.get(i).getResponseObject();
+                ResponseObject responseObject = responses.get(i);
+                JSONObject request = responseObject.getRequestObject();
+                JSONObject response = responseObject.getResponseObject();
 
                 JSONObject stripped = stripValues(request, response);
                 String strippedString = stripped.toString();
@@ -111,11 +112,11 @@ public class DiversityBasedFitness extends Fitness {
                 // decide whether to add individual to the archive
                 if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
-                } else if (fitness >= Configuration.getARCHIVE_THRESHOLD() && !getArchive().contains(population.get(i))) {
+                } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
                     this.addToArchive(population.get(i), responses.get(i));
                 }
             }
-            if (generationCount % Configuration.getNEW_CLUSTERS_AFTER_GEN() == 0) {
+            if (generationCount % Configuration.NEW_CLUSTERS_AFTER_GEN == 0) {
                 for (String method : allFeatureVectors.keySet()) {
                     //TODO make sure all strings are in there
                     for (String responseStructure : allFeatureVectors.get(method).keySet()) {

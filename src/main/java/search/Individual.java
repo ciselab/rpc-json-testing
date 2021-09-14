@@ -1,12 +1,11 @@
 package search;
 
 import org.json.JSONObject;
-import search.genes.ArrayGene;
-import search.openRPC.Specification;
+import util.Configuration;
+import util.CrossoverType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomBool;
@@ -45,15 +44,61 @@ public class Individual {
         return new Individual(newDna);
     }
 
-    /**
-     * When an individual lives through the next generation, it becomes a generation older.
-     */
-    public void birthday() {
-        this.age = this.age + 1;
-    }
+    public Individual crossover(Individual other) {
+        // TODO always starts with the short individual (bad, should be random)
+        List<Chromosome> mixedDna = new ArrayList<>();
 
-    public int getAge() {
-        return age;
+        List<Chromosome> shortParent = this.getDna();
+        List<Chromosome> longParent = other.getDna();
+
+        if (other.getDna().size() < this.getDna().size()) {
+            shortParent = other.getDna();
+            longParent = this.getDna();
+        }
+
+        boolean startShort = getRandomBool(0.5);
+
+        int newLength = shortParent.size();
+
+        if (shortParent.size() != longParent.size()) {
+            newLength = getRandom().nextInt(longParent.size() - shortParent.size()) + shortParent.size();
+        }
+
+        if (Configuration.CROSSOVER_TYPE == CrossoverType.RANDOM) {
+            for (int i = 0; i < newLength; i++) {
+                if (i < shortParent.size() && getRandomBool(0.5)) {
+                    mixedDna.add(shortParent.get(i));
+                } else {
+                    mixedDna.add(longParent.get(i));
+                }
+            }
+        } else if (Configuration.CROSSOVER_TYPE == CrossoverType.ONE_POINT) {
+            int cutPoint = getRandom().nextInt(newLength);
+
+            for (int i = 0; i < newLength; i++) {
+                if (i < shortParent.size() && i < cutPoint) {
+                    mixedDna.add(shortParent.get(i));
+                } else {
+                    mixedDna.add(longParent.get(i));
+                }
+            }
+
+        } else if (Configuration.CROSSOVER_TYPE == CrossoverType.TWO_POINT) {
+            int cutPoint1 = getRandom().nextInt(newLength);
+            int cutPoint2 = getRandom().nextInt(newLength);
+
+            for (int i = 0; i < newLength; i++) {
+                if (i < shortParent.size() && (i < cutPoint1 || i >= cutPoint2)) {
+                    mixedDna.add(shortParent.get(i));
+                } else {
+                    mixedDna.add(longParent.get(i));
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("Unsupported crossover type.");
+        }
+
+        return new Individual(mixedDna);
     }
 
     public double getFitness() {
