@@ -2,6 +2,7 @@ package search.clustering;
 
 import util.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,7 +22,11 @@ public class Cluster {
     public Cluster(SimilarityMetric metric, List<Integer> weightVector, List<List<Object>> members) {
         this.metric = metric;
         this.weightVector = weightVector;
-        this.members = members;
+        this.members = new ArrayList<>();
+
+        for (List<Object> member : members) {
+            this.members.add(new ArrayList<>(member));
+        }
     }
 
     public Pair<Boolean, Double> isWithin(List<Object> value) {

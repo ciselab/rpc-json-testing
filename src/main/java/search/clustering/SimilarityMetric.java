@@ -76,10 +76,11 @@ public class SimilarityMetric {
                 }
             }
         }
+        // TODO
         // If half of the features in the vector are not different, two vectors are not different enough and distance should be 0.
-        if (differentFeatures / a.size() < Configuration.getTHRESHOLD_DIFFERENT_FEATURES()) {
-            return 0;
-        }
+//        if (differentFeatures / a.size() < Configuration.getTHRESHOLD_DIFFERENT_FEATURES()) {
+//            return 0;
+//        }
         return Math.sqrt(distance);
     }
 

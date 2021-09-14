@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static util.Configuration.getChangeTypeProb;
 import static util.RandomSingleton.getRandom;
+import static util.RandomSingleton.getRandomBool;
 import static util.RandomSingleton.getRandomIndex;
 
 public class Generator {
@@ -67,7 +67,7 @@ public class Generator {
         arrayGene.addChild(objectGene);
 
         for (ParamSpecification param : params) {
-            if (param.isRequired() || getRandom().nextDouble() < Configuration.getINCLUDE_PARAM_PROB()) {
+            if (param.isRequired() || getRandom().nextDouble() < Configuration.INCLUDE_PARAM_PROB) {
                 List<SchemaSpecification> schemaOptions = specification.getSchemas().get(param.getPath());
                 // If there is only one possible schema, this will be the type.
                 int index = getRandom().nextInt(schemaOptions.size());
@@ -91,29 +91,30 @@ public class Generator {
      * @return Gene
      */
     public Gene generateValueGene(SchemaSpecification schema) {
-        Long minimum = schema.getMin();
-        Long maximum = schema.getMax();
-
         String type = schema.getType();
 
         // With some probably alter the type of the gene
-        // TODO arrays and objects, but how to define what should be in them
-        if (getRandom().nextDouble() < getChangeTypeProb()) {
-            int typeToBe = getRandom().nextInt(3);
-            if (typeToBe == 0) {
-                type = "string";
-            } else if (typeToBe == 1) {
-                type = "boolean";
-            } else if (typeToBe == 2) {
-                type = "integer";
-            } else if (typeToBe == 3) {
-                type = "array";
-                //TODO
-            } else if (typeToBe == 4) {
-                type = "object";
-                //TODO
+        if (getRandomBool(Configuration.CHANGE_TYPE_PROB)) {
+            if (Configuration.ADVANCED_TYPE_CHANGES) {
+                int randomSchema = getRandomIndex(specification.getSchemas().values());
+                List<SchemaSpecification> options = (new ArrayList<>(specification.getSchemas().values())).get(randomSchema);
+                schema = options.get(getRandomIndex(options));
+                type = schema.getType();
+            } else {
+                int typeToBe = getRandom().nextInt(3);
+                if (typeToBe == 0) {
+                    type = "string";
+                } else if (typeToBe == 1) {
+                    type = "boolean";
+                } else if (typeToBe == 2) {
+                    type = "integer";
+                }
             }
         }
+
+        Long minimum = schema.getMin();
+        Long maximum = schema.getMax();
+
 
         String pattern = schema.getPattern();
         String[] enumOptions = schema.getEnums();
@@ -127,7 +128,7 @@ public class Generator {
 
                 for (String key : children.keySet()) {
                     // if a key is not required there is 75 % chance to be skipped
-                    if (!required.contains(key) && getRandom().nextDouble() <= Configuration.getSKIP_NONREQUIRED_KEY_PROB()) {
+                    if (!required.contains(key) && getRandom().nextDouble() <= Configuration.SKIP_NONREQUIRED_KEY_PROB) {
                         continue;
                     }
 
@@ -194,7 +195,7 @@ public class Generator {
     public String generateHTTPMethod() {
         String[] methods = new String[]{"POST", "GET"};
         String method = methods[0];
-        if (getRandom().nextDouble() > Configuration.getHTTP_METHOD_GET_PROB()) {
+        if (getRandom().nextDouble() > Configuration.HTTP_METHOD_GET_PROB) {
             method = methods[1];
         }
         return method;
