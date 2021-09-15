@@ -2,7 +2,7 @@
   "openrpc": "1.0.0-rc1",
   "info": {
     "version": "1.0.0",
-    "title": "Ripple JSON-RPC",
+    "title": "XRP JSON-RPC",
     "description": "This API lets you interact with a rippled server via JSON-RPC"
   },
   "servers": [
@@ -507,6 +507,16 @@
           }
         },
         {
+          "name": "ticket",
+          "description": "Retrieve a Ticket object, which represents a sequence number set aside for future use. Can be provided as string (object ID of the Ticket) or as an object.",
+          "schema": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/ObjectID" },
+              { "$ref": "#/components/schemas/Ticket" }
+            ]
+          }
+        },
+        {
           "name": "offer",
           "description": "Specify an Offer object to retrieve. If a string, interpret as the unique index to the Offer. If an object, requires the sub-fields account and seq to uniquely identify the offer.",
           "schema": {
@@ -844,50 +854,6 @@
       }
     },
     {
-      "name": "path_find",
-      "description": "Find a path for a payment between two accounts and receive updates.",
-      "params": [
-        {
-          "name": "subcommand",
-          "description": "There are three different modes, or sub-commands, of the path_find command. ",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "enum": ["create", "close", "status"]
-          }
-        },
-        {
-          "$ref": "#/components/contentDescriptors/SourceAccount"
-        },
-        {
-          "$ref": "#/components/contentDescriptors/DestinationAccount"
-        },
-        {
-          "$ref": "#/components/contentDescriptors/DestinationAmount"
-        },
-        {
-          "$ref": "#/components/contentDescriptors/SendMax"
-        },
-        {
-          "name": "paths",
-          "description": "Array of arrays of objects, representing payment paths to check.",
-          "schema": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          }
-        }
-      ],
-      "result": {
-        "name": "result",
-        "description": "A path along which a transaction can possibly be made.",
-        "schema": {
-          "type": "object"
-        }
-      }
-    },
-    {
       "name": "ripple_path_find",
       "description": "Find a path for payment between two accounts, once.",
       "params": [
@@ -1039,7 +1005,7 @@
           "name": "url",
           "description": "URL where the server sends a JSON-RPC callbacks for each event. Admin-only.",
           "schema": {
-            "type": "string", "pattern": "(http(s)?:\\\/\\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}(\\.[a-z]{2,6})?\\b([-a-zA-Z0-9@:%_\\+.~#?&\\\/\\\/=]*)"
+            "$ref": "#/components/schemas/URL"
           }
         },
         {
@@ -1094,6 +1060,27 @@
       "name": "fee",
       "description": "Get information about transaction cost. This requires the FeeEscalation amendment to be enabled.",
       "params": [
+      ],
+      "result": {
+        "name": "result",
+        "description": "The current state of the open-ledger requirements for the transaction cost.",
+        "schema": {
+          "type": "object"
+        }
+      }
+    },
+    {
+      "name": "manifest",
+      "description": "The manifest method reports the current manifest information for a given validator public key. The manifest is the public portion of that validator's configured token.",
+      "params": [
+        {
+          "name": "public_key",
+          "description": "The base58-encoded public key of the validator to look up. This can be the master public key or ephemeral public key.",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/ValidationPublicKey"
+          }
+        }
       ],
       "result": {
         "name": "result",
@@ -1162,6 +1149,18 @@
         "type": "string",
         "pattern": "^__ACCOUNT__$"
       },
+      "AccountPublicKey": {
+        "type": "string",
+        "pattern": "^a[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyzZ]{33,53}$"
+      },
+      "SeedSecretKey": {
+        "type": "string",
+        "pattern": "^s[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{16,29}$"
+      },
+      "ValidationPublicKey": {
+        "type": "string",
+        "pattern": "^n[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyzZ]{33,53}$"
+      },
       "ObjectID": {
         "type": "string",
         "pattern": "^[0-9A-F]{64}$"
@@ -1190,9 +1189,12 @@
         "type": "string",
         "pattern": "^[A-Fa-f0-9]{64}$"
       },
-      "AccountPublicKey": {
+      "Blob": {
+        "type": "string"
+      },
+      "URL": {
         "type": "string",
-        "pattern": "^a[1-9a-km-zA-HJ-NP-Z]{33,53}$"
+        "pattern": "(http(s)?:\\\/\\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}(\\.[a-z]{2,6})?\\b([-a-zA-Z0-9@:%_\\+.~#?&\\\/\\\/=]*)"
       },
       "Transaction": {
         "type": "object",
@@ -1231,14 +1233,28 @@
             "description": "Additional arbitrary information used to identify this transaction.",
             "type": "array",
             "items": {
-              "type": "object"
+              "type": "object",
+              "required": ["Memo"],
+              "properties": {
+                "Memo": {
+                  "description": "Each object has only one field, Memo, which in turn contains another object Memo.",
+                  "$ref": "#/components/schemas/Memo"
+                }
+              }
             }
           },
           "Signers": {
             "description": "Array of objects that represent a multi-signature which authorizes this transaction.",
             "type": "array",
             "items": {
-              "type": "object"
+              "type": "object",
+              "required": ["Signer"],
+              "properties": {
+                "Signer": {
+                  "description": "The Signers list is an array of objects, each with one field, Signer.",
+                  "$ref": "#/components/schemas/Signer"
+                }
+              }
             }
           },
           "SourceTag": {
@@ -1256,6 +1272,66 @@
           "TxnSignature": {
             "description": "(Automatically added when signing) The signature that verifies this transaction as originating from the account it says it is from.",
             "type": "string"
+          },
+          "Destination": {
+            "description": "AccountDelete Fields - The address of an account to receive any leftover XRP after deleting the sending account. Must be a funded account in the ledger, and must not be the sending account.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "DestinationTag": {
+            "description": "AccountDelete Fields - Arbitrary destination tag that identifies a hosted recipient or other information for the recipient of the deleted account's leftover XRP.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "CheckID": {
+            "description": "CheckCancel Fields - The ID of the Check ledger object to cancel, as a 64-character hexadecimal string.",
+            "$ref": "#/components/schemas/Hex64String"
+          },
+          "SendMax": {
+            "description": "CheckCreate Fields - Maximum amount of source currency the Check is allowed to debit the sender, including transfer fees on non-XRP currencies. The Check can only credit the destination with the same currency (from the same issuer, for non-XRP currencies). For non-XRP amounts, the nested field names MUST be lower-case.",
+            "$ref": "#/components/schemas/CurrencyAmount"
+          },
+          "Owner": {
+            "description": "EscrowCancel Fields - Address of the source account that funded the escrow payment.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "OfferSequence": {
+            "description": "EscrowCancel Fields - Transaction sequence (or Ticket number) of EscrowCreate transaction that created the escrow to cancel.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "Amount": {
+            "description": "EscrowCreate Fields - Amount of XRP, in drops, to deduct from the sender's balance and escrow. Once escrowed, the XRP can either go to the Destination address (after the FinishAfter time) or returned to the sender (after the CancelAfter time).",
+            "$ref": "#/components/schemas/CurrencyAmount"
+          },
+          "TakerGets": {
+            "description": "OfferCreate Fields - The amount and type of currency being provided by the offer creator.",
+            "$ref": "#/components/schemas/CurrencyAmount"
+          },
+          "TakerPays": {
+            "description": "OfferCreate Fields - The amount and type of currency being requested by the offer creator.",
+            "$ref": "#/components/schemas/CurrencyAmount"
+          },
+          "Channel": {
+            "description": "PaymentChannelClaim Fields - The unique ID of the channel, as a 64-character hexadecimal string.",
+            "$ref": "#/components/schemas/Hex64String"
+          },
+          "SettleDelay": {
+            "description": "PaymentChannelCreate Fields - Amount of time the source address must wait before closing the channel if it has unclaimed XRP.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "PublicKey": {
+            "description": "PaymentChannelCreate Fields - The public key of the key pair the source will use to sign claims against this channel, in hexadecimal. This can be any secp256k1 or Ed25519 public key.",
+            "$ref": "#/components/schemas/HexString"
+          },
+          "SignerQuorum": {
+            "description": "SignerListSet Fields - A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is greater than or equal to this value. To delete a signer list, use the value 0.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "TicketCount": {
+            "description": "TicketCreate Fields - How many Tickets to create. This must be a positive number and cannot cause the account to own more than 250 Tickets after executing this transaction.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "LimitAmount": {
+            "description": "TrustSet Fields - Object defining the trust line to create or modify, in the format of a Currency Amount.",
+            "$ref": "#/components/schemas/CurrencyObject"
           }
         }
       },
@@ -1307,6 +1383,21 @@
           }
         }
       },
+      "Ticket": {
+        "description": "A Ticket object. Represents a sequence number set aside for future use.",
+        "type": "object",
+        "required": ["owner", "ticket_sequence"],
+        "properties": {
+          "owner": {
+            "description": "The owner of the Ticket object.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "ticket_sequence": {
+            "description": "The Ticket Sequence number of the Ticket entry to retrieve.",
+            "$ref": "#/components/schemas/UnsignedInteger"
+          }
+        }
+      },
       "Offer": {
         "description": "An Offer object.",
         "type": "object",
@@ -1337,6 +1428,42 @@
           },
           "currency": {
             "$ref": "#/components/schemas/Currency"
+          }
+        }
+      },
+      "Memo": {
+        "description": "Additional arbitrary information used to identify this transaction.",
+        "type": "object",
+        "properties": {
+          "MemoData": {
+            "description": "Arbitrary hex value, conventionally containing the content of the memo.",
+            "$ref": "#/components/schemas/HexString"
+          },
+          "MemoFormat": {
+            "description": "Hex value representing characters allowed in URLs.",
+            "$ref": "#/components/schemas/HexString"
+          },
+          "MemoType": {
+            "description": "Hex value representing characters allowed in URLs.",
+            "$ref": "#/components/schemas/HexString"
+          }
+        }
+      },
+      "Signer": {
+        "description": "The Signer field has nested fields.",
+        "type": "object",
+        "properties": {
+          "Account": {
+            "description": "The address associated with this signature, as it appears in the signer list.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "TxnSignature": {
+            "description": "A signature for this transaction, verifiable using the SigningPubKey.",
+            "$ref": "#/components/schemas/Blob"
+          },
+          "SigningPubKey": {
+            "description": "The public key used to create this signature.",
+            "$ref": "#/components/schemas/Blob"
           }
         }
       },
@@ -1515,8 +1642,7 @@
         "name": "seed",
         "description": "The secret seed to use to sign the claim. This must be the same key pair as the public key specified in the channel. Must be in the XRP Ledger's base58 format. If provided, you must also specify the key_type. Cannot be used with secret, seed_hex, or passphrase. ",
         "schema": {
-          "type": "string",
-          "pattern": "^s[1-9a-km-zA-HJ-NP-Z]{16,29}$"
+          "$ref": "#/components/schemas/SeedSecretKey"
         }
       },
       "SeedHex": {
