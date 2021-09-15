@@ -878,7 +878,7 @@
           "description": "Array of currencies that the source account might want to spend. Each entry in the array should be a JSON object with a mandatory currency field and optional issuer field, like how currency amounts are specified. Cannot contain more than 18 source currencies. By default, uses all source currencies available up to a maximum of 88 different currency/issuer pairs.",
           "schema": {
             "type": "array",
-            "length": 18,
+            "maxlength": 18,
             "items": {
               "$ref": "#/components/schemas/CurrencyObject"
             }
@@ -1189,6 +1189,10 @@
         "type": "string",
         "pattern": "^[A-Fa-f0-9]{64}$"
       },
+      "HexStringHash128": {
+        "type": "string",
+        "pattern": "^$|^[A-Fa-f0-9]{32}$"
+      },
       "Blob": {
         "type": "string"
       },
@@ -1273,6 +1277,34 @@
             "description": "(Automatically added when signing) The signature that verifies this transaction as originating from the account it says it is from.",
             "type": "string"
           },
+          "ClearFlag": {
+            "description": "AccountSet Fields - Unique identifier of a flag to disable for this account.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "Domain": {
+            "description": "AccountSet Fields - The domain that owns this account, as a string of hex representing the ASCII for the domain in lowercase. Cannot be more than 256 bytes in length.",
+            "$ref": "#/components/schemas/HexString"
+          },
+          "EmailHash": {
+            "description": "AccountSet Fields - Hash of an email address to be used for generating an avatar image. ",
+            "$ref": "#/components/schemas/HexStringHash128"
+          },
+          "MessageKey": {
+            "description": "AccountSet Fields - Public key for sending encrypted messages to this account.",
+            "$ref": "#/components/schemas/Blob"
+          },
+          "SetFlag": {
+            "description": "AccountSet Fields - Integer flag to enable for this account.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "TransferRate": {
+            "description": "AccountSet Fields - The fee to charge when users transfer this account's issued currencies, represented as billionths of a unit. Cannot be more than 2000000000 or less than 1000000000, except for the special case 0 meaning no fee.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "TickSize": {
+            "description": "AccountSet Fields - Tick size to use for offers involving a currency issued by this address. The exchange rates of those offers is rounded to this many significant digits. Valid values are 3 to 15 inclusive, or 0 to disable.",
+            "$ref": "#/components/schemas/UnsignedInteger8bit"
+          },
           "Destination": {
             "description": "AccountDelete Fields - The address of an account to receive any leftover XRP after deleting the sending account. Must be a funded account in the ledger, and must not be the sending account.",
             "$ref": "#/components/schemas/Address"
@@ -1285,9 +1317,33 @@
             "description": "CheckCancel Fields - The ID of the Check ledger object to cancel, as a 64-character hexadecimal string.",
             "$ref": "#/components/schemas/Hex64String"
           },
-          "SendMax": {
-            "description": "CheckCreate Fields - Maximum amount of source currency the Check is allowed to debit the sender, including transfer fees on non-XRP currencies. The Check can only credit the destination with the same currency (from the same issuer, for non-XRP currencies). For non-XRP amounts, the nested field names MUST be lower-case.",
+          "Amount": {
+            "description": "CheckCash Fields - Redeem the Check for exactly this amount, if possible.",
             "$ref": "#/components/schemas/CurrencyAmount"
+          },
+          "DeliverMin": {
+            "description": "CheckCash Fields - Redeem the Check for at least this amount and for as much as possible.",
+            "$ref": "#/components/schemas/CurrencyAmount"
+          },
+          "SendMax": {
+            "description": "CheckCreate Fields - Maximum amount of source currency the Check is allowed to debit the sender, including transfer fees on non-XRP currencies.",
+            "$ref": "#/components/schemas/CurrencyAmount"
+          },
+          "Expiration": {
+            "description": "CheckCreate Fields - Time after which the Check is no longer valid, in seconds since the Ripple Epoch.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "InvoiceID": {
+            "description": "CheckCreate Fields - Arbitrary 256-bit hash representing a specific reason or identifier for this Check.",
+            "$ref": "#/components/schemas/Hex64String"
+          },
+          "Authorize": {
+            "description": "DepositPreauth Fields - AThe XRP Ledger address of the sender to preauthorize.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "Unauthorize": {
+            "description": "DepositPreauth Fields - The XRP Ledger address of a sender whose preauthorization should be revoked.",
+            "$ref": "#/components/schemas/Address"
           },
           "Owner": {
             "description": "EscrowCancel Fields - Address of the source account that funded the escrow payment.",
@@ -1297,9 +1353,21 @@
             "description": "EscrowCancel Fields - Transaction sequence (or Ticket number) of EscrowCreate transaction that created the escrow to cancel.",
             "$ref": "#/components/schemas/UnsignedInteger32bit"
           },
-          "Amount": {
-            "description": "EscrowCreate Fields - Amount of XRP, in drops, to deduct from the sender's balance and escrow. Once escrowed, the XRP can either go to the Destination address (after the FinishAfter time) or returned to the sender (after the CancelAfter time).",
-            "$ref": "#/components/schemas/CurrencyAmount"
+          "CancelAfter": {
+            "description": "EscrowCreate Fields - The time, in seconds since the Ripple Epoch, when this escrow expires.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "FinishAfter": {
+            "description": "EscrowCreate Fields - The time, in seconds since the Ripple Epoch, when the escrowed XRP can be released to the recipient.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "Condition": {
+            "description": "EscrowCreate Fields - Hex value representing a PREIMAGE-SHA-256 crypto-condition. The funds can only be delivered to the recipient if this condition is fulfilled.",
+            "$ref": "#/components/schemas/HexString"
+          },
+          "Fulfillment": {
+            "description": "EscrowFinish Fields - Hex value of the PREIMAGE-SHA-256 crypto-condition fulfillment matching the held payment's Condition.",
+            "$ref": "#/components/schemas/HexString"
           },
           "TakerGets": {
             "description": "OfferCreate Fields - The amount and type of currency being provided by the offer creator.",
@@ -1309,21 +1377,42 @@
             "description": "OfferCreate Fields - The amount and type of currency being requested by the offer creator.",
             "$ref": "#/components/schemas/CurrencyAmount"
           },
+          "Balance": {
+            "description": "PaymentChannelClaim Fields - Total amount of XRP, in drops, delivered by this channel after processing this claim.",
+            "$ref": "#/components/schemas/XRPdrops"
+          },
           "Channel": {
             "description": "PaymentChannelClaim Fields - The unique ID of the channel, as a 64-character hexadecimal string.",
             "$ref": "#/components/schemas/Hex64String"
           },
-          "SettleDelay": {
-            "description": "PaymentChannelCreate Fields - Amount of time the source address must wait before closing the channel if it has unclaimed XRP.",
-            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          "Signature": {
+            "description": "PaymentChannelClaim Fields - The signature of this claim, as hexadecimal. The signed message contains the channel ID and the amount of the claim. ",
+            "$ref": "#/components/schemas/Hex64String"
           },
           "PublicKey": {
             "description": "PaymentChannelCreate Fields - The public key of the key pair the source will use to sign claims against this channel, in hexadecimal. This can be any secp256k1 or Ed25519 public key.",
             "$ref": "#/components/schemas/HexString"
           },
+          "SettleDelay": {
+            "description": "PaymentChannelCreate Fields - Amount of time the source address must wait before closing the channel if it has unclaimed XRP.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "RegularKey": {
+            "description": "SetRegularKey Fields - A base-58-encoded Address that indicates the regular key pair to be assigned to the account. If omitted, removes any existing regular key pair from the account. Must not match the master key pair for the address.",
+            "$ref": "#/components/schemas/Address"
+          },
           "SignerQuorum": {
             "description": "SignerListSet Fields - A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is greater than or equal to this value. To delete a signer list, use the value 0.",
             "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "SignerEntries": {
+            "description": "SignerListSet Fields - Array of SignerEntry objects, indicating the addresses and weights of signers in this list. This signer list must have at least 1 member and no more than 8 members. No address may appear more than once in the list, nor may the Account submitting the transaction appear in the list.",
+            "type": "array",
+            "minlength": 1,
+            "maxlength": 8,
+            "items": {
+              "$ref": "#/components/schemas/SignerEntry"
+            }
           },
           "TicketCount": {
             "description": "TicketCreate Fields - How many Tickets to create. This must be a positive number and cannot cause the account to own more than 250 Tickets after executing this transaction.",
@@ -1332,6 +1421,14 @@
           "LimitAmount": {
             "description": "TrustSet Fields - Object defining the trust line to create or modify, in the format of a Currency Amount.",
             "$ref": "#/components/schemas/CurrencyObject"
+          },
+          "QualityIn": {
+            "description": "TrustSet Fields - Value incoming balances on this trust line at the ratio of this number per 1,000,000,000 units. A value of 0 is shorthand for treating balances at face value.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "QualityOut": {
+            "description": "TrustSet Fields - Value outgoing balances on this trust line at the ratio of this number per 1,000,000,000 units. A value of 0 is shorthand for treating balances at face value.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
           }
         }
       },
@@ -1452,6 +1549,7 @@
       "Signer": {
         "description": "The Signer field has nested fields.",
         "type": "object",
+        "required": ["Account", "TxnSignature", "SigningPubKey"],
         "properties": {
           "Account": {
             "description": "The address associated with this signature, as it appears in the signer list.",
@@ -1464,6 +1562,21 @@
           "SigningPubKey": {
             "description": "The public key used to create this signature.",
             "$ref": "#/components/schemas/Blob"
+          }
+        }
+      },
+      "SignerEntry": {
+        "description": "Each member of the SignerEntries field is an object that describes that signer in the list.",
+        "type": "object",
+        "required": ["Account", "SignerWeight"],
+        "properties": {
+          "Account": {
+            "description": "An XRP Ledger address whose signature contributes to the multi-signature. It does not need to be a funded address in the ledger.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "SignerWeight": {
+            "description": "The weight of a signature from this signer. A multi-signature is only valid if the sum weight of the signatures provided meets or exceeds the signer list's SignerQuorum value.",
+            "$ref": "#/components/schemas/UnsignedInteger16bit"
           }
         }
       },
@@ -1502,14 +1615,17 @@
       "CurrencyAmount": {
         "oneOf": [
           {
-            "type": "string",
-            "description": "XRP",
-            "pattern": "^(?:-1|[0-9]|[1-9][0-9]{1,14}|1000000000000000|10000000000000000)$"
+            "$ref": "#/components/schemas/XRPdrops"
           },
           {
             "$ref": "#/components/schemas/CurrencyObject"
           }
         ]
+      },
+      "XRPdrops": {
+        "type": "string",
+        "description": "XRP drops",
+        "pattern": "^(?:-1|[0-9]|[1-9][0-9]{1,14}|1000000000000000|10000000000000000)$"
       },
       "Taker": {
         "description": "Unique account address to use as a perspective for viewing offers, in the XRP Ledger's base58 format.",
