@@ -24,6 +24,7 @@ import static util.RandomSingleton.getRandomIndex;
 public class Generator {
 
     private Specification specification;
+    private String regexDefault = "[a-z]*";
 
     public Generator(Specification specification) {
         this.specification = specification;
@@ -115,11 +116,11 @@ public class Generator {
         Long minimum = schema.getMin();
         Long maximum = schema.getMax();
 
-
         String pattern = schema.getPattern();
         String[] enumOptions = schema.getEnums();
 
         switch (type) {
+
             case "object":
                 JSONObjectGene objectGene = new JSONObjectGene(schema);
 
@@ -127,19 +128,20 @@ public class Generator {
                 Set<String> required = schema.getRequiredKeys();
 
                 for (String key : children.keySet()) {
-                    // if a key is not required there is 75 % chance to be skipped
+                    // If a key is not required there is probability that it is not included
                     if (!required.contains(key) && getRandom().nextDouble() <= Configuration.SKIP_NONREQUIRED_KEY_PROB) {
                         continue;
                     }
 
                     List<SchemaSpecification> options = children.get(key);
-                    // take random schema out of the option
+                    // Pick a random schema out of the options
                     SchemaSpecification choice = options.get(getRandom().nextInt(options.size()));
 
                     objectGene.addChild(new StringGene(null, key), generateValueGene(choice));
                 }
 
                 return objectGene;
+
             case "array":
                 List<SchemaSpecification> items = schema.getArrayItemSchemaSpecification();
                 // TODO probably always just one type of child
@@ -150,8 +152,10 @@ public class Generator {
                 }
 
                 return arrayGene;
+
             case "boolean":
                 return new BooleanGene(schema, getRandom().nextBoolean());
+
             case "integer":
                 if (minimum == null) {
                     minimum = Long.MIN_VALUE;
@@ -161,6 +165,7 @@ public class Generator {
                 }
                 long generatedLong = minimum + (long) (getRandom().nextDouble() * (maximum - minimum));
                 return new LongGene(schema, generatedLong);
+
             case "string":
             default:
                 if (enumOptions != null && enumOptions.length != 0) {
@@ -170,7 +175,8 @@ public class Generator {
                     // create a value from the pattern
                     return new StringGene(schema, generateRandomValue(pattern));
                 } else {
-                    return new StringGene(schema, generateRandomValue("[a-z]*"));
+                    // create a string from scratch
+                    return new StringGene(schema, generateRandomValue(regexDefault));
                 }
         }
     }

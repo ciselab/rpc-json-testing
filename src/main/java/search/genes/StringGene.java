@@ -2,17 +2,14 @@ package search.genes;
 
 import search.Generator;
 import search.openRPC.SchemaSpecification;
-import search.openRPC.Specification;
 import util.Configuration;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomBool;
-import static util.RandomSingleton.getRandomIndex;
 
 public class StringGene extends ValueGene<String> {
 
@@ -31,8 +28,8 @@ public class StringGene extends ValueGene<String> {
             return this.copy();
         }
 
-        // TODO remove changing entire gene.
-        if (getRandomBool(0.95)) {
+        if (getRandomBool(Configuration.MUTATION_INSTEAD_OF_GENERATION)) {
+
             // Option 1: always just create new stringGene because there are no chars to mutate
             if (this.getValue().length() == 0) {
                 return getNewGene(generator);
@@ -45,7 +42,7 @@ public class StringGene extends ValueGene<String> {
 
                 if (options.contains(this.getValue())) {
                     int index = options.indexOf(this.getValue());
-                    // remove the current option from list
+                    // Remove the current option from list
                     options.remove(index);
                 }
 
@@ -64,15 +61,17 @@ public class StringGene extends ValueGene<String> {
 //            }
 
             // Option 4: mutate characters in the string
-            if (this.getValue().equals("__ACCOUNT__")) {
+            // TODO find a different way to specify the use of a tag
+            if (this.getValue().equals("__ACCOUNT__") || !getSchema().isMutable()) {
                 return this.copy();
             }
 
             String mutatedValue = mutateCharacters(this.getValue());
+
             return new StringGene(this.getSchema(), mutatedValue);
 
         } else {
-            // change gene schema type (e.g. no longer string but long, or still string but totally different string)
+            // Change gene into an entirely new value by generating new value
             return getNewGene(generator);
         }
     }

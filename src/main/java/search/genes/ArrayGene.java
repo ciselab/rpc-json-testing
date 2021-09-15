@@ -51,70 +51,62 @@ public class ArrayGene extends NestedGene<JSONArray> {
     public ArrayGene mutate(Generator generator) {
         ArrayGene clone = this.copy();
 
-        // if there is no schema it means this is the main parameters array
+        // If there is no schema it means this is the main parameters array
         if (getSchema() == null) {
-            // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
-            int index = getRandom().nextInt(clone.children.size());
-            Gene child = clone.children.get(index);
-            child = child.mutate(generator);
+            for (int i = 0; i < clone.children.size(); i++) {
+                if (util.RandomSingleton.getRandomBool(1 / clone.children.size())) {
+                    Gene child = clone.children.get(i);
+                    child = child.mutate(generator);
 
-            while (child instanceof ArrayGene) {
-                child = child.mutate(generator);
-            }
-
-            clone.children.set(index, child);
-            return clone;
-        }
-
-        // if the array is always empty according to specification, it stays empty.
-        if (getSchema().getArrayItemSchemaSpecification().isEmpty()) {
-            return clone;
-        }
-
-        List<SchemaSpecification> children = getSchema().getArrayItemSchemaSpecification();
-        // TODO we only take the first specification for now but this could be an anyof/oneof so we should take into account that we have to change the type of all child genes
-
-        double choice = getRandom().nextDouble();
-
-        if (clone.children.size() < this.getSchema().getLength() && (clone.children.size() == 0 || choice <= Configuration.ADD_ELEMENT_PROB)) {
-            // add a child
-            Gene child = generator.generateValueGene(children.get(0));
-
-            while (child instanceof ArrayGene) {
-                child = generator.generateValueGene(children.get(0));
-            }
-
-            clone.children.add(child);
-        } else if (clone.children.size() > 1 && choice <= (Configuration.REMOVE_ELEMENT_PROB + Configuration.ADD_ELEMENT_PROB)) {
-            // remove a child
-            int index = getRandom().nextInt(clone.children.size());
-            clone.children.remove(index);
-
-        } else {
-            // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
-            int index = getRandom().nextInt(clone.children.size());
-
-            // Choose another gene if the chosen gene is the ACCOUNT tag
-            if (clone.children.get(index) instanceof StringGene) {
-                if (((StringGene) clone.children.get(index)).getValue().equals("__ACCOUNT__")) {
-                    int newIndex = getRandom().nextInt(clone.children.size());
-                    while (newIndex == index && clone.children.size() > 1) {
-                        newIndex = getRandom().nextInt(clone.children.size());
+                    // Make sure child is not another array (stripValues does not support arrays in arrays)
+                    while (child instanceof ArrayGene) {
+                        child = child.mutate(generator);
                     }
-                    index = newIndex;
+                    clone.children.set(i, child);
                 }
             }
-
-            Gene child = clone.children.get(index);
-            child = child.mutate(generator);
-
-            while (child instanceof ArrayGene) {
-                child = child.mutate(generator);
-            }
-
-            clone.children.set(index, child);
+            return clone;
         }
 
+        // If the array is always empty according to specification, it stays empty.
+        // TODO or maybe it should be filled with something?
+//        if (getSchema().getArrayItemSchemaSpecification().isEmpty()) {
+//            return clone;
+//        }
+
+        // TODO we only take the first specification for now but this could be an anyof/oneof so we should take into account that we have to change the type of all child genes
+        List<SchemaSpecification> children = getSchema().getArrayItemSchemaSpecification();
+
+        // Mutate elements of the array
+        for (int i = 0; i < clone.children.size(); i++) {
+            if (util.RandomSingleton.getRandomBool(1 / clone.children.size())) {
+                double choice = getRandom().nextDouble();
+
+                if (clone.children.size() < this.getSchema().getLength() && (clone.children.size() == 0 || choice <= Configuration.ADD_ELEMENT_PROB)) {
+                    // Add a child (change gene into a different type or generate new value)
+                    Gene child = generator.generateValueGene(children.get(i));
+                    while (child instanceof ArrayGene) {
+                        child = generator.generateValueGene(children.get(i));
+                    }
+                    clone.children.add(i, child); // Will be added in the end
+                    i += 1;
+                } else if (clone.children.size() > 1 && choice <= (Configuration.REMOVE_ELEMENT_PROB + Configuration.ADD_ELEMENT_PROB)) {
+                    // Remove a child
+                    clone.children.remove(i);
+                    i -= 1;
+
+                } else {
+                    // Mutate a child (or more)
+                    Gene child = clone.children.get(i);
+                    child = child.mutate(generator);
+                    // Make sure child is not another array (stripValues does not support arrays in arrays)
+                    while (child instanceof ArrayGene) {
+                        child = child.mutate(generator);
+                    }
+                    clone.children.set(i, child);
+                }
+            }
+        }
         return clone;
     }
 

@@ -20,11 +20,11 @@ public class LongGene extends ValueGene<Long> {
      */
     @Override
     public Gene mutate(Generator generator) {
-        // TODO remove changing entire gene.
-        if (getRandomBool(0.95)) {
+
+        if (getRandomBool(Configuration.MUTATION_INSTEAD_OF_GENERATION)) {
+
             // Get minimum and maximum value of the parameter range
             SchemaSpecification schema = getSchema();
-
             Long lb = schema.getMin();
             Long ub = schema.getMax();
 
@@ -39,7 +39,7 @@ public class LongGene extends ValueGene<Long> {
 
             Long distanceMinMax = ub - lb;
 
-            //double check that this is always above 0
+            // Double check that this is always above 0 (?)
             double newValue = getValue();
 
             double delta1 = (newValue - lb) / distanceMinMax;
@@ -62,16 +62,17 @@ public class LongGene extends ValueGene<Long> {
             newValue = Math.round(newValue + deltaq * distanceMinMax);
 
             // This part does not allow for the creation of edge cases
-            // (below the minimum and above the maximum)
-//            if (newValue < lb)
-//                newValue = lb;
-//            else if (newValue > ub)
-//                newValue = ub;
+            if (Configuration.NO_OUTSIDE_BOUNDARY_CASES) {
+                if (newValue < lb)
+                    newValue = lb;
+                else if (newValue > ub)
+                    newValue = ub;
+            }
 
             return new LongGene(this.getSchema(), (long) newValue);
 
         } else {
-            // change gene type (e.g. string instead of long, or random long within specification)
+            // Change gene into an entirely new value by generating new value
             return getNewGene(generator);
         }
     }

@@ -28,7 +28,7 @@ public class Chromosome {
     }
 
     /**
-     * Mutate individual.
+     * Mutate a chromosome.
      * @param generator
      * @return mutated individual
      */
@@ -38,12 +38,12 @@ public class Chromosome {
             // mutate http method
             return new Chromosome(generator.generateHTTPMethod(), method, genes.copy());
         } else if (choice < (Configuration.MUTATE_HTTP_METHOD_PROB + Configuration.MUTATE_API_METHOD_PROB)) {
-            // mutate method (this is actually not mutation but just a new individual)
+            // mutate api method (and corresponding newly generated parameters)
             String methodName = generator.getRandomMethod();
             ArrayGene method = generator.generateMethod(methodName);
             return new Chromosome(generator.generateHTTPMethod(), methodName, method);
         } else {
-            // mutate parameters (mutate certain rate of parameters)
+            // mutate parameters of api method
             ArrayGene newGenes = genes.mutate(generator);
             return new Chromosome(httpMethod, method, newGenes);
         }

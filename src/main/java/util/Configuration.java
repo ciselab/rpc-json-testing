@@ -26,17 +26,17 @@ public final class Configuration {
     public static final double THRESHOLD_DIFFERENT_FEATURES = 0.5;
 
     // - Mutation of genes
+    public static final double MUTATION_INSTEAD_OF_GENERATION = 0.95;
     // Array gene
     public static final double REMOVE_ELEMENT_PROB = 0.1;
     public static final double ADD_ELEMENT_PROB = 0.1;
-    // Boolean gene
-    public static final double BOOL_FLIP_PROB = 0.95;
     // Object gene
     public static final double ADD_NONREQUIRED_CHILD_PROB = 0.1;
     public static final double REMOVE_CHILD_PROB = 0.1;
     public static final double REPLACE_CHILD_PROB = 0.2;
     // Long gene
     public static final double BOUNDARY_CASE_PROB = 0.15;
+    public static final boolean NO_OUTSIDE_BOUNDARY_CASES = false;
     // String gene
     public static final double FRACTION_STRING_TO_MUTATE = 0.2;
     public static final double OTHER_ENUM_PROB = 0.6;

@@ -12,12 +12,10 @@ import static util.RandomSingleton.getRandomBool;
 
 public class Individual {
     private List<Chromosome> dna;
-    private Integer age;
     private double fitness;
 
     public Individual(List<Chromosome> dna) {
         this.dna = dna;
-        this.age = 0;
     }
 
     public JSONObject toTotalJSONObject() {
@@ -37,8 +35,11 @@ public class Individual {
         List<Chromosome> newDna = new ArrayList<>();
 
         for (int i = 0; i < dna.size(); i++) {
-            // TODO maybe make this conditional on random var
-            newDna.add(dna.get(i).mutate(generator));
+            if (util.RandomSingleton.getRandomBool(1/dna.size())) {
+                newDna.add(dna.get(i).mutate(generator));
+            } else {
+                newDna.add(dna.get(i));
+            }
         }
 
         return new Individual(newDna);

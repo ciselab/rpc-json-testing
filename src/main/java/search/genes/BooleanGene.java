@@ -4,8 +4,6 @@ import search.Generator;
 import search.openRPC.SchemaSpecification;
 import util.Configuration;
 
-import static util.RandomSingleton.getRandom;
-
 public class BooleanGene extends ValueGene<Boolean> {
 
     public BooleanGene(SchemaSpecification schema, Boolean value) {
@@ -14,10 +12,10 @@ public class BooleanGene extends ValueGene<Boolean> {
 
     @Override
     public Gene mutate(Generator generator) {
-        if (getRandom().nextDouble() < Configuration.BOOL_FLIP_PROB) {
+        if (util.RandomSingleton.getRandomBool(Configuration.MUTATION_INSTEAD_OF_GENERATION)) {
             return new BooleanGene(this.getSchema(), !this.getValue());
         } else {
-            // change gene (e.g. no longer boolean but string, or random boolean)
+            // Change gene into an entirely new value by generating new value
             return getNewGene(generator);
         }
     }
