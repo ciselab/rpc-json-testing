@@ -66,7 +66,7 @@ public class Collector {
 
         // Update API method occurrences statistics
         String currentMethod = ind.getDna().get(ind.getDna().size()-1).getApiMethod();
-        if (!methodCountArchive.containsKey(ind.)) {
+        if (!methodCountArchive.containsKey(currentMethod)) {
             methodCountArchive.put(currentMethod, 0);
         }
         methodCountArchive.put(currentMethod, methodCountArchive.get(currentMethod) + 1);
