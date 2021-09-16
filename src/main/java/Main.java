@@ -164,11 +164,10 @@ public class Main {
             heuristic.gatherResponses(population);
 
             // Stopping criterium = time
-            int generation = 0;
-
             while (testDriver.shouldContinue()) {
-                System.out.println("Starting generation: " + generation + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");
-                generation += 1;
+                System.out.println("Starting generation: " + getCollector().getGeneration() + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");
+
+                getCollector().nextGeneration();
                 population = heuristic.nextGeneration(population);
 
                 // Store some statistics for analysis purposes.
@@ -177,8 +176,8 @@ public class Main {
                     for (Individual ind : population) {
 
                         // Count methods
-                        getCollector().countMethodPerGen(ind, generation);
-                        getCollector().countStatusCodesPerGen(ind, generation);
+                        getCollector().countMethods(ind);
+                        getCollector().countStatusCodes(ind);
 
                         if (ind.getFitness() > maxFitness) {
                             maxFitness = ind.getFitness();
@@ -204,7 +203,10 @@ public class Main {
             }
 
             // Information on API methods that occurred
-            writeFile(getCollector().getMethodCount().toString(), "methods_per_gen.txt");
+            writeFile(getCollector().getMethodCountTotal().toString(), "methods_total.txt");
+            writeFile(getCollector().getMethodCountArchive().toString(), "methods_archive.txt");
+            writeFile(getCollector().getMethodCountPerGen().toString(), "methods_per_gen.txt");
+
             // Information on status codes that occurred
             writeFile(getCollector().getStatusCodesTotal().toString(), "status_codes_total.txt");
             writeFile(getCollector().getStatusCodesArchive().toString(), "status_codes_archive.txt");
@@ -212,7 +214,7 @@ public class Main {
 
             // Information on the amount of tests in the archive
             List<Individual> archive = getCollector().getArchive();
-            String testInArchive = "Amount of tests in the archive: " + archive.size() + ", stopped at generation: " + generation;
+            String testInArchive = "Amount of tests in the archive: " + archive.size() + ", stopped at generation: " + getCollector().getGeneration();
             writeFile(testInArchive, "archive_size.txt");
 
             // Delete old test files and write archive to tests

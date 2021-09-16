@@ -81,11 +81,6 @@ public abstract class Heuristic {
 
                     individual.setResponseObject(responseObject);
 
-                    if (!getCollector().getStatusCodesTotal().containsKey(responseObject.getResponseCode())) {
-                        getCollector().getStatusCodesTotal().put(responseObject.getResponseCode(), 0);
-                    }
-                    getCollector().getStatusCodesTotal().put(responseObject.getResponseCode(), getCollector().getStatusCodesTotal().get(responseObject.getResponseCode()) + 1);
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

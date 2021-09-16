@@ -32,7 +32,7 @@ public final class IO {
      * @throws IOException
      */
     public static void writeFile(List<String> information, String fileName) throws IOException {
-        FileWriter writer = new FileWriter(new File(testDirectory + "/" + fileName), true);
+        FileWriter writer = new FileWriter(new File(testDirectory + "/" + fileName), false);
 
         for (int i = 0; i < information.size(); i++) {
             writer.write(information.get(i) + System.lineSeparator());
@@ -47,7 +47,7 @@ public final class IO {
      * @throws IOException
      */
     public static void writeFile(String information, String fileName) throws IOException {
-        FileWriter writer = new FileWriter(new File(testDirectory + "/" + fileName), true);
+        FileWriter writer = new FileWriter(new File(testDirectory + "/" + fileName), false);
 
         writer.write(information + System.lineSeparator());
         writer.close();

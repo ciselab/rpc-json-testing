@@ -106,6 +106,7 @@ public class DiversityBasedFitness extends Fitness {
 
             individual.setFitness(fitness);
             getCollector().collect(method, responseObject.getResponseCode(), strippedString, String.valueOf(featureAndWeightVector.getKey()));
+            // TODO all general collector things should be grouped together (currently in Main)
 
             // decide whether to add individual to the archive
             if (responseObject.getResponseCode() > 499 && !getCollector().getArchive().contains(individual)) {
