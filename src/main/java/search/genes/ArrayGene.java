@@ -2,7 +2,7 @@ package search.genes;
 
 import org.json.JSONArray;
 import search.Generator;
-import search.openRPC.SchemaSpecification;
+import openRPC.SchemaSpecification;
 import util.Configuration;
 
 import java.util.ArrayList;

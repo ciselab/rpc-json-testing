@@ -1,4 +1,4 @@
-package search.openRPC;
+package openRPC;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static search.openRPC.Specification.extractTypes;
+import static openRPC.Specification.extractTypes;
 
 /**
  * SchemaSpecification contains the attributes of a schema belonging to a parameter.

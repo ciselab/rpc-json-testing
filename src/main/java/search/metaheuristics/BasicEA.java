@@ -2,13 +2,14 @@ package search.metaheuristics;
 
 import search.Generator;
 import search.Individual;
-import search.objective.Fitness;
+import objective.Fitness;
 import test_drivers.TestDriver;
 import util.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static util.IO.writeFile;
 import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomBool;
 import static util.RandomSingleton.getRandomIndex;
@@ -66,6 +67,11 @@ public class BasicEA extends Heuristic{
         offspring.addAll(population);
 
         this.gatherResponses(offspring);
+
+        // Quit the process if time is up.
+        if (!this.getTestDriver().shouldContinue()) {
+            return population;
+        }
 
         // evaluate entire population
         fitness.evaluate(getGenerator(), offspring);

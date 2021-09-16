@@ -1,4 +1,4 @@
-package info;
+package statistics;
 
 import util.Triple;
 import java.io.FileWriter;

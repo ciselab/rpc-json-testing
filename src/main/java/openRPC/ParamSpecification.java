@@ -1,4 +1,4 @@
-package search.openRPC;
+package openRPC;
 
 /**
  * ParamSpecification contains attributes of a parameter belonging to an API operation.

@@ -1,4 +1,4 @@
-package search.objective;
+package objective;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

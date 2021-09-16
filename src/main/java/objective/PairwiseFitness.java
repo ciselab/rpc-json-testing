@@ -1,4 +1,4 @@
-//package search.objective;
+//package objective;
 //
 //import connection.Client;
 //import connection.ResponseObject;

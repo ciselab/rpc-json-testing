@@ -5,21 +5,20 @@ import search.Generator;
 import search.Individual;
 import search.metaheuristics.Heuristic;
 import search.metaheuristics.RandomFuzzer;
-import search.objective.DiversityBasedFitness;
-import search.objective.Fitness;
-import search.objective.RandomFitness;
-import search.objective.ResponseFitnessClustering;
-import search.objective.ResponseFitnessClustering2;
-import search.objective.ResponseFitnessPredefinedTypes;
-import search.objective.ResponseStructureFitness;
-import search.objective.ResponseStructureFitness2;
-import search.objective.StatusCodeFitness;
-import search.openRPC.Specification;
+import objective.DiversityBasedFitness;
+import objective.Fitness;
+import objective.ResponseFitnessClustering;
+import objective.ResponseFitnessClustering2;
+import objective.ResponseFitnessPredefinedTypes;
+import objective.ResponseStructureFitness;
+import objective.ResponseStructureFitness2;
+import objective.StatusCodeFitness;
+import openRPC.Specification;
+import statistics.MethodCoverage;
 import test_drivers.GanacheTestDriver;
 import test_drivers.RippledTestDriver;
 import test_drivers.RippledTestDriverTestNet;
 import test_drivers.TestDriver;
-import test_generation.TestWriter;
 import util.Configuration;
 
 import java.io.File;
@@ -27,8 +26,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static statistics.Collector.getCollector;
 import static util.IO.readFile;
 import static util.IO.writeFile;
 
@@ -101,57 +103,65 @@ public class Main {
                 testDriverString = "RippledTestDriverTestNet";
             }
 
-            // Create the selected fitness function object.
-            Fitness fitness;
+            // Create the selected heuristic and fitness function object.
+            Heuristic heuristic;
+            Fitness fitness = null;
             switch (fitnessFunction) {
                 case "1":
-                    System.out.println("Using 1: RandomFitness");
-                    fitness = new RandomFitness();
+                    System.out.println("Using 1: RandomFuzzer");
+                    heuristic = new RandomFuzzer(generator, testDriver);
                     break;
                 case "2":
                     System.out.println("Using 2: StatusCodeFitness");
                     fitness = new StatusCodeFitness();
+                    heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "3":
                     System.out.println("Using 3: ResponseFitnessPredefinedTypes");
                     fitness = new ResponseFitnessPredefinedTypes();
+                    heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "4":
                     System.out.println("Using 4: ResponseFitnessClustering");
                     fitness = new ResponseFitnessClustering();
+                    heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "5":
                     System.out.println("Using 5: ResponseFitnessClustering2");
                     fitness = new ResponseFitnessClustering2();
+                    heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "6":
-                    System.out.println("Using 6: ResponseStructureFitness2");
-                    fitness = new ResponseStructureFitness2();
+                    System.out.println("Using 6: ResponseStructureFitness");
+                    fitness = new ResponseStructureFitness();
+                    heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "7":
-                    System.out.println("Using 7: ResponseStructureFitness3");
-                    fitness = new ResponseStructureFitness3();
+                    System.out.println("Using 7: ResponseStructureFitness2");
+                    fitness = new ResponseStructureFitness2();
+                    heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "8":
                     System.out.println("Using 8: DiversityBasedFitness");
                     fitness = new DiversityBasedFitness();
+                    heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 default:
-                    System.out.println("No or invalid argument specified for fitness. Using default fitness: RandomFitness");
-                    fitness = new RandomFitness();
+                    System.out.println("No or invalid argument specified for fitness. Using default heuristic: RandomFuzzer");
+                    heuristic = new RandomFuzzer(generator, testDriver);
             }
 
             System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime / 60) + " hour(s)");
 
-            BasicEA ea = new BasicEA(generator, testDriver, fitness);
-            List<Individual> population = ea.generatePopulation(Configuration.POPULATION_SIZE);
+            List<Individual> population = heuristic.generatePopulation(Configuration.POPULATION_SIZE);
+            heuristic.gatherResponses(population);
 
             // Stopping criterium = time
             int generation = 0;
             while (testDriver.shouldContinue()) {
                 System.out.println("Starting generation: " + generation + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");
                 generation += 1;
-                population = ea.nextGeneration(population);
+                population = heuristic.nextGeneration(population);
 
                 // Keeping records of the highest fitness in each generation.
                 double maxFitness = 0;
@@ -163,30 +173,39 @@ public class Main {
                 bestFitness.add(maxFitness);
             }
 
-            // Information on how the fitness function is progressing
-            writeFile(fitness.storeInformation(), "fitness_progress.txt");
-            // Information on status codes that occurred
-            writeFile(fitness.getStatusCodesTotal().toString(), "status_codes_total.txt");
-            writeFile(fitness.getStatusCodesArchive().toString(), "status_codes_archive.txt");
-            // Information on the amount of tests in the archive
-            List<Individual> archive = fitness.getArchive();
-            String testInArchive = "Amount of tests in the archive: " + archive.size() + ", stopped at generation: " + generation;
-            writeFile(testInArchive, "archive_size.txt");
-            // Write best fitness values of each generation to file
-            writeFile(bestFitness.toString(), "best_fitness_values.txt");
+            Map<String, MethodCoverage> coverage = getCollector().getInternalCoverage();
 
-            // Delete old test files and write archive to tests
-            String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
-            TestWriter testWriter = new TestWriter(url_server, testDirectory, testDriverString);
-            for (File file : new java.io.File(testDirectory).listFiles()) {
-                if (!file.isDirectory()) {
-                    file.delete();
-                }
+            for (String method : coverage.keySet()) {
+                System.out.println(method);
+                System.out.println(coverage.get(method).statusses);
+                System.out.println(coverage.get(method).structures.keySet());
             }
-            System.out.println("Tests in the archive: " + archive.size());
-            for (int i = 0; i < archive.size(); i++) {
-                testWriter.writeTest(archive.get(i), "ind" + i + "Test");
-            }
+
+//            // Information on how the fitness function is progressing
+//            writeFile(fitness.storeInformation(), "fitness_progress.txt");
+//
+//            // Information on status codes that occurred
+//            writeFile(fitness.getStatusCodesTotal().toString(), "status_codes_total.txt");
+//            writeFile(fitness.getStatusCodesArchive().toString(), "status_codes_archive.txt");
+//            // Information on the amount of tests in the archive
+//            List<Individual> archive = fitness.getArchive();
+//            String testInArchive = "Amount of tests in the archive: " + archive.size() + ", stopped at generation: " + generation;
+//            writeFile(testInArchive, "archive_size.txt");
+//            // Write best fitness values of each generation to file
+//            writeFile(bestFitness.toString(), "best_fitness_values.txt");
+//
+//            // Delete old test files and write archive to tests
+//            String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
+//            TestWriter testWriter = new TestWriter(url_server, testDirectory, testDriverString);
+//            for (File file : new java.io.File(testDirectory).listFiles()) {
+//                if (!file.isDirectory()) {
+//                    file.delete();
+//                }
+//            }
+//            System.out.println("Tests in the archive: " + archive.size());
+//            for (int i = 0; i < archive.size(); i++) {
+//                testWriter.writeTest(archive.get(i), "ind" + i + "Test");
+//            }
 
         } catch (MalformedURLException e) {
             e.printStackTrace();

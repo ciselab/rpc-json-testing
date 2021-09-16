@@ -3,7 +3,7 @@ package test_drivers;
 import connection.Client;
 import connection.ResponseObject;
 
-import info.StatisticsKeeper;
+import statistics.StatisticsKeeper;
 import org.json.JSONObject;
 import util.Configuration;
 

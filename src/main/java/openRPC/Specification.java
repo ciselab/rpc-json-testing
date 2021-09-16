@@ -1,4 +1,4 @@
-package search.openRPC;
+package openRPC;
 
 import util.Pair;
 import org.json.JSONArray;

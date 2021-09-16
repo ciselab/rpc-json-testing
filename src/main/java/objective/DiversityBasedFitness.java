@@ -1,9 +1,8 @@
-package search.objective;
+package objective;
 
 import connection.ResponseObject;
 import search.clustering.AgglomerativeClustering3;
 import search.clustering.Cluster;
-import test_drivers.TestDriver;
 import search.Generator;
 import search.Individual;
 import util.Configuration;
@@ -22,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+
+import static statistics.Collector.getCollector;
 
 /**
  * Cluster once every X generations.
@@ -103,6 +104,7 @@ public class DiversityBasedFitness extends Fitness {
             }
 
             individual.setFitness(fitness);
+            getCollector().collect(method, responseObject.getResponseCode(), strippedString, String.valueOf(featureAndWeightVector.getKey()));
 
             // decide whether to add individual to the archive
             if (responseObject.getResponseCode() > 499 && !getArchive().contains(individual)) {

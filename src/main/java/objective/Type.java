@@ -1,4 +1,4 @@
-package search.objective;
+package objective;
 
 public enum Type {
     // String

@@ -60,6 +60,10 @@ public abstract class Heuristic {
      */
     public void gatherResponses(List<Individual> population) {
         for (Individual individual : population) {
+            if (individual.hasResponseObject()) {
+                continue;
+            }
+
             if (testDriver.shouldContinue()) {
 
                 long start = System.nanoTime();

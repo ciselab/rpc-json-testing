@@ -1,7 +1,7 @@
 package search.genes;
 
 import search.Generator;
-import search.openRPC.SchemaSpecification;
+import openRPC.SchemaSpecification;
 
 /**
  * ValueGene represents one single gene (can be BooleanGene, LongGene or StringGene).

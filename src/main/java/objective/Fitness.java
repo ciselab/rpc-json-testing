@@ -1,4 +1,4 @@
-package search.objective;
+package objective;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -104,6 +104,9 @@ public abstract class Fitness {
                             smallerStrippedArray.put(0, STANDARD_BOOLEAN);
                         } else if (array.isNull(0)) {
                             smallerStrippedArray.put(0, "null");
+                        } else {
+                            System.out.println(arrayObject);
+                            System.exit(0);
                         }
                         // TODO currently it is assuming no arrays in arrays
                     }

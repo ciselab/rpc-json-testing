@@ -1,9 +1,7 @@
-package search.objective;
+package objective;
 
-import connection.ResponseObject;
 import search.Generator;
 import search.Individual;
-import test_drivers.TestDriver;
 import util.Configuration;
 
 import java.util.ArrayList;

@@ -13,7 +13,7 @@ import static util.RandomSingleton.getRandomBool;
 
 public class Individual {
     private List<Chromosome> dna;
-    private ResponseObject responseObject;
+    private ResponseObject responseObject = null;
     private double fitness;
 
     public Individual(List<Chromosome> dna) {
@@ -140,10 +140,14 @@ public class Individual {
     }
 
     public ResponseObject getResponseObject() {
-        if (responseObject == null) {
+        if (!hasResponseObject()) {
             throw new IllegalStateException("Response object must be set first!");
         }
         return responseObject;
+    }
+
+    public boolean hasResponseObject() {
+        return responseObject != null;
     }
 
     public void setResponseObject(ResponseObject responseObject) {

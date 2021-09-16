@@ -1,7 +1,7 @@
 package search.genes;
 
 import search.Generator;
-import search.openRPC.SchemaSpecification;
+import openRPC.SchemaSpecification;
 import util.Configuration;
 
 public class BooleanGene extends ValueGene<Boolean> {

@@ -1,4 +1,4 @@
-package search.objective;
+package objective;
 
 import util.Configuration;
 import util.Pair;

@@ -1,8 +1,7 @@
 package search.genes;
 
-import search.openRPC.SchemaSpecification;
+import openRPC.SchemaSpecification;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

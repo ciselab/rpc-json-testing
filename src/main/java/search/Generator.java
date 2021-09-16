@@ -7,9 +7,9 @@ import search.genes.Gene;
 import search.genes.JSONObjectGene;
 import search.genes.LongGene;
 import search.genes.StringGene;
-import search.openRPC.ParamSpecification;
-import search.openRPC.SchemaSpecification;
-import search.openRPC.Specification;
+import openRPC.ParamSpecification;
+import openRPC.SchemaSpecification;
+import openRPC.Specification;
 import util.Configuration;
 
 import java.util.ArrayList;
