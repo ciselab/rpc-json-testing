@@ -1,10 +1,11 @@
 import connection.Client;
-import org.json.JSONObject;
+
 import search.metaheuristics.BasicEA;
 import search.Generator;
 import search.Individual;
 import search.metaheuristics.Heuristic;
 import search.metaheuristics.RandomFuzzer;
+
 import objective.DiversityBasedFitness;
 import objective.Fitness;
 import objective.ResponseFitnessClustering;
@@ -13,24 +14,30 @@ import objective.ResponseFitnessPredefinedTypes;
 import objective.ResponseStructureFitness;
 import objective.ResponseStructureFitness2;
 import objective.StatusCodeFitness;
+
 import openRPC.Specification;
 import statistics.MethodCoverage;
+
 import test_drivers.GanacheTestDriver;
 import test_drivers.RippledTestDriver;
 import test_drivers.RippledTestDriverTestNet;
 import test_drivers.TestDriver;
+import test_generation.TestWriter;
+
 import util.Configuration;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static statistics.Collector.getCollector;
+
 import static util.IO.readFile;
 import static util.IO.writeFile;
 
@@ -175,37 +182,41 @@ public class Main {
 
             Map<String, MethodCoverage> coverage = getCollector().getInternalCoverage();
 
-            for (String method : coverage.keySet()) {
-                System.out.println(method);
-                System.out.println(coverage.get(method).statusses);
-                System.out.println(coverage.get(method).structures.keySet());
+//            for (String method : coverage.keySet()) {
+//                System.out.println(method);
+//                System.out.println(coverage.get(method).statusses);
+//                System.out.println(coverage.get(method).structures.keySet());
+//            }
+
+            if (fitness != null) {
+                // Information on how the fitness function is progressing
+                writeFile(fitness.storeInformation(), "fitness_progress.txt");
+
+                // Write best fitness values of each generation to file
+                writeFile(bestFitness.toString(), "best_fitness_values.txt");
             }
 
-//            // Information on how the fitness function is progressing
-//            writeFile(fitness.storeInformation(), "fitness_progress.txt");
-//
-//            // Information on status codes that occurred
-//            writeFile(fitness.getStatusCodesTotal().toString(), "status_codes_total.txt");
-//            writeFile(fitness.getStatusCodesArchive().toString(), "status_codes_archive.txt");
-//            // Information on the amount of tests in the archive
-//            List<Individual> archive = fitness.getArchive();
-//            String testInArchive = "Amount of tests in the archive: " + archive.size() + ", stopped at generation: " + generation;
-//            writeFile(testInArchive, "archive_size.txt");
-//            // Write best fitness values of each generation to file
-//            writeFile(bestFitness.toString(), "best_fitness_values.txt");
-//
-//            // Delete old test files and write archive to tests
-//            String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
-//            TestWriter testWriter = new TestWriter(url_server, testDirectory, testDriverString);
-//            for (File file : new java.io.File(testDirectory).listFiles()) {
-//                if (!file.isDirectory()) {
-//                    file.delete();
-//                }
-//            }
-//            System.out.println("Tests in the archive: " + archive.size());
-//            for (int i = 0; i < archive.size(); i++) {
-//                testWriter.writeTest(archive.get(i), "ind" + i + "Test");
-//            }
+            // Information on status codes that occurred
+            writeFile(getCollector().getStatusCodesTotal().toString(), "status_codes_total.txt");
+            writeFile(getCollector().getStatusCodesArchive().toString(), "status_codes_archive.txt");
+
+            // Information on the amount of tests in the archive
+            List<Individual> archive = getCollector().getArchive();
+            String testInArchive = "Amount of tests in the archive: " + archive.size() + ", stopped at generation: " + generation;
+            writeFile(testInArchive, "archive_size.txt");
+
+            // Delete old test files and write archive to tests
+            String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
+            TestWriter testWriter = new TestWriter(url_server, testDirectory, testDriverString);
+            for (File file : new java.io.File(testDirectory).listFiles()) {
+                if (!file.isDirectory()) {
+                    file.delete();
+                }
+            }
+            System.out.println("Tests in the archive: " + archive.size());
+            for (int i = 0; i < archive.size(); i++) {
+                testWriter.writeTest(archive.get(i), "ind" + i + "Test");
+            }
 
         } catch (MalformedURLException e) {
             e.printStackTrace();

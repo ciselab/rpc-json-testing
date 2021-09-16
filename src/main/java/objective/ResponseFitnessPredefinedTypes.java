@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import static statistics.Collector.getCollector;
+
 public class ResponseFitnessPredefinedTypes extends Fitness {
 
     private static String separator = "/";
@@ -40,10 +42,10 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
             individual.setFitness(fitness);
 
             // decide whether to add individual to the archive
-            if (individual.getResponseObject().getResponseCode() > 499 && !getArchive().contains(individual)) {
-                this.addToArchive(individual);
-            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(individual)) {
-                this.addToArchive(individual);
+            if (individual.getResponseObject().getResponseCode() > 499 && !getCollector().getArchive().contains(individual)) {
+                getCollector().addToArchive(individual);
+            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getCollector().getArchive().contains(individual)) {
+                getCollector().addToArchive(individual);
             }
         }
 

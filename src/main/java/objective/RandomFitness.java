@@ -3,11 +3,10 @@ package objective;
 import search.Generator;
 import search.Individual;
 import util.Configuration;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static util.RandomSingleton.getRandomBool;
+import static statistics.Collector.getCollector;
 
 /**
  * RandomFitness creates random fitness values for individuals (based on Gaussian distribution).
@@ -25,8 +24,8 @@ public class RandomFitness extends Fitness {
             Individual individual = population.get(i);
 
             // decide whether to add individual to the archive
-            if (getRandomBool(1 - Configuration.ARCHIVE_THRESHOLD_RANDOM) && !getArchive().contains(individual)) {
-                this.addToArchive(individual);
+            if (getRandomBool(1 - Configuration.ARCHIVE_THRESHOLD_RANDOM) && !getCollector().getArchive().contains(individual)) {
+                getCollector().addToArchive(individual);
             }
         }
     }

@@ -107,10 +107,10 @@ public class DiversityBasedFitness extends Fitness {
             getCollector().collect(method, responseObject.getResponseCode(), strippedString, String.valueOf(featureAndWeightVector.getKey()));
 
             // decide whether to add individual to the archive
-            if (responseObject.getResponseCode() > 499 && !getArchive().contains(individual)) {
-                this.addToArchive(individual);
-            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(individual)) {
-                this.addToArchive(individual);
+            if (responseObject.getResponseCode() > 499 && !getCollector().getArchive().contains(individual)) {
+                getCollector().addToArchive(individual);
+            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getCollector().getArchive().contains(individual)) {
+                getCollector().addToArchive(individual);
             }
         }
         if (generationCount % Configuration.NEW_CLUSTERS_AFTER_GEN == 0) {
@@ -122,8 +122,6 @@ public class DiversityBasedFitness extends Fitness {
             }
         }
         generationCount += 1;
-
-
     }
 
     @Override

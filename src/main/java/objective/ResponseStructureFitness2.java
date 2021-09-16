@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import static statistics.Collector.getCollector;
+
 /**
  * Use complexity of the request and response object (layers of JSON object) in the fitness calculation.
  */
@@ -59,10 +61,10 @@ public class ResponseStructureFitness2 extends Fitness {
 
 //            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.
             // decide whether to add individual to the archive
-            if (individual.getResponseObject().getResponseCode() > 499 && !getArchive().contains(individual)) {
-                this.addToArchive(individual);
-            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(individual)) {
-                this.addToArchive(individual);
+            if (individual.getResponseObject().getResponseCode() > 499 && !getCollector().getArchive().contains(individual)) {
+                getCollector().addToArchive(individual);
+            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getCollector().getArchive().contains(individual)) {
+                getCollector().addToArchive(individual);
             }
         }
     }

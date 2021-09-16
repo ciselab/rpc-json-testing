@@ -9,25 +9,13 @@ import search.Individual;
 
 import util.Pair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
 public abstract class Fitness {
-
-    private List<Individual> archive;
-    private Map<Integer, Integer> statusCodesTotal;
-    private Map<Integer, Integer> statusCodesArchive;
-
-    public Fitness() {
-        this.archive = new ArrayList<>();
-        this.statusCodesTotal = new HashMap<>();
-        this.statusCodesArchive = new HashMap<>();
-    }
 
     /**
      * Evaluate the population on fitness.
@@ -176,24 +164,4 @@ public abstract class Fitness {
         return keyValuePairs;
     }
 
-    public void addToArchive(Individual ind) {
-        archive.add(ind);
-
-        if (!statusCodesArchive.containsKey(ind.getResponseObject().getResponseCode())) {
-            statusCodesArchive.put(ind.getResponseObject().getResponseCode(), 0);
-        }
-        statusCodesArchive.put(ind.getResponseObject().getResponseCode(), statusCodesArchive.get(ind.getResponseObject().getResponseCode()) + 1);
-    }
-
-    public List<Individual> getArchive() {
-        return archive;
-    }
-
-    public Map<Integer, Integer> getStatusCodesTotal() {
-        return statusCodesTotal;
-    }
-
-    public Map<Integer, Integer> getStatusCodesArchive() {
-        return statusCodesArchive;
-    }
 }

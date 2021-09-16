@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static statistics.Collector.getCollector;
+
 public class StatusCodeFitness extends Fitness {
     private Map<Integer, Integer> statusFrequencyTable;
 
@@ -33,10 +35,10 @@ public class StatusCodeFitness extends Fitness {
             // If statuscode is relatively rare, add to archive.
             double archive_threshold = Math.min((100 / statusFrequencyTable.size()), Configuration.ARCHIVE_THRESHOLD);
             // Decide whether to add individual to the archive
-            if (ind.getResponseObject().getResponseCode() > 499 && !getArchive().contains(ind)) {
-                this.addToArchive(ind);
-            } else if (fitness >= archive_threshold && !getArchive().contains(ind)) {
-                this.addToArchive(ind);
+            if (ind.getResponseObject().getResponseCode() > 499 && !getCollector().getArchive().contains(ind)) {
+                getCollector().addToArchive(ind);
+            } else if (fitness >= archive_threshold && !getCollector().getArchive().contains(ind)) {
+                getCollector().addToArchive(ind);
             }
         }
     }
