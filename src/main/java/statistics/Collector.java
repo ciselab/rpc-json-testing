@@ -93,17 +93,16 @@ public class Collector {
 
         // Count status codes per generation
         int currentStatusCode = ind.getResponseObject().getResponseCode();
-        if (statusCodesPerGen.get(generation-1).containsKey(currentStatusCode)) {
-            statusCodesPerGen.get(generation-1).put(currentStatusCode, statusCodesPerGen.get(generation-1).get(currentStatusCode)+1);
-        } else {
-            statusCodesPerGen.get(generation-1).put(currentStatusCode, 1);
+        if (!statusCodesPerGen.get(generation-1).containsKey(currentStatusCode)) {
+            statusCodesPerGen.get(generation-1).put(currentStatusCode, 0);
         }
+        statusCodesPerGen.get(generation-1).put(currentStatusCode, statusCodesPerGen.get(generation-1).get(currentStatusCode)+1);
 
         // Count status codes total
-        if (statusCodesTotal.containsKey(currentStatusCode)) {
-            statusCodesTotal.put(currentStatusCode, statusCodesTotal.get(currentStatusCode)+1);
-            statusCodesTotal.put(currentStatusCode, 1);
+        if (!statusCodesTotal.containsKey(currentStatusCode)) {
+            statusCodesTotal.put(currentStatusCode, 0);
         }
+        statusCodesTotal.put(currentStatusCode, statusCodesTotal.get(currentStatusCode)+1);
     }
 
     public void countStatusCodesInArchivePerGen(Individual ind) {
