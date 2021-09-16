@@ -1,9 +1,8 @@
 package search.objective;
 
-import connection.ResponseObject;
-import test_drivers.TestDriver;
 import util.Configuration;
 import util.Pair;
+
 import search.Generator;
 import search.Individual;
 
@@ -25,34 +24,29 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
     // MAP<METHOD, MAP<PATH-TO-PARAM, MAP<CATEGORY, COUNT>>>
     private Map<String, Map<String, Map<Type, Integer>>> valuePerKeyCount;
 
-    public ResponseFitnessPredefinedTypes(TestDriver testDriver) {
-        super(testDriver);
+    public ResponseFitnessPredefinedTypes() {
+        super();
         this.valuePerKeyCount = new HashMap<>();
     }
 
     @Override
     public void evaluate(Generator generator, List<Individual> population) {
+        for (Individual individual : population) {
+            Double fitness = recordValueTypesAndGetFitness(individual.getDna().get(individual.getDna().size() - 1).getMethod(),
+                individual.getResponseObject().getResponseObject()); // population and responses are in the same order
 
-        List<ResponseObject> responses = getResponses(population);
+            fitness = 1.0 / (1 + fitness);
 
-        if (getTestDriver().shouldContinue()) {
+            individual.setFitness(fitness);
 
-            for (int i = 0; i < population.size(); i++) {
-                Double fitness = recordValueTypesAndGetFitness(population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod(), responses.get(i).getResponseObject()); // population and responses are in the same order
-
-                fitness = 1.0 / (1 + fitness);
-
-                population.get(i).setFitness(fitness);
-
-                // decide whether to add individual to the archive
-                if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
-                    this.addToArchive(population.get(i), responses.get(i));
-                } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                    this.addToArchive(population.get(i), responses.get(i));
-                }
+            // decide whether to add individual to the archive
+            if (individual.getResponseObject().getResponseCode() > 499 && !getArchive().contains(individual)) {
+                this.addToArchive(individual);
+            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(individual)) {
+                this.addToArchive(individual);
             }
-
         }
+
     }
 
     @Override

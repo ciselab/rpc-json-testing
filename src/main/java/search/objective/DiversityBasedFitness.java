@@ -37,8 +37,8 @@ public class DiversityBasedFitness extends Fitness {
     // Count the number of generations
     private int generationCount;
 
-    public DiversityBasedFitness(TestDriver testDriver) {
-        super(testDriver);
+    public DiversityBasedFitness() {
+        super();
         this.clusteringPerResponseStructure = new HashMap<>();
         this.statuses = new HashMap<>();
         this.generationCount = 0;
@@ -46,87 +46,81 @@ public class DiversityBasedFitness extends Fitness {
 
     @Override
     public void evaluate(Generator generator, List<Individual> population) {
+        // Map with API methods as key and a map as value. This second map has skeletons as key and a list of feature vectors as value.
+        Map<String, Map<String, List<List<Object>>>> allFeatureVectors = new HashMap<>();
 
-        List<ResponseObject> responses = getResponses(population);
+        for (Individual individual : population) {
+            String method = individual.getDna().get(individual.getDna().size() - 1).getMethod();
+            ResponseObject responseObject = individual.getResponseObject();
+            JSONObject request = responseObject.getRequestObject();
+            JSONObject response = responseObject.getResponseObject();
 
-        if (getTestDriver().shouldContinue()) {
+            JSONObject stripped = stripValues(request, response);
+            String strippedString = stripped.toString();
 
-            // Map with API methods as key and a map as value. This second map has skeletons as key and a list of feature vectors as value.
-            Map<String, Map<String, List<List<Object>>>> allFeatureVectors = new HashMap<>();
+            Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripped);
 
-            for (int i = 0; i < population.size(); i++) {
-                String method = population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod();
-                ResponseObject responseObject = responses.get(i);
-                JSONObject request = responseObject.getRequestObject();
-                JSONObject response = responseObject.getResponseObject();
-
-                JSONObject stripped = stripValues(request, response);
-                String strippedString = stripped.toString();
-
-                Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripped);
-
-                // If the response is an empty object just give it a fitness of zero
-                if (featureAndWeightVector.getKey().size() == 0) {
-                    population.get(i).setFitness(0);
-                    continue;
-                }
-
-                // Add key and value for the used method if it does not exist yet.
-                if (!allFeatureVectors.containsKey(method)) {
-                    allFeatureVectors.put(method, new HashMap<>());
-                }
-                // Add key and value for the found response skeleton if it does not exist yet.
-                if (!allFeatureVectors.get(method).containsKey(strippedString)) {
-                    allFeatureVectors.get(method).put(strippedString, new ArrayList<>());
-                }
-                // Add the feature vector to the right place in the map.
-                allFeatureVectors.get(method).get(strippedString).add(featureAndWeightVector.getKey());
-
-                if (!clusteringPerResponseStructure.containsKey(method)) {
-                    clusteringPerResponseStructure.put(method, new HashMap<>());
-                    statuses.put(method, new HashSet<>());
-                }
-
-                statuses.get(method).add(responses.get(i).getResponseCode());
-
-                if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
-                    clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering3(featureAndWeightVector.getValue()));
-                }
-
-                AgglomerativeClustering3 clustering = clusteringPerResponseStructure.get(method).get(strippedString);
-
-                // calculate the minimum distance of the individual to the clusters
-                double cost = clustering.addOne(featureAndWeightVector.getKey());
-
-                double fitness = 1.0 / (1 + cost);
-
-                // TODO not use this hack for worst output
-                if (population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("random") ||
-                    population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_info") ||
-                    population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_state")) {
-                    fitness = 0;
-                }
-
-                population.get(i).setFitness(fitness);
-
-                // decide whether to add individual to the archive
-                if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
-                    this.addToArchive(population.get(i), responses.get(i));
-                } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                    this.addToArchive(population.get(i), responses.get(i));
-                }
+            // If the response is an empty object just give it a fitness of zero
+            if (featureAndWeightVector.getKey().size() == 0) {
+                individual.setFitness(0);
+                continue;
             }
-            if (generationCount % Configuration.NEW_CLUSTERS_AFTER_GEN == 0) {
-                for (String method : allFeatureVectors.keySet()) {
-                    //TODO make sure all strings are in there
-                    for (String responseStructure : allFeatureVectors.get(method).keySet()) {
-                        clusteringPerResponseStructure.get(method).get(responseStructure).cluster();
-                    }
-                }
-            }
-            generationCount += 1;
 
+            // Add key and value for the used method if it does not exist yet.
+            if (!allFeatureVectors.containsKey(method)) {
+                allFeatureVectors.put(method, new HashMap<>());
+            }
+            // Add key and value for the found response skeleton if it does not exist yet.
+            if (!allFeatureVectors.get(method).containsKey(strippedString)) {
+                allFeatureVectors.get(method).put(strippedString, new ArrayList<>());
+            }
+            // Add the feature vector to the right place in the map.
+            allFeatureVectors.get(method).get(strippedString).add(featureAndWeightVector.getKey());
+
+            if (!clusteringPerResponseStructure.containsKey(method)) {
+                clusteringPerResponseStructure.put(method, new HashMap<>());
+                statuses.put(method, new HashSet<>());
+            }
+
+            statuses.get(method).add(responseObject.getResponseCode());
+
+            if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
+                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering3(featureAndWeightVector.getValue()));
+            }
+
+            AgglomerativeClustering3 clustering = clusteringPerResponseStructure.get(method).get(strippedString);
+
+            // calculate the minimum distance of the individual to the clusters
+            double cost = clustering.addOne(featureAndWeightVector.getKey());
+
+            double fitness = 1.0 / (1 + cost);
+
+            // TODO not use this hack for worst output
+            if (individual.getDna().get(individual.getDna().size() - 1).getMethod().equals("random") ||
+                individual.getDna().get(individual.getDna().size() - 1).getMethod().equals("server_info") ||
+                individual.getDna().get(individual.getDna().size() - 1).getMethod().equals("server_state")) {
+                fitness = 0;
+            }
+
+            individual.setFitness(fitness);
+
+            // decide whether to add individual to the archive
+            if (responseObject.getResponseCode() > 499 && !getArchive().contains(individual)) {
+                this.addToArchive(individual);
+            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(individual)) {
+                this.addToArchive(individual);
+            }
         }
+        if (generationCount % Configuration.NEW_CLUSTERS_AFTER_GEN == 0) {
+            for (String method : allFeatureVectors.keySet()) {
+                //TODO make sure all strings are in there
+                for (String responseStructure : allFeatureVectors.get(method).keySet()) {
+                    clusteringPerResponseStructure.get(method).get(responseStructure).cluster();
+                }
+            }
+        }
+        generationCount += 1;
+
 
     }
 
@@ -142,7 +136,6 @@ public class DiversityBasedFitness extends Fitness {
             info.add("\t\tStructures covered: " + clusteringPerResponseStructure.get(method).keySet().size());
 
             for (String structure : clusteringPerResponseStructure.get(method).keySet()) {
-//                System.out.println(structure);
                 info.add(structure);
                 info.add("\t\t\tClusters: " + clusteringPerResponseStructure.get(method).get(structure).getClusters().size());
 
@@ -152,7 +145,7 @@ public class DiversityBasedFitness extends Fitness {
 
                 for (Cluster cluster : clusteringPerResponseStructure.get(method).get(structure).getClusters()) {
                     clusterSize.add(cluster.size());
-                    // printing
+
                     for (List<Object> vector: cluster.getMembers()) {
                         individuals.append("\t\t\t\t\t").append(vector.toString()).append("\n");
                     }
@@ -226,6 +219,10 @@ public class DiversityBasedFitness extends Fitness {
                     }
 
                     Object arrayObject = array.get(0);
+                    if (strippedArray.length() == 0) {
+                        System.out.println(array);
+                        System.out.println(strippedArray);
+                    }
                     Object strippedArrayObject = strippedArray.get(0);
 
                     // TODO currently we assume there are no arrays in arrays

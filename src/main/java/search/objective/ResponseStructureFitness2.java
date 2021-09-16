@@ -1,18 +1,23 @@
 package search.objective;
 
-import connection.ResponseObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import search.Generator;
 import search.Individual;
-import test_drivers.TestDriver;
+
 import util.Configuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 /**
- * This ResponseStructureFitness uses the stripValues function from Fitness.
+ * Use complexity of the request and response object (layers of JSON object) in the fitness calculation.
  */
 public class ResponseStructureFitness2 extends Fitness {
     private static String STANDARD_STRING = "";
@@ -21,49 +26,84 @@ public class ResponseStructureFitness2 extends Fitness {
 
     private Map<String, Integer> structureFrequencyTable;
 
-    public ResponseStructureFitness2(TestDriver testDriver) {
-        super(testDriver);
+    public ResponseStructureFitness2() {
+        super();
         this.structureFrequencyTable = new HashMap<>();
     }
 
     @Override
     public void evaluate(Generator generator, List<Individual> population) {
+        for (Individual individual : population) {
+            String structureString = stripValues(individual.toTotalJSONObject(), individual.getResponseObject().getResponseObject()).toString();
+            if (!structureFrequencyTable.containsKey(structureString)) {
+                structureFrequencyTable.put(structureString, 0);
+            }
+            structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
+        }
 
-        List<ResponseObject> responses = getResponses(population);
+        double totalFitness = 0;
 
-        if (getTestDriver().shouldContinue()) {
+        for (Individual individual : population) {
+            String structureString = stripValues(individual.toTotalJSONObject(), individual.getResponseObject().getResponseObject()).toString();
 
-            // Fill in hashmap with structure frequency
-            for (int i = 0; i < population.size(); i++) {
+            int inputComplexity = calculateComplexity(individual.toTotalJSONObject());
+            int outputComplexity = calculateComplexity(individual.getResponseObject().getResponseObject());
 
-                String structureString = stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString();
+            double exploitationFitness = 1.0 / (1.0 + (double) structureFrequencyTable.get(structureString));
+            // every key should be mutated at least once
+            double explorationFitness = (inputComplexity + outputComplexity);
 
-                if (!structureFrequencyTable.containsKey(structureString)) {
-                    structureFrequencyTable.put(structureString, 0);
-                }
-                structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
-
-                // Evaluate individual compared to the map
-                double fitness = (double) 1 / structureFrequencyTable.get(stripValues(population.get(i).toTotalJSONObject(), responses.get(i).getResponseObject()).toString());
-                population.get(i).setFitness(fitness);
+            double fitness = exploitationFitness * explorationFitness;
+            totalFitness += fitness;
+            individual.setFitness(fitness);
 
 //            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.
-                // decide whether to add individual to the archive
-                if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
-                    this.addToArchive(population.get(i), responses.get(i));
-                } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                    this.addToArchive(population.get(i), responses.get(i));
-                }
+            // decide whether to add individual to the archive
+            if (individual.getResponseObject().getResponseCode() > 499 && !getArchive().contains(individual)) {
+                this.addToArchive(individual);
+            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(individual)) {
+                this.addToArchive(individual);
             }
-
         }
     }
 
     @Override
-    public ArrayList<String>  storeInformation() {
+    public ArrayList<String> storeInformation() {
         ArrayList<String> info = new ArrayList<>();
         info.add("Map: " + structureFrequencyTable.keySet().size());
         return info;
     }
 
+
+    private int calculateComplexity(JSONObject response) {
+        int complexity = 0;
+
+        JSONObject structure = new JSONObject(response.toString());
+
+        Queue<JSONObject> queue = new LinkedList<>();
+        queue.add(structure);
+
+        while(!queue.isEmpty()) {
+            JSONObject object = queue.poll();
+            Iterator<String> it = object.keys();
+            while (it.hasNext()) {
+                complexity++;
+                String key = it.next();
+                Object smallerObject = object.get(key);
+                if (smallerObject instanceof JSONObject) {
+                    queue.add((JSONObject) object.get(key));
+                } else if (smallerObject instanceof JSONArray) {
+                    JSONArray array = ((JSONArray) smallerObject);
+                    for (int i = 0; i < array.length(); i++) {
+                        Object arrayObject = array.get(i);
+                        if (arrayObject instanceof JSONObject) {
+                            queue.add((JSONObject) arrayObject);
+                        }
+                        // TODO currently it is assuming no arrays in arrays
+                    }
+                }
+            }
+        }
+        return complexity;
+    }
 }

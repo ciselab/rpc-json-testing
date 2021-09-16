@@ -1,16 +1,18 @@
 import connection.Client;
 import org.json.JSONObject;
-import search.BasicEA;
+import search.metaheuristics.BasicEA;
 import search.Generator;
 import search.Individual;
+import search.metaheuristics.Heuristic;
+import search.metaheuristics.RandomFuzzer;
 import search.objective.DiversityBasedFitness;
 import search.objective.Fitness;
 import search.objective.RandomFitness;
 import search.objective.ResponseFitnessClustering;
 import search.objective.ResponseFitnessClustering2;
 import search.objective.ResponseFitnessPredefinedTypes;
+import search.objective.ResponseStructureFitness;
 import search.objective.ResponseStructureFitness2;
-import search.objective.ResponseStructureFitness3;
 import search.objective.StatusCodeFitness;
 import search.openRPC.Specification;
 import test_drivers.GanacheTestDriver;
@@ -36,10 +38,11 @@ public class Main {
 
     public static void main(String args[]) {
 
-        // Read the arguments (fitness function used, running time, server).
+        // Read the input arguments (heuristic, running time, server).
         String fitnessFunction = "8";
         int runningTime = 5; //default value
         String server = "";
+
         try {
             fitnessFunction = args[0]; // 1, 2, 3, 4, 5, 6, 7 or 8, default is 1
             runningTime = Integer.parseInt(args[1]); // time in minutes, default is 1 hour
@@ -66,6 +69,7 @@ public class Main {
             url_server = "https://s.altnet.rippletest.net:51234"; // The url for the Ripple JSON-RPC API ledger (testnet)
         }
 
+        // Read the OpenRPC specification that will be used.
         Specification specification = null;
         try {
             String data = readFile(filepath);
@@ -102,44 +106,44 @@ public class Main {
             switch (fitnessFunction) {
                 case "1":
                     System.out.println("Using 1: RandomFitness");
-                    fitness = new RandomFitness(testDriver);
+                    fitness = new RandomFitness();
                     break;
                 case "2":
                     System.out.println("Using 2: StatusCodeFitness");
-                    fitness = new StatusCodeFitness(testDriver);
+                    fitness = new StatusCodeFitness();
                     break;
                 case "3":
                     System.out.println("Using 3: ResponseFitnessPredefinedTypes");
-                    fitness = new ResponseFitnessPredefinedTypes(testDriver);
+                    fitness = new ResponseFitnessPredefinedTypes();
                     break;
                 case "4":
                     System.out.println("Using 4: ResponseFitnessClustering");
-                    fitness = new ResponseFitnessClustering(testDriver);
+                    fitness = new ResponseFitnessClustering();
                     break;
                 case "5":
                     System.out.println("Using 5: ResponseFitnessClustering2");
-                    fitness = new ResponseFitnessClustering2(testDriver);
+                    fitness = new ResponseFitnessClustering2();
                     break;
                 case "6":
                     System.out.println("Using 6: ResponseStructureFitness2");
-                    fitness = new ResponseStructureFitness2(testDriver);
+                    fitness = new ResponseStructureFitness2();
                     break;
                 case "7":
                     System.out.println("Using 7: ResponseStructureFitness3");
-                    fitness = new ResponseStructureFitness3(testDriver);
+                    fitness = new ResponseStructureFitness3();
                     break;
                 case "8":
                     System.out.println("Using 8: DiversityBasedFitness");
-                    fitness = new DiversityBasedFitness(testDriver);
+                    fitness = new DiversityBasedFitness();
                     break;
                 default:
                     System.out.println("No or invalid argument specified for fitness. Using default fitness: RandomFitness");
-                    fitness = new RandomFitness(testDriver);
+                    fitness = new RandomFitness();
             }
 
             System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime / 60) + " hour(s)");
 
-            BasicEA ea = new BasicEA(fitness, generator);
+            BasicEA ea = new BasicEA(generator, testDriver, fitness);
             List<Individual> population = ea.generatePopulation(Configuration.POPULATION_SIZE);
 
             // Stopping criterium = time
@@ -170,12 +174,6 @@ public class Main {
             writeFile(testInArchive, "archive_size.txt");
             // Write best fitness values of each generation to file
             writeFile(bestFitness.toString(), "best_fitness_values.txt");
-
-            // Stopping criterium = generations
-//            for (int i = 0; i < 20; i++) {
-//                System.out.println("Generation: " + i);
-//                population = ea.nextGeneration(population);
-//            }
 
             // Delete old test files and write archive to tests
             String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";

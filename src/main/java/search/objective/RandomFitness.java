@@ -10,37 +10,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static util.RandomSingleton.getRandom;
+import static util.RandomSingleton.getRandomBool;
 
 /**
  * RandomFitness creates random fitness values for individuals (based on Gaussian distribution).
  */
 public class RandomFitness extends Fitness {
 
-    public RandomFitness(TestDriver testDriver) {
-        super(testDriver);
+    public RandomFitness() {
+        super();
     }
 
     @Override
     public void evaluate(Generator generator, List<Individual> population) {
         // Call methods
-        List<ResponseObject> responseObjects = getResponses(population);
+        for (int i = 0; i < population.size(); i++) {
+            Individual individual = population.get(i);
 
-        if (getTestDriver().shouldContinue()) {
-
-            for (int i = 0; i < population.size(); i++) {
-                Individual individual = population.get(i);
-
-                double fitness = getRandom().nextGaussian();
-                individual.setFitness(fitness);
-
-                // decide whether to add individual to the archive
-                if (fitness >= Configuration.ARCHIVE_THRESHOLD_RANDOM && !getArchive().contains(individual)) {
-                    this.addToArchive(individual, responseObjects.get(i));
-                }
+            // decide whether to add individual to the archive
+            if (getRandomBool(1 - Configuration.ARCHIVE_THRESHOLD_RANDOM) && !getArchive().contains(individual)) {
+                this.addToArchive(individual);
             }
-
         }
-
     }
 
     @Override

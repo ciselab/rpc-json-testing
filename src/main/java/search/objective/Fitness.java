@@ -1,13 +1,12 @@
 package search.objective;
 
-import connection.ResponseObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
-import search.Chromosome;
+
 import search.Generator;
 import search.Individual;
-import test_drivers.TestDriver;
+
 import util.Pair;
 
 import java.util.ArrayList;
@@ -20,13 +19,11 @@ import java.util.Queue;
 
 public abstract class Fitness {
 
-    private TestDriver testDriver;
     private List<Individual> archive;
     private Map<Integer, Integer> statusCodesTotal;
     private Map<Integer, Integer> statusCodesArchive;
 
-    public Fitness(TestDriver testDriver) {
-        this.testDriver = testDriver;
+    public Fitness() {
         this.archive = new ArrayList<>();
         this.statusCodesTotal = new HashMap<>();
         this.statusCodesArchive = new HashMap<>();
@@ -43,66 +40,6 @@ public abstract class Fitness {
      * Store information regarding the process of the run.
      */
     public abstract List<String> storeInformation();
-
-    /**
-     * Get all responses from current generation of requests (i.e. individuals).
-     *
-     * @param population
-     * @return list of ResponseObjects
-     */
-    public List<ResponseObject> getResponses(List<Individual> population) {
-        List<ResponseObject> responses = new ArrayList<>();
-
-        double averageEvalTime = 0;
-
-        for (int i = 0; i < population.size(); i++) {
-
-            if (testDriver.shouldContinue()) {
-
-                Individual individual = population.get(i);
-                long start = System.nanoTime();
-                try {
-//                System.out.println("Preparing tests");
-                    testDriver.prepTest();
-
-                    ResponseObject responseObject = null;
-
-                    for (int j = 0; j < individual.getDna().size(); j++) {
-                        Chromosome chromosome = individual.getDna().get(j);
-                        responseObject = testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest());
-                    }
-
-                    if (responseObject == null) {
-                        ResponseObject ro = new ResponseObject("", new JSONObject(),-999, new JSONObject());
-                        responses.add(ro);
-                        System.out.println("ResponseObject is null. This should never be the case!");
-                        throw new Exception("Individual with zero chromosomes!!!");
-                    }
-
-                    responses.add(responseObject);
-
-//                    System.out.println("Status code of response on individual " + i + " is " + responseObject.getResponseCode());
-
-                    if (!statusCodesTotal.containsKey(responseObject.getResponseCode())) {
-                        statusCodesTotal.put(responseObject.getResponseCode(), 0);
-                    }
-                    statusCodesTotal.put(responseObject.getResponseCode(), statusCodesTotal.get(responseObject.getResponseCode()) + 1);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                averageEvalTime += (System.nanoTime() - start);
-
-                testDriver.checkWhetherToStop();
-            }
-
-        }
-
-        averageEvalTime /= (population.size() * 1000000);
-//        System.out.println("Average test time: " + averageEvalTime + " ms");
-        return responses;
-    }
 
     private static String STANDARD_STRING = "";
     private static Boolean STANDARD_BOOLEAN = true;
@@ -236,17 +173,17 @@ public abstract class Fitness {
         return keyValuePairs;
     }
 
-    public List<Individual> getArchive() {
-        return archive;
-    }
-
-    public void addToArchive(Individual ind, ResponseObject res) {
+    public void addToArchive(Individual ind) {
         archive.add(ind);
 
-        if (!statusCodesArchive.containsKey(res.getResponseCode())) {
-            statusCodesArchive.put(res.getResponseCode(), 0);
+        if (!statusCodesArchive.containsKey(ind.getResponseObject().getResponseCode())) {
+            statusCodesArchive.put(ind.getResponseObject().getResponseCode(), 0);
         }
-        statusCodesArchive.put(res.getResponseCode(), statusCodesArchive.get(res.getResponseCode()) + 1);
+        statusCodesArchive.put(ind.getResponseObject().getResponseCode(), statusCodesArchive.get(ind.getResponseObject().getResponseCode()) + 1);
+    }
+
+    public List<Individual> getArchive() {
+        return archive;
     }
 
     public Map<Integer, Integer> getStatusCodesTotal() {
@@ -256,9 +193,4 @@ public abstract class Fitness {
     public Map<Integer, Integer> getStatusCodesArchive() {
         return statusCodesArchive;
     }
-
-    public TestDriver getTestDriver() {
-        return testDriver;
-    }
-
 }

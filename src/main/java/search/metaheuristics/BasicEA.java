@@ -1,9 +1,10 @@
-package search;
+package search.metaheuristics;
 
-import search.genes.ArrayGene;
+import search.Generator;
+import search.Individual;
 import search.objective.Fitness;
+import test_drivers.TestDriver;
 import util.Configuration;
-import util.RandomSingleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,42 +13,25 @@ import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomBool;
 import static util.RandomSingleton.getRandomIndex;
 
-public class BasicEA {
+public class BasicEA extends Heuristic{
 
     private Fitness fitness;
-    private Generator generator;
-    
-    public BasicEA(Fitness fitness, Generator generator) {
+
+    public BasicEA(Generator generator, TestDriver testDriver, Fitness fitness) {
+        super(generator, testDriver);
         this.fitness = fitness;
-        this.generator = generator;
-    }
-
-    public List<Individual> generatePopulation(int size) {
-        List<Individual> population = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            population.add(generateRandomIndividual());
-        }
-        return population;
-    }
-
-    public Individual generateRandomIndividual() {
-        int nRequests = RandomSingleton.getRandom().nextInt(Configuration.REQUESTS_GENERATOR_LIMIT) + 1;
-        List<Chromosome> dna = new ArrayList<>();
-
-        for (int i = 0; i < nRequests; i++) {
-            String methodName = generator.getRandomMethod();
-            ArrayGene method = generator.generateMethod(methodName);
-            Chromosome chromosome = new Chromosome(generator.generateHTTPMethod(), methodName, method);
-            dna.add(chromosome);
-        }
-
-        return new Individual(dna);
     }
 
     public List<Individual> nextGeneration(List<Individual> population) {
         List<Individual> offspring = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
+
+            // Quit the process if time is up.
+            if (!this.getTestDriver().shouldContinue()) {
+                return population;
+            }
+
             if (getRandomBool(Configuration.ADD_NEW_RANDOM_INDIVIDUAL)) {
                 offspring.add(generateRandomIndividual());
                 continue;
@@ -67,7 +51,7 @@ public class BasicEA {
             }
 
             for (int j = 0; j < Configuration.MUTATIONS_PER_INDIVIDUAL; j++) {
-                mutant = mutant.mutate(generator);
+                mutant = mutant.mutate(getGenerator());
             }
 
             String mutantString = mutant.toTotalJSONObject().toString();
@@ -81,13 +65,21 @@ public class BasicEA {
 
         offspring.addAll(population);
 
+        this.gatherResponses(offspring);
+
         // evaluate entire population
-        fitness.evaluate(generator, offspring);
+        fitness.evaluate(getGenerator(), offspring);
 
 //        return elitistSelection(offspring);
         return tournamentSelection(offspring, Configuration.TOURNAMENT_SIZE);
     }
 
+    /**
+     * Selection based on Tournament Selection.
+     * @param population
+     * @param tournamentSize
+     * @return the next population of individuals
+     */
     private List<Individual> tournamentSelection(List<Individual> population, int tournamentSize) {
         // select next generation
         List<Individual> newPopulation = new ArrayList<>();
@@ -119,6 +111,11 @@ public class BasicEA {
         return newPopulation;
     }
 
+    /**
+     * Selection based on Elitist Selection.
+     * @param population
+     * @return the next population of individuals
+     */
     private List<Individual> elitistSelection(List<Individual> population) {
         // Sort
         population.sort((o1, o2) -> Double.compare(o2.getFitness(), o1.getFitness()));

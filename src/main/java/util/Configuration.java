@@ -33,7 +33,6 @@ public final class Configuration {
     // Object gene
     public static final double ADD_NONREQUIRED_CHILD_PROB = 0.1;
     public static final double REMOVE_CHILD_PROB = 0.1;
-    public static final double REPLACE_CHILD_PROB = 0.2;
     // Long gene
     public static final double BOUNDARY_CASE_PROB = 0.15;
     public static final boolean NO_OUTSIDE_BOUNDARY_CASES = false;

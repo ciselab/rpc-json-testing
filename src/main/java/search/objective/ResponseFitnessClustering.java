@@ -1,10 +1,9 @@
 package search.objective;
 
-import connection.ResponseObject;
-import test_drivers.TestDriver;
 import search.Generator;
 import search.Individual;
 import search.clustering.AgglomerativeClustering;
+
 import util.Configuration;
 import util.Pair;
 import util.Triple;
@@ -33,68 +32,61 @@ public class ResponseFitnessClustering extends Fitness {
     private Map<String, Map<String, AgglomerativeClustering>> clusteringPerResponseStructure;
     private Map<String, Set<Integer>> statuses;
 
-    public ResponseFitnessClustering(TestDriver testDriver) {
-        super(testDriver);
+    public ResponseFitnessClustering() {
+        super();
         this.clusteringPerResponseStructure = new HashMap<>();
         this.statuses = new HashMap<>();
     }
 
     @Override
     public void evaluate(Generator generator, List<Individual> population) {
+        for (Individual individual : population) {
+            String method = individual.getDna().get(individual.getDna().size() - 1).getMethod();
+            JSONObject request = individual.toTotalJSONObject();
+            JSONObject response = individual.getResponseObject().getResponseObject();
 
-        List<ResponseObject> responses = getResponses(population);
+            JSONObject stripped = stripValues(request, response);
+            String strippedString = stripped.toString();
 
-        if (getTestDriver().shouldContinue()) {
+            Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripped);
 
-            for (int i = 0; i < population.size(); i++) {
-                String method = population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod();
-                JSONObject request = population.get(i).toTotalJSONObject();
-                JSONObject response = responses.get(i).getResponseObject();
-
-                JSONObject stripped = stripValues(request, response);
-                String strippedString = stripped.toString();
-
-                Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripped);
-
-                // If empty object just give it a fitness of zero
-                if (featureAndWeightVector.getKey().size() == 0) {
-                    population.get(i).setFitness(0);
-                    continue;
-                }
-
-                if (!clusteringPerResponseStructure.containsKey(method)) {
-                    clusteringPerResponseStructure.put(method, new HashMap<>());
-                    statuses.put(method, new HashSet<>());
-                }
-
-                statuses.get(method).add(responses.get(i).getResponseCode());
-
-
-                if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
-                    clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering(featureAndWeightVector.getValue()));
-                }
-
-                AgglomerativeClustering clustering = clusteringPerResponseStructure.get(method).get(strippedString);
-
-                double cost = clustering.cluster(featureAndWeightVector.getKey());
-
-                double fitness = 1.0 / (1 + cost);
-                // TODO not use this hack for worst output
-                if (population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("random") ||
-                    population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_info") ||
-                    population.get(i).getDna().get(population.get(i).getDna().size() - 1).getMethod().equals("server_state")) {
-                    fitness = 0;
-                }
-                population.get(i).setFitness(fitness);
-
-                // decide whether to add individual to the archive
-                if (responses.get(i).getResponseCode() > 499 && !getArchive().contains(population.get(i))) {
-                    this.addToArchive(population.get(i), responses.get(i));
-                } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(population.get(i))) {
-                    this.addToArchive(population.get(i), responses.get(i));
-                }
+            // If empty object just give it a fitness of zero
+            if (featureAndWeightVector.getKey().size() == 0) {
+                individual.setFitness(0);
+                continue;
             }
 
+            if (!clusteringPerResponseStructure.containsKey(method)) {
+                clusteringPerResponseStructure.put(method, new HashMap<>());
+                statuses.put(method, new HashSet<>());
+            }
+
+            statuses.get(method).add(individual.getResponseObject().getResponseCode());
+
+
+            if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
+                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering(featureAndWeightVector.getValue()));
+            }
+
+            AgglomerativeClustering clustering = clusteringPerResponseStructure.get(method).get(strippedString);
+
+            double cost = clustering.cluster(featureAndWeightVector.getKey());
+
+            double fitness = 1.0 / (1 + cost);
+            // TODO not use this hack for worst output
+            if (individual.getDna().get(individual.getDna().size() - 1).getMethod().equals("random") ||
+                individual.getDna().get(individual.getDna().size() - 1).getMethod().equals("server_info") ||
+                individual.getDna().get(individual.getDna().size() - 1).getMethod().equals("server_state")) {
+                fitness = 0;
+            }
+            individual.setFitness(fitness);
+
+            // decide whether to add individual to the archive
+            if (individual.getResponseObject().getResponseCode() > 499 && !getArchive().contains(individual)) {
+                this.addToArchive(individual);
+            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getArchive().contains(individual)) {
+                this.addToArchive(individual);
+            }
         }
     }
 
@@ -103,7 +95,7 @@ public class ResponseFitnessClustering extends Fitness {
         ArrayList<String> info = new ArrayList<>();
 
         info.add("Methods covered: " + clusteringPerResponseStructure.keySet().size());
-        for (String method: clusteringPerResponseStructure.keySet()) {
+        for (String method : clusteringPerResponseStructure.keySet()) {
             info.add("\t" + method + ": ");
             info.add("\t\tStatusses covered: " + statuses.get(method).size() + ", namely: " + statuses.get(method).toString());
             info.add("\t\tStructures covered: " + clusteringPerResponseStructure.get(method).keySet().size());
@@ -117,7 +109,7 @@ public class ResponseFitnessClustering extends Fitness {
 
                 for (List<List<Object>> cluster : clusteringPerResponseStructure.get(method).get(structure).getClusters()) {
                     clusterSize.add(cluster.size());
-                    for (List<Object> vector: cluster) {
+                    for (List<Object> vector : cluster) {
                         individuals.append("\t\t\t\t\t").append(vector.toString()).append("\n");
                     }
                     individuals.append("\n");
@@ -161,7 +153,7 @@ public class ResponseFitnessClustering extends Fitness {
                     // TODO should we do this? It  can occur that an error_message is null for example.
                     if (stripped.has(key)) {
                         featureVector.add("null");
-                        weightVector.add(depth+1);
+                        weightVector.add(depth + 1);
                     }
                     continue;
                 }
@@ -173,7 +165,7 @@ public class ResponseFitnessClustering extends Fitness {
                 Object smallerObject = object.get(key);
                 Object strippedSmallerObject = strippedObject.get(key);
                 if (smallerObject instanceof JSONObject) {
-                    queue.add(new Triple<>((JSONObject) smallerObject, depth+1, (JSONObject) strippedSmallerObject));
+                    queue.add(new Triple<>((JSONObject) smallerObject, depth + 1, (JSONObject) strippedSmallerObject));
                 } else if (smallerObject instanceof JSONArray) {
                     JSONArray array = ((JSONArray) smallerObject);
                     JSONArray strippedArray = ((JSONArray) strippedSmallerObject);
@@ -195,14 +187,14 @@ public class ResponseFitnessClustering extends Fitness {
                     // TODO assumes no arrays in arrays
                     // just take first object of array
                     if (arrayObject instanceof JSONObject) {
-                        queue.add(new Triple<>((JSONObject) arrayObject, depth+1, (JSONObject) strippedArrayObject));
+                        queue.add(new Triple<>((JSONObject) arrayObject, depth + 1, (JSONObject) strippedArrayObject));
                     } else {
                         featureVector.add(arrayObject);
-                        weightVector.add(depth+1);
+                        weightVector.add(depth + 1);
                     }
                 } else {
                     featureVector.add(smallerObject);
-                    weightVector.add(depth+1);
+                    weightVector.add(depth + 1);
                 }
             }
         }

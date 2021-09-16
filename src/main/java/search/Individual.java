@@ -1,5 +1,6 @@
 package search;
 
+import connection.ResponseObject;
 import org.json.JSONObject;
 import util.Configuration;
 import util.CrossoverType;
@@ -12,6 +13,7 @@ import static util.RandomSingleton.getRandomBool;
 
 public class Individual {
     private List<Chromosome> dna;
+    private ResponseObject responseObject;
     private double fitness;
 
     public Individual(List<Chromosome> dna) {
@@ -137,4 +139,14 @@ public class Individual {
         return true;
     }
 
+    public ResponseObject getResponseObject() {
+        if (responseObject == null) {
+            throw new IllegalStateException("Response object must be set first!");
+        }
+        return responseObject;
+    }
+
+    public void setResponseObject(ResponseObject responseObject) {
+        this.responseObject = responseObject;
+    }
 }
