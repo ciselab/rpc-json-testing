@@ -88,13 +88,12 @@ public class ArrayGene extends NestedGene<JSONArray> {
                     while (child instanceof ArrayGene) {
                         child = generator.generateValueGene(children.get(i));
                     }
-                    clone.children.add(i, child); // Will be added in the end
-                    i += 1;
+                    clone.children.add(i, child);
+//                    i += 1;
                 } else if (clone.children.size() > 1 && choice <= (Configuration.REMOVE_ELEMENT_PROB + Configuration.ADD_ELEMENT_PROB)) {
                     // Remove a child
                     clone.children.remove(i);
                     i -= 1;
-
                 } else {
                     // Mutate a child (or more)
                     Gene child = clone.children.get(i);

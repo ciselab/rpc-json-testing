@@ -29,7 +29,7 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
 
     public void addChild(StringGene key, Gene value) {
         if (value == null) {
-            throw new IllegalStateException("Value cannot be null!!!");
+            throw new IllegalStateException("Value cannot be null!");
         }
 
         this.children.put(key, value);
@@ -59,74 +59,71 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
         JSONObjectGene clone = this.copy();
         List<StringGene> keys = new ArrayList<>(clone.children.keySet());
 
-        // if there are no parameters/children and there is no schema, do not do anything.
+        // If there are no parameters/children and there is no schema, do not do anything.
         if (getSchema() == null && keys.isEmpty()) {
             return clone;
         }
 
-        // if there is no schema it means this is the main parameters object
+        // If there is no schema it means this is the main parameters object.
         if (getSchema() == null) {
-            // TODO this always mutates exactly ONE CHILD (but we might want to mutate more later)
-
-            int index = getRandom().nextInt(keys.size());
-            StringGene key = keys.get(index);
-
-            Gene child = clone.children.get(key);
-            clone.addChild(key, child.mutate(generator));
-
+            for (int i = 0; i < keys.size(); i++) {
+                if (util.RandomSingleton.getRandomBool(1 / keys.size())) {
+                    StringGene key = keys.get(i);
+                    Gene child = clone.children.get(key);
+                    clone.addChild(key, child.mutate(generator));
+                }
+            }
             return clone;
         }
 
-        // if the JSONObjectGene has no children, it will stay empty.
+        // If the JSONObjectGene has no children, it will stay empty.
         if (getSchema().getChildSchemaSpecification().keySet().isEmpty()) {
             return clone;
         }
 
         Map<String, List<SchemaSpecification>> children = getSchema().getChildSchemaSpecification();
 
-        // TODO this always mutate exactly ONE CHILD (but we might want to mutate more)
-        double choice = getRandom().nextDouble();
+        for (int i = 0; i < keys.size(); i++) {
+            if (util.RandomSingleton.getRandomBool(1 / keys.size())) {
+                double choice = getRandom().nextDouble();
 
-        if ((choice <= Configuration.ADD_NONREQUIRED_CHILD_PROB || keys.isEmpty()) && clone.addRandomNonRequiredChild(generator)) {
-            return clone;
-        } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB) && clone.removeRandomChild()) {
-            return clone;
-        } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB + Configuration.REPLACE_CHILD_PROB) && !keys.isEmpty()) {
-            // replace random child
-            int index = getRandomIndex(keys);
-            StringGene key = keys.get(index);
-
-            List<SchemaSpecification> options = children.get(key.getValue());
-
-            clone.addChild(key, generator.generateValueGene(options.get(getRandomIndex(options))));
-        } else if (!keys.isEmpty()) {
-            // mutate random child
-            int index = getRandom().nextInt(keys.size());
-            StringGene key = keys.get(index);
-
-            Gene child = clone.children.get(key);
-            clone.addChild(key, child.mutate(generator));
+                if ((choice <= Configuration.ADD_NONREQUIRED_CHILD_PROB || keys.isEmpty()) && clone.addChild(generator)) {
+                    // Add missing child/parameter to the object
+                    i -= 1;
+                } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB) && clone.removeChild(keys.get(i).getValue())) {
+                    // Remove child/parameter from the object
+                } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB + (1 - Configuration.MUTATION_INSTEAD_OF_GENERATION)) && !keys.isEmpty()) {
+                    // Replace value of child/parameter with a newly generated one
+                    StringGene key = keys.get(i);
+                    List<SchemaSpecification> options = children.get(key.getValue());
+                    clone.addChild(key, generator.generateValueGene(options.get(getRandomIndex(options))));
+                } else if (!keys.isEmpty()) {
+                    // Mutate child/parameter
+                    StringGene key = keys.get(i);
+                    Gene child = clone.children.get(key);
+                    clone.addChild(key, child.mutate(generator));
+                }
+            }
         }
-
         return clone;
     }
     
     /**
-     * Add one of the missing non-required children of the JSONObjectGene.
+     * Add one of the missing children of the JSONObjectGene.
      */
-    public boolean addRandomNonRequiredChild(Generator generator) {
-        Set<String> nonRequiredKeys = new HashSet<>(this.getSchema().getChildSchemaSpecification().keySet());
-        nonRequiredKeys.removeAll(this.getSchema().getRequiredKeys());
+    public boolean addChild(Generator generator) {
+        Set<String> missingKeys = new HashSet<>(this.getSchema().getChildSchemaSpecification().keySet());
+
         for (StringGene child : this.children.keySet()) {
-            nonRequiredKeys.remove(child.getValue());
+            missingKeys.remove(child.getValue());
         }
 
-        if (nonRequiredKeys.isEmpty()) {
+        if (missingKeys.isEmpty()) {
             return false;
         }
 
-        int index = getRandomIndex(nonRequiredKeys);
-        String childKey = (String) nonRequiredKeys.toArray()[index];
+        int index = getRandomIndex(missingKeys);
+        String childKey = (String) missingKeys.toArray()[index];
         List<SchemaSpecification> options = this.getSchema().getChildSchemaSpecification().get(childKey);
 
         Gene newChild = generator.generateValueGene(options.get(getRandomIndex(options)));
@@ -135,28 +132,9 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
     }
 
     /**
-     * Remove one of the (required or non-required) children of the JSONObjectGene.
+     * Remove one of the children of the JSONObjectGene.
      */
-    public boolean removeRandomChild() {
-        Set<String> usedKeys = new HashSet<>();
-
-        // Add all children
-        for (StringGene child : this.children.keySet()) {
-            usedKeys.add(child.getValue());
-        }
-
-        // Remove required children from the set (containing child to be removed) from with a certain probability
-//        if (getRandom().nextDouble() > 0.75) {
-//            usedKeys.removeAll(this.getSchema().getRequiredKeys());
-//        }
-
-        // If there are no keys, there are no children that can be removed.
-        if (usedKeys.isEmpty()) {
-            return false;
-        }
-        int index = getRandomIndex(usedKeys);
-        String childKey = (String) usedKeys.toArray()[index];
-
+    public boolean removeChild(String childKey) {
         for (StringGene key : children.keySet()) {
             if (key.getValue().equals(childKey)) {
                 this.children.remove(key);
@@ -164,7 +142,7 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
             }
         }
 
-        throw new RuntimeException("This should not be possible!");
+        return false;
     }
 
     @Override
