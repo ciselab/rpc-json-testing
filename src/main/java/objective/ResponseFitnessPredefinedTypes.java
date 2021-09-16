@@ -34,7 +34,7 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
     @Override
     public void evaluate(Generator generator, List<Individual> population) {
         for (Individual individual : population) {
-            Double fitness = recordValueTypesAndGetFitness(individual.getDna().get(individual.getDna().size() - 1).getMethod(),
+            Double fitness = recordValueTypesAndGetFitness(individual.getDna().get(individual.getDna().size() - 1).getApiMethod(),
                 individual.getResponseObject().getResponseObject()); // population and responses are in the same order
 
             fitness = 1.0 / (1 + fitness);

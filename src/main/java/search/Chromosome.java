@@ -6,23 +6,22 @@ import util.Configuration;
 
 import java.util.Objects;
 
-import static util.RandomSingleton.getChoiceWithChance;
 import static util.RandomSingleton.getRandom;
 
 public class Chromosome {
     private String httpMethod;
-    private String method;
+    private String apiMethod;
     private ArrayGene genes;
 
-    public Chromosome(String httpMethod, String method, ArrayGene genes) {
+    public Chromosome(String httpMethod, String apiMethod, ArrayGene genes) {
         this.httpMethod = httpMethod;
-        this.method = method;
+        this.apiMethod = apiMethod;
         this.genes = genes;
     }
 
     public JSONObject toRequest() {
         JSONObject request = new JSONObject();
-        request.put("method", method);
+        request.put("method", apiMethod);
         request.put("params", genes.toJSON());
         return request;
     }
@@ -35,27 +34,26 @@ public class Chromosome {
     public Chromosome mutate(Generator generator) {
         double choice = getRandom().nextDouble();
         if (choice < Configuration.MUTATE_HTTP_METHOD_PROB) {
-            // mutate http method
-            return new Chromosome(generator.generateHTTPMethod(), method, genes.copy());
+            // mutate http apiMethod
+            return new Chromosome(generator.generateHTTPMethod(), apiMethod, genes.copy());
         } else if (choice < (Configuration.MUTATE_HTTP_METHOD_PROB + Configuration.MUTATE_API_METHOD_PROB)) {
-            // mutate api method (and corresponding newly generated parameters)
+            // mutate api apiMethod (and corresponding newly generated parameters)
             String methodName = generator.getRandomMethod();
             ArrayGene method = generator.generateMethod(methodName);
             return new Chromosome(generator.generateHTTPMethod(), methodName, method);
         } else {
-            // mutate parameters of api method
+            // mutate parameters of api apiMethod
             ArrayGene newGenes = genes.mutate(generator);
-            return new Chromosome(httpMethod, method, newGenes);
+            return new Chromosome(httpMethod, apiMethod, newGenes);
         }
     }
-
 
     public String getHTTPMethod() {
         return httpMethod;
     }
 
-    public String getMethod() {
-        return method;
+    public String getApiMethod() {
+        return apiMethod;
     }
 
 
@@ -70,7 +68,7 @@ public class Chromosome {
         Chromosome that = (Chromosome) o;
         return
 //            Objects.equals(httpMethod, that.httpMethod) &&
-            Objects.equals(method, that.method) &&
+            Objects.equals(apiMethod, that.apiMethod) &&
             Objects.equals(genes, that.genes);
     }
 }

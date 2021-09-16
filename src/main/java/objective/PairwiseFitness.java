@@ -34,13 +34,13 @@
 //        double[][] similarityMatrix = new double[population.size()][population.size()];
 //
 //        for (int i = 0; i < population.size(); i++) {
-//            String method = population.get(i).getMethod();
+//            String method = population.get(i).getApiMethod();
 //            JSONObject request = population.get(i).toRequest();
 //            JSONObject response = responses.get(i).getResponseObject();
 //            similarityMatrix[i][i] = 1.0; // same object so similarity == 1
 //
 //            for (int j = i + 1; j < population.size(); j++) {
-//                String method2 = population.get(j).getMethod();
+//                String method2 = population.get(j).getApiMethod();
 //                JSONObject request2 = population.get(j).toRequest();
 //                JSONObject response2 = responses.get(j).getResponseObject();
 //

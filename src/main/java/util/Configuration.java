@@ -20,7 +20,7 @@ public final class Configuration {
     // All fitness excl random
     public static final double ARCHIVE_THRESHOLD = 0.8;
     // Random
-    public static final double ARCHIVE_THRESHOLD_RANDOM = 2.5;
+    public static final double ARCHIVE_THRESHOLD_RANDOM = 0.01;
 
     // - Similarity
     public static final double THRESHOLD_DIFFERENT_FEATURES = 0.5;

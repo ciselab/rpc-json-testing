@@ -49,7 +49,7 @@ public class Main {
 
         // Read the input arguments (heuristic, running time, server).
         String fitnessFunction = "8";
-        int runningTime = 5; //default value
+        int runningTime = 3; //default value
         String server = "";
 
         try {
@@ -165,23 +165,30 @@ public class Main {
 
             // Stopping criterium = time
             int generation = 0;
+
             while (testDriver.shouldContinue()) {
                 System.out.println("Starting generation: " + generation + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");
                 generation += 1;
                 population = heuristic.nextGeneration(population);
 
-                // Keeping records of the highest fitness in each generation.
-                double maxFitness = 0;
-                for (Individual ind : population) {
-                    if (ind.getFitness() > maxFitness) {
-                        maxFitness = ind.getFitness();
+                // Store some statistics for analysis purposes.
+                if (testDriver.shouldContinue()) {
+                    double maxFitness = 0;
+                    for (Individual ind : population) {
+
+                        // Count methods
+                        getCollector().countMethodPerGen(ind, generation);
+                        getCollector().countStatusCodesPerGen(ind, generation);
+
+                        if (ind.getFitness() > maxFitness) {
+                            maxFitness = ind.getFitness();
+                        }
                     }
+                    bestFitness.add(maxFitness);
                 }
-                bestFitness.add(maxFitness);
             }
 
             Map<String, MethodCoverage> coverage = getCollector().getInternalCoverage();
-
 //            for (String method : coverage.keySet()) {
 //                System.out.println(method);
 //                System.out.println(coverage.get(method).statusses);
@@ -196,9 +203,12 @@ public class Main {
                 writeFile(bestFitness.toString(), "best_fitness_values.txt");
             }
 
+            // Information on API methods that occurred
+            writeFile(getCollector().getMethodCount().toString(), "methods_per_gen.txt");
             // Information on status codes that occurred
             writeFile(getCollector().getStatusCodesTotal().toString(), "status_codes_total.txt");
             writeFile(getCollector().getStatusCodesArchive().toString(), "status_codes_archive.txt");
+            writeFile(getCollector().getStatusCodesPerGen().toString(), "status_codes_per_gen.txt");
 
             // Information on the amount of tests in the archive
             List<Individual> archive = getCollector().getArchive();

@@ -9,7 +9,6 @@ import util.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 
-import static util.IO.writeFile;
 import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomBool;
 import static util.RandomSingleton.getRandomIndex;

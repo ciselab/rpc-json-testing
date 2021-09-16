@@ -3,8 +3,12 @@ package search.metaheuristics;
 import search.Generator;
 import search.Individual;
 import test_drivers.TestDriver;
+import util.Configuration;
 
 import java.util.List;
+
+import static statistics.Collector.getCollector;
+import static util.RandomSingleton.getRandomBool;
 
 public class RandomFuzzer extends Heuristic {
 
@@ -20,6 +24,12 @@ public class RandomFuzzer extends Heuristic {
         List<Individual> nextPopulation = generatePopulation(population.size());
 
         this.gatherResponses(nextPopulation);
+
+        for (Individual individual : nextPopulation) {
+            if (getRandomBool(Configuration.ARCHIVE_THRESHOLD_RANDOM)) {
+                getCollector().addToArchive(individual);
+            }
+        }
 
         return nextPopulation;
     }

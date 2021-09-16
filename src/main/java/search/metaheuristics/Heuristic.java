@@ -11,22 +11,18 @@ import util.Configuration;
 import util.RandomSingleton;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import static statistics.Collector.getCollector;
 
 public abstract class Heuristic {
 
     private Generator generator;
     private TestDriver testDriver;
-    private Map<Integer, Integer> statusCodesTotal;
-    private Map<Integer, Integer> statusCodesArchive;
 
     public Heuristic(Generator generator, TestDriver testDriver) {
         this.generator = generator;
         this.testDriver = testDriver;
-        this.statusCodesTotal = new HashMap<>();
-        this.statusCodesArchive = new HashMap<>();
     }
 
     public List<Individual> generatePopulation(int size) {
@@ -66,7 +62,6 @@ public abstract class Heuristic {
 
             if (testDriver.shouldContinue()) {
 
-                long start = System.nanoTime();
                 try {
                     testDriver.prepTest();
 
@@ -86,10 +81,10 @@ public abstract class Heuristic {
 
                     individual.setResponseObject(responseObject);
 
-                    if (!statusCodesTotal.containsKey(responseObject.getResponseCode())) {
-                        statusCodesTotal.put(responseObject.getResponseCode(), 0);
+                    if (!getCollector().getStatusCodesTotal().containsKey(responseObject.getResponseCode())) {
+                        getCollector().getStatusCodesTotal().put(responseObject.getResponseCode(), 0);
                     }
-                    statusCodesTotal.put(responseObject.getResponseCode(), statusCodesTotal.get(responseObject.getResponseCode()) + 1);
+                    getCollector().getStatusCodesTotal().put(responseObject.getResponseCode(), getCollector().getStatusCodesTotal().get(responseObject.getResponseCode()) + 1);
 
                 } catch (Exception e) {
                     e.printStackTrace();
