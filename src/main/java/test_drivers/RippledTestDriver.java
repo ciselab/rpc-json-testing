@@ -2,7 +2,7 @@ package test_drivers;
 
 import connection.Client;
 import connection.ResponseObject;
-import statistics.StatisticsKeeper;
+import statistics.CoverageRecorder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.Configuration;
@@ -14,18 +14,18 @@ import java.io.InputStreamReader;
 public class RippledTestDriver extends TestDriver {
 
     private JSONObject accounts;
-    private StatisticsKeeper sk;
+    private CoverageRecorder sk;
     private Long previousTimeStored;
 
     public RippledTestDriver(Client client, Long runTime) {
         super(client, runTime);
-        sk = new StatisticsKeeper();
+        sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
     }
 
     public RippledTestDriver(Client client) {
         super(client);
-        sk = new StatisticsKeeper();
+        sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
     }
 

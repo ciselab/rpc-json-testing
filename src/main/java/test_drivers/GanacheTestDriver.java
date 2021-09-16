@@ -3,7 +3,7 @@ package test_drivers;
 import connection.Client;
 import connection.ResponseObject;
 
-import statistics.StatisticsKeeper;
+import statistics.CoverageRecorder;
 import org.json.JSONObject;
 import util.Configuration;
 
@@ -20,18 +20,18 @@ public class GanacheTestDriver extends TestDriver {
 
     private List<String> accounts;
     private List<String> keys;
-    private StatisticsKeeper sk;
+    private CoverageRecorder sk;
     private Long previousTimeStored;
 
     public GanacheTestDriver(Client client, Long runTime) {
         super(client, runTime);
-        sk = new StatisticsKeeper();
+        sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
     }
 
     public GanacheTestDriver(Client client) {
         super(client);
-        sk = new StatisticsKeeper();
+        sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
     }
 

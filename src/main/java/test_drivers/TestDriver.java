@@ -8,14 +8,14 @@ public abstract class TestDriver {
 
     private Client client;
     private Long runTime;
-    private Long startTime;
     private boolean greenLightSignal;
+    private static Long startTime;
 
     public TestDriver (Client client, Long runTime) {
         this.client = client;
         this.runTime = runTime;
-        this.startTime = System.currentTimeMillis();
         this.greenLightSignal = true;
+        this.startTime = System.currentTimeMillis();
     }
 
     public TestDriver (Client client) {
@@ -38,7 +38,7 @@ public abstract class TestDriver {
         return client;
     }
 
-    public Long getStartTime() {
+    public static Long getStartTime() {
         return startTime;
     }
 
