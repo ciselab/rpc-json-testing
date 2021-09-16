@@ -74,6 +74,7 @@ public class ResponseFitnessClustering extends Fitness {
 
             double cost = clustering.cluster(featureAndWeightVector.getKey());
 
+            // Fitness is between 0 and 1.
             double fitness = 1.0 / (1 + cost);
             // TODO not use this hack for worst output
             if (individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("random") ||

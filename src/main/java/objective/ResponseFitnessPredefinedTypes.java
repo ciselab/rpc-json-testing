@@ -34,10 +34,11 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
     @Override
     public void evaluate(Generator generator, List<Individual> population) {
         for (Individual individual : population) {
-            Double fitness = recordValueTypesAndGetFitness(individual.getDna().get(individual.getDna().size() - 1).getApiMethod(),
+            Double cost = recordValueTypesAndGetFitness(individual.getDna().get(individual.getDna().size() - 1).getApiMethod(),
                 individual.getResponseObject().getResponseObject()); // population and responses are in the same order
 
-            fitness = 1.0 / (1 + fitness);
+            // Fitness is between 0 and 1.
+            Double fitness = 1.0 / cost;
 
             individual.setFitness(fitness);
 
@@ -70,7 +71,7 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
      * Copy the response JSONObject and remove the values.
      *
      * @param response
-     * @return JSONObject with standard values, but key structure intact.
+     * @return ratio between how often a type has occurred and how many parameters the response has.
      */
     public Double recordValueTypesAndGetFitness(String method, JSONObject response) {
         JSONObject structure = new JSONObject(response.toString());

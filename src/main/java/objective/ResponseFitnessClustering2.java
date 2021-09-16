@@ -91,6 +91,7 @@ public class ResponseFitnessClustering2 extends Fitness {
             // calculate the minimum distance of the individual to the clusters
             double cost = clustering.calculateMaxSimilarity(featureAndWeightVector.getKey());
 
+            // Fitness is between 0 and 1.
             double fitness = 1.0 / (1 + cost);
 
             // TODO not use this hack for worst output

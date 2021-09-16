@@ -39,6 +39,7 @@ public class ResponseStructureFitness extends Fitness {
             structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
 
             // Evaluate individual compared to the map
+            // Fitness is between 0 and 1.
             double fitness = (double) 1 / structureFrequencyTable.get(stripValues(individual.toTotalJSONObject(), individual.getResponseObject().getResponseObject()).toString());
             individual.setFitness(fitness);
 

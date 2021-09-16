@@ -28,6 +28,7 @@ public class StatusCodeFitness extends Fitness {
             statusFrequencyTable.put(responseCode, statusFrequencyTable.get(responseCode) + 1);
 
             // If statuscode occurs only once in a large population, it is more rare than if it occurs once in a small population.
+            // Fitness is between 0 and 1.
             double fitness = 1 / statusFrequencyTable.get(ind.getResponseObject().getResponseCode());
 
             ind.setFitness(fitness);
