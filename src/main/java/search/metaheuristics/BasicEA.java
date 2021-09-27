@@ -3,8 +3,10 @@ package search.metaheuristics;
 import search.Generator;
 import search.Individual;
 import objective.Fitness;
+import statistics.Collector;
 import test_drivers.TestDriver;
 import util.Configuration;
+import util.SelectionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,13 @@ public class BasicEA extends Heuristic{
             }
 
             if (getRandomBool(Configuration.ADD_NEW_RANDOM_INDIVIDUAL)) {
-                offspring.add(generateRandomIndividual());
+
+                if (getRandomBool(Configuration.SAMPLE_FROM_ARCHIVE)) {
+                    String key = (new ArrayList<>(Collector.getCollector().getArchive().keySet())).get(getRandomIndex(Collector.getCollector().getArchive().keySet()));
+                    offspring.add(Collector.getCollector().getArchive().get(key));
+                } else {
+                    offspring.add(generateRandomIndividual());
+                }
                 continue;
             }
 
@@ -75,8 +83,12 @@ public class BasicEA extends Heuristic{
         // evaluate entire population
         fitness.evaluate(getGenerator(), offspring);
 
-//        return elitistSelection(offspring);
-        return tournamentSelection(offspring, Configuration.TOURNAMENT_SIZE);
+        if (Configuration.SELECTION_TYPE == SelectionType.TOURNAMENT) {
+            return tournamentSelection(offspring, Configuration.TOURNAMENT_SIZE);
+        } else if (Configuration.SELECTION_TYPE == SelectionType.ELITIST) {
+            return elitistSelection(offspring);
+        }
+        throw new IllegalArgumentException("Unsupported selection type");
     }
 
     /**

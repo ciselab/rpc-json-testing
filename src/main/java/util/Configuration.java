@@ -61,5 +61,11 @@ public final class Configuration {
     // - Attempts allowed to run failed request
     public static final int MAX_ATTEMPTS = 2;
 
+    public static final double SAMPLE_FROM_ARCHIVE = 0.0;
+
+    public static final SelectionType SELECTION_TYPE = SelectionType.TOURNAMENT;
+
 }
+
+
 
