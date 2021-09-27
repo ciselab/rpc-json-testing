@@ -1,5 +1,6 @@
 package objective;
 
+import org.json.JSONObject;
 import search.Generator;
 import search.Individual;
 import util.Configuration;
@@ -22,10 +23,14 @@ public class RandomFitness extends Fitness {
         // Call methods
         for (int i = 0; i < population.size(); i++) {
             Individual individual = population.get(i);
+            JSONObject request = individual.toTotalJSONObject();
+            JSONObject response = individual.getResponseObject().getResponseObject();
+
+            JSONObject stripped = stripValues(request, response);
 
             // decide whether to add individual to the archive
-            if (getRandomBool(1 - Configuration.ARCHIVE_THRESHOLD_RANDOM) && !getCollector().getArchive().contains(individual)) {
-                getCollector().addToArchive(individual);
+            if (getRandomBool(1 - Configuration.ARCHIVE_THRESHOLD_RANDOM)) {
+                getCollector().addToArchive(stripped.toString(), individual);
             }
         }
     }

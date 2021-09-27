@@ -109,10 +109,10 @@ public class DiversityBasedFitness extends Fitness {
             // TODO all general collector things should be grouped together (currently in Main)
 
             // decide whether to add individual to the archive
-            if (responseObject.getResponseCode() > 499 && !getCollector().getArchive().contains(individual)) {
-                getCollector().addToArchive(individual);
-            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getCollector().getArchive().contains(individual)) {
-                getCollector().addToArchive(individual);
+            if (responseObject.getResponseCode() > 499) {
+                getCollector().addToArchive(stripped.toString(), individual);
+            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD) {
+                getCollector().addToArchive(stripped.toString(), individual);
             }
         }
         if (generationCount % Configuration.NEW_CLUSTERS_AFTER_GEN == 0) {

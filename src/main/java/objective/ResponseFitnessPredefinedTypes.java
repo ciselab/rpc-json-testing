@@ -43,10 +43,10 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
             individual.setFitness(fitness);
 
             // decide whether to add individual to the archive
-            if (individual.getResponseObject().getResponseCode() > 499 && !getCollector().getArchive().contains(individual)) {
-                getCollector().addToArchive(individual);
-            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getCollector().getArchive().contains(individual)) {
-                getCollector().addToArchive(individual);
+            if (individual.getResponseObject().getResponseCode() > 499) {
+                getCollector().addToArchive(individual.getResponseObject().getResponseObject().toString(), individual);
+            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD) {
+                getCollector().addToArchive(individual.getResponseObject().getResponseObject().toString(), individual);
             }
         }
 

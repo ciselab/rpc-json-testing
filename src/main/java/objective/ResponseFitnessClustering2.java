@@ -104,10 +104,10 @@ public class ResponseFitnessClustering2 extends Fitness {
             individual.setFitness(fitness);
 
             // decide whether to add individual to the archive
-            if (individual.getResponseObject().getResponseCode() > 499 && !getCollector().getArchive().contains(individual)) {
-                getCollector().addToArchive(individual);
-            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD && !getCollector().getArchive().contains(individual)) {
-                getCollector().addToArchive(individual);
+            if (individual.getResponseObject().getResponseCode() > 499) {
+                getCollector().addToArchive(stripped.toString(), individual);
+            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD) {
+                getCollector().addToArchive(stripped.toString(), individual);
             }
         }
         if (generationCount % Configuration.NEW_CLUSTERS_AFTER_GEN == 0) {

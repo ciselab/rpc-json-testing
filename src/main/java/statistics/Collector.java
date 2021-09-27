@@ -11,7 +11,7 @@ import java.util.Map;
 public class Collector {
 
     private static Collector instance;
-    private static List<Individual> archive;
+    private static Archive archive;
     private static int generation;
 
     private static Map<Integer, Integer> statusCodesTotal;
@@ -27,8 +27,8 @@ public class Collector {
     private Map<String, MethodCoverage> internalCoverage;
 
     private Collector() {
-        this.generation = 0;
-        archive = new ArrayList<>();
+        generation = 0;
+        archive = new Archive();
 
         this.internalCoverage = new HashMap<>();
 
@@ -55,8 +55,8 @@ public class Collector {
         generation += 1;
     }
 
-    public void addToArchive(Individual ind) {
-        archive.add(ind);
+    public void addToArchive(String key, Individual ind) {
+        archive.putWithSecondaryObjectives(key, ind);
 
         // Update status codes occurrences statistics
         if (!statusCodesArchive.containsKey(ind.getResponseObject().getResponseCode())) {
@@ -155,7 +155,7 @@ public class Collector {
         return internalCoverage;
     }
 
-    public List<Individual> getArchive() {
+    public Archive getArchive() {
         return archive;
     }
 

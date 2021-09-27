@@ -27,7 +27,7 @@ public class RandomFuzzer extends Heuristic {
 
         for (Individual individual : nextPopulation) {
             if (getRandomBool(Configuration.ARCHIVE_THRESHOLD_RANDOM)) {
-                getCollector().addToArchive(individual);
+                getCollector().addToArchive(individual.getResponseObject().getResponseObject().toString(), individual);
             }
         }
 

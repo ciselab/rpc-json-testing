@@ -36,10 +36,10 @@ public class StatusCodeFitness extends Fitness {
             // If statuscode is relatively rare, add to archive.
             double archive_threshold = Math.min((100 / statusFrequencyTable.size()), Configuration.ARCHIVE_THRESHOLD);
             // Decide whether to add individual to the archive
-            if (ind.getResponseObject().getResponseCode() > 499 && !getCollector().getArchive().contains(ind)) {
-                getCollector().addToArchive(ind);
-            } else if (fitness >= archive_threshold && !getCollector().getArchive().contains(ind)) {
-                getCollector().addToArchive(ind);
+            if (ind.getResponseObject().getResponseCode() > 499) {
+                getCollector().addToArchive(ind.getResponseObject().getResponseObject().toString(), ind);
+            } else if (fitness >= archive_threshold) {
+                getCollector().addToArchive(ind.getResponseObject().getResponseObject().toString(), ind);
             }
         }
     }
