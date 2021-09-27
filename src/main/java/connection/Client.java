@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 
 /**
@@ -44,6 +45,7 @@ public class Client {
     public ResponseObject createRequest(String method, JSONObject request, int retry) throws IOException {
         // Open a connection on the URL and cast the response
         HttpURLConnection con = (HttpURLConnection) serverURI.openConnection();
+        con.setConnectTimeout(5000); // 5 second timeout
 
         con.setRequestProperty("Content-Type", "application/json; utf-8");
 
@@ -51,6 +53,7 @@ public class Client {
 
         con.setRequestMethod(method);
 
+        // create the request (my output)
         String jsonInputString = request.toString();
         try {
             OutputStream os = con.getOutputStream();
@@ -77,6 +80,15 @@ public class Client {
             }
             jsonOutputString = response.toString();
             responseCode = con.getResponseCode();
+        } catch (SocketTimeoutException e) {
+            System.out.println("SocketTimeoutException! Response gets assigned statusCode -3.");
+            jsonOutputString = "{}";
+            responseCode = -3;
+
+            if (retry < Configuration.MAX_ATTEMPTS) {
+                System.out.println("Retrying... " + (retry + 1));
+                return this.createRequest(method, request, retry + 1);
+            }
         } catch (ConnectException e) {
 //            e.printStackTrace();
             System.out.println("ConnectException! Response gets assigned statusCode -1.");
