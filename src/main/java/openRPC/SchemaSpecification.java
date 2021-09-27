@@ -63,6 +63,18 @@ public class SchemaSpecification {
         } else if (type.equals("string")) {
             pattern = schema.has("pattern") ? schema.getString("pattern") : null;
 
+            if (pattern != null && (
+                    pattern.contains("__ACCOUNT__")
+                    || pattern.contains("__MASTER_KEY__")
+                    || pattern.contains("__MASTER_SEED__")
+                    || pattern.contains("__MASTER_SEED_HEX__")
+                    || pattern.contains("__PUBLIC_KEY__")
+                    || pattern.contains("__PUBLIC_KEY_HEX__")
+                )) {
+                this.isMutable = false;
+                this.name = pattern.replace("$", "").replace("^", "");
+            }
+
             if (schema.has("enum")) {
                 JSONArray options = schema.getJSONArray("enum");
 

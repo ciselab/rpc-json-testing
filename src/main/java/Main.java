@@ -16,6 +16,7 @@ import objective.ResponseStructureFitness2;
 import objective.StatusCodeFitness;
 
 import openRPC.Specification;
+import statistics.Archive;
 import statistics.MethodCoverage;
 
 import test_drivers.GanacheTestDriver;
@@ -213,7 +214,7 @@ public class Main {
             writeFile(getCollector().getStatusCodesPerGen().toString(), "status_codes_per_gen.txt");
 
             // Information on the amount of tests in the archive
-            List<Individual> archive = getCollector().getArchive();
+            Archive archive = getCollector().getArchive();
             String testInArchive = "Amount of tests in the archive: " + archive.size() + ", stopped at generation: " + getCollector().getGeneration();
             writeFile(testInArchive, "archive_size.txt");
 
@@ -226,8 +227,10 @@ public class Main {
                 }
             }
             System.out.println("Tests in the archive: " + archive.size());
-            for (int i = 0; i < archive.size(); i++) {
-                testWriter.writeTest(archive.get(i), "ind" + i + "Test");
+            int i = 0;
+            for (String key : archive.keySet()) {
+                testWriter.writeTest(archive.get(key), "ind" + i + "Test");
+                i++;
             }
 
         } catch (MalformedURLException e) {

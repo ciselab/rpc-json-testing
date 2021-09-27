@@ -57,5 +57,9 @@ public final class Configuration {
 
     // - Test settings
     public static final int NUMBER_OF_ACCOUNTS = 1;
+
+    // - Attempts allowed to run failed request
+    public static final int MAX_ATTEMPTS = 2;
+
 }
 

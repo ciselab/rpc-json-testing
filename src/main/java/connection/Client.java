@@ -1,6 +1,7 @@
 package connection;
 
 import org.json.JSONObject;
+import util.Configuration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,8 +18,19 @@ import java.net.URL;
 public class Client {
     private URL serverURI;
 
-    public Client(URL serverURI) throws IOException {
+    public Client(URL serverURI) {
         this.serverURI  = serverURI;
+    }
+
+    /**
+     * Send a JSON-RPC request to the server and retrieve the response.
+     * @param method
+     * @param request
+     * @return ResponseObject consisting of a HTTP status code and a JSON object
+     * @throws IOException
+     */
+    public ResponseObject createRequest(String method, JSONObject request) throws IOException {
+        return createRequest(method, request, 0);
     }
 
     // Based on https://www.twilio.com/blog/5-ways-to-make-http-requests-in-java
@@ -29,7 +41,7 @@ public class Client {
      * @return ResponseObject consisting of a HTTP status code and a JSON object
      * @throws IOException
      */
-    public ResponseObject createRequest(String method, JSONObject request) throws IOException {
+    public ResponseObject createRequest(String method, JSONObject request, int retry) throws IOException {
         // Open a connection on the URL and cast the response
         HttpURLConnection con = (HttpURLConnection) serverURI.openConnection();
 
@@ -72,19 +84,31 @@ public class Client {
             // TODO sometimes there occurs a Connection refused error here but I do not know why
             jsonOutputString = "{}";
             responseCode = -1;
+
+            if (retry < Configuration.MAX_ATTEMPTS) {
+                System.out.println("Retrying... " + (retry + 1));
+                return this.createRequest(method, request, retry + 1);
+            }
         } catch (SocketException e) {
 //            e.printStackTrace();
             System.out.println("SocketException! Response gets assigned statusCode -2.");
             System.out.println("Request was: " + jsonInputString);
             jsonOutputString = "{}";
             responseCode = -2;
+
+            if (retry < Configuration.MAX_ATTEMPTS) {
+                System.out.println("Retrying... " + (retry + 1));
+                return this.createRequest(method, request, retry + 1);
+            }
         } catch (IOException e) {
 //            e.printStackTrace();
             //TODO: do something for responses without a response object (perhaps create extra field for statuscode or responsemessage)
-            System.out.println("IOException occurred! No response body but status code was " + con.getResponseCode());
-            System.out.println("Request was: " + jsonInputString);
+//            System.out.println("IOException occurred! No response body but status code was " + con.getResponseCode());
+//            System.out.println("Request was: " + jsonInputString);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("responseMessage", con.getResponseMessage());
+            // Add the request to make sure that we get a different response structure if the request is different
+            jsonObject.put("request", request);
             jsonOutputString = jsonObject.toString();
             responseCode = con.getResponseCode();
         }
