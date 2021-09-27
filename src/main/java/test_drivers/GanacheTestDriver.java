@@ -103,10 +103,6 @@ public class GanacheTestDriver extends TestDriver {
         retrieveAccounts();
     }
 
-    protected JSONObject replaceAccountStrings(JSONObject request, String account) {
-        return new JSONObject(request.toString().replace("__ACCOUNT__", account));
-    }
-
     /**
      * Before this method prepTust is run.
      * @param method
@@ -120,7 +116,8 @@ public class GanacheTestDriver extends TestDriver {
             throw new Exception("No accounts found! Something went wrong.");
         }
 
-        request = replaceAccountStrings(request,  accounts.get(0));
+        request = replaceAccountStrings(request, "__ACCOUNT__",  accounts);
+        request = replaceAccountStrings(request, "__MASTER_KEY__",  keys);
 
         // TODO something with private keys as well
         return getClient().createRequest(method, request);

@@ -4,6 +4,8 @@ import connection.Client;
 import connection.ResponseObject;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public abstract class TestDriver {
 
     private Client client;
@@ -28,6 +30,17 @@ public abstract class TestDriver {
             this.greenLightSignal = false;
             System.out.println("Stop signal is given! The run time of the experiment is up.");
         }
+    }
+
+
+    protected JSONObject replaceAccountStrings(JSONObject request, String constant, List<String> replacements) {
+        String stringObj = request.toString();
+
+        for (int i = 0; i < replacements.size(); i++) {
+            stringObj = stringObj.replace(constant + i, replacements.get(i));
+        }
+
+        return new JSONObject(stringObj);
     }
 
     public abstract void prepTest() throws Exception;

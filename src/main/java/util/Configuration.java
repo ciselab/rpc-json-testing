@@ -54,5 +54,8 @@ public final class Configuration {
     // - Crossover settings
     public static final boolean CROSSOVER_ENABLED = true;
     public static final CrossoverType CROSSOVER_TYPE = CrossoverType.RANDOM; // RANDOM, ONE_POINT, OR TWO_POINT
+
+    // - Test settings
+    public static final int NUMBER_OF_ACCOUNTS = 1;
 }
 

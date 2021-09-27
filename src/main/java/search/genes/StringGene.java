@@ -60,12 +60,6 @@ public class StringGene extends ValueGene<String> {
 //                return new StringGene(this.getSchema(), Generator.generateRandomValue(mutatedRegex));
 //            }
 
-            // Option 4: mutate characters in the string
-            // TODO find a different way to specify the use of a tag
-            if (this.getValue().equals("__ACCOUNT__") || !getSchema().isMutable()) {
-                return this.copy();
-            }
-
             String mutatedValue = mutateCharacters(this.getValue());
 
             return new StringGene(this.getSchema(), mutatedValue);

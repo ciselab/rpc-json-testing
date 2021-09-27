@@ -18,6 +18,8 @@ import static openRPC.Specification.extractTypes;
  */
 public class SchemaSpecification {
 
+    private String name;
+
     private String type;
 
     // for LongGenes
@@ -41,7 +43,11 @@ public class SchemaSpecification {
     private boolean isMutable;
 
     public SchemaSpecification(JSONObject schema) {
-        isMutable = true;
+        // TODO all schemas must have a name (extra param in OpenRPC for non mutable shit)
+        // TODO this name should then be used to check if it is mutable
+        // TODO this name should also be equal to the constant of the constant string gene
+        this.name = "";
+        this.isMutable = true;
 
         if (schema.has("type")) {
             this.type = schema.getString("type");
@@ -64,8 +70,14 @@ public class SchemaSpecification {
 
                 for (int i = 0; i < options.length(); i++) {
                     enums[i] = options.getString(i);
-                    if (options.getString(i).equals("__ACCOUNT__")) {
+                    if (options.getString(i).equals("__ACCOUNT__")
+                        || options.getString(i).equals("__MASTER_KEY__")
+                        || options.getString(i).equals("__MASTER_SEED__")
+                        || options.getString(i).equals("__MASTER_SEED_HEX__")
+                        || options.getString(i).equals("__PUBLIC_KEY__")
+                        || options.getString(i).equals("__PUBLIC_KEY_HEX__")) {
                         this.isMutable = false;
+                        this.name = options.getString(i);
                     }
                 }
             }
@@ -131,5 +143,9 @@ public class SchemaSpecification {
 
     public boolean isMutable() {
         return isMutable;
+    }
+
+    public String getName() {
+        return name;
     }
 }

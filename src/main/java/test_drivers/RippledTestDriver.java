@@ -10,10 +10,12 @@ import util.Configuration;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RippledTestDriver extends TestDriver {
 
-    private JSONObject accounts;
+    private List<JSONObject> accounts;
     private CoverageRecorder sk;
     private Long previousTimeStored;
 
@@ -83,21 +85,16 @@ public class RippledTestDriver extends TestDriver {
         checkCoverage(); // check whether coverage should be stored
 
         startServer();
-//        System.out.println("PROPOSE WALLETS");
-        ResponseObject accounts = retrieveAccounts();
-//        System.out.println(accounts.getResponseCode());
-//        System.out.println(accounts.getResponseObject());
-//        System.out.println("SENDING FROM GENESIS ACCOUNT");
-        ResponseObject createAccounts = createAccounts(accounts.getResponseObject());
-//        System.out.println(createAccounts.getResponseCode());
-//        System.out.println(createAccounts.getResponseObject());
-//        System.out.println("REPLACE ACCOUNTS IN REQUEST");
-        this.accounts = accounts.getResponseObject();
+        this.accounts = new ArrayList<>();
+
+        for (int i = 0; i < Configuration.NUMBER_OF_ACCOUNTS; i++) {
+            ResponseObject accounts = retrieveAccounts();
+            ResponseObject createAccounts = createAccounts(accounts.getResponseObject());
+            this.accounts.add(accounts.getResponseObject());
+        }
+
     }
 
-    protected JSONObject replaceAccountStrings(JSONObject request, String account) {
-        return new JSONObject(request.toString().replace("__ACCOUNT__", account));
-    }
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
 
@@ -105,7 +102,28 @@ public class RippledTestDriver extends TestDriver {
             throw new Exception("No accounts found! Please call prepTest before runTest!!");
         }
 
-        request = replaceAccountStrings(request, accounts.getJSONObject("result").getString("account_id"));
+        List<String> accountStrings = new ArrayList<>();
+        List<String> masterKeyStrings = new ArrayList<>();
+        List<String> masterSeedStrings = new ArrayList<>();
+        List<String> masterSeedHexStrings = new ArrayList<>();
+        List<String> publicKeyStrings = new ArrayList<>();
+        List<String> publicKeyHexStrings = new ArrayList<>();
+
+        for (int i = 0; i < accounts.size(); i++) {
+            accountStrings.add(accounts.get(i).getJSONObject("result").getString("account_id"));
+            masterKeyStrings.add(accounts.get(i).getJSONObject("result").getString("master_key"));
+            masterSeedStrings.add(accounts.get(i).getJSONObject("result").getString("master_seed"));
+            masterSeedHexStrings.add(accounts.get(i).getJSONObject("result").getString("master_seed_hex"));
+            publicKeyStrings.add(accounts.get(i).getJSONObject("result").getString("public_key"));
+            publicKeyHexStrings.add(accounts.get(i).getJSONObject("result").getString("public_key_hex"));
+        }
+
+        request = replaceAccountStrings(request, "__ACCOUNT__", accountStrings);
+        request = replaceAccountStrings(request, "__MASTER_KEY__", masterKeyStrings);
+        request = replaceAccountStrings(request, "__MASTER_SEED__", masterSeedStrings);
+        request = replaceAccountStrings(request, "__MASTER_SEED_HEX__", masterSeedHexStrings);
+        request = replaceAccountStrings(request, "__PUBLIC_KEY__", publicKeyStrings);
+        request = replaceAccountStrings(request, "__PUBLIC_KEY_HEX__", publicKeyHexStrings);
 
         return getClient().createRequest(method, request);
     }

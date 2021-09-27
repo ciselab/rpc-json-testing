@@ -3,6 +3,7 @@ package search;
 import com.github.curiousoddman.rgxgen.RgxGen;
 import search.genes.ArrayGene;
 import search.genes.BooleanGene;
+import search.genes.ConstantStringGene;
 import search.genes.Gene;
 import search.genes.JSONObjectGene;
 import search.genes.LongGene;
@@ -168,6 +169,10 @@ public class Generator {
 
             case "string":
             default:
+                if (!schema.isMutable()) {
+                    return new ConstantStringGene(schema, schema.getName(), getRandom().nextInt(Configuration.NUMBER_OF_ACCOUNTS));
+                }
+
                 if (enumOptions != null && enumOptions.length != 0) {
                     // pick a random enum type
                     return new StringGene(schema, enumOptions[getRandom().nextInt(enumOptions.length)]);
