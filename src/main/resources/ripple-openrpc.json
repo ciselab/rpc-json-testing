@@ -960,7 +960,7 @@
           "schema": {
             "oneOf":[
               {
-                "$ref": "#/components/schemas/HexString"
+                "$ref": "#/components/schemas/AccountPublicKeyHex"
               },
               {
                 "$ref": "#/components/schemas/AccountPublicKey"
@@ -1149,13 +1149,13 @@
         "type": "string",
         "pattern": "^__ACCOUNT__$"
       },
+      "AccountPublicKeyHex": {
+        "type": "string",
+        "pattern": "^__PUBLIC_KEY_HEX__$"
+      },
       "AccountPublicKey": {
         "type": "string",
-        "pattern": "^a[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyzZ]{33,53}$"
-      },
-      "SeedSecretKey": {
-        "type": "string",
-        "pattern": "^s[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{16,29}$"
+        "pattern": "^__PUBLIC_KEY__$"
       },
       "ValidationPublicKey": {
         "type": "string",
@@ -1391,7 +1391,7 @@
           },
           "PublicKey": {
             "description": "PaymentChannelCreate Fields - The public key of the key pair the source will use to sign claims against this channel, in hexadecimal. This can be any secp256k1 or Ed25519 public key.",
-            "$ref": "#/components/schemas/HexString"
+            "$ref": "#/components/schemas/AccountPublicKeyHex"
           },
           "SettleDelay": {
             "description": "PaymentChannelCreate Fields - Amount of time the source address must wait before closing the channel if it has unclaimed XRP.",
@@ -1751,21 +1751,24 @@
         "name": "secret",
         "description": "The secret key to use to sign the claim. This must be the same key pair as the public key specified in the channel. Cannot be used with seed, seed_hex, or passphrase.",
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^__MASTER_KEY__$"
         }
       },
       "Seed": {
         "name": "seed",
         "description": "The secret seed to use to sign the claim. This must be the same key pair as the public key specified in the channel. Must be in the XRP Ledger's base58 format. If provided, you must also specify the key_type. Cannot be used with secret, seed_hex, or passphrase. ",
         "schema": {
-          "$ref": "#/components/schemas/SeedSecretKey"
+          "type": "string",
+          "pattern": "^__MASTER_SEED__$"
         }
       },
       "SeedHex": {
         "name": "seed_hex",
         "description": "The secret seed to use to sign the claim. This must be the same key pair as the public key specified in the channel. Must be in hexadecimal format. If provided, you must also specify the key_type. Cannot be used with secret, seed, or passphrase.",
         "schema": {
-          "$ref": "#/components/schemas/HexString"
+          "type": "string",
+          "pattern": "^__MASTER_SEED_HEX__$"
         }
       },
       "Passphrase": {

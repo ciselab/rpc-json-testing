@@ -187,7 +187,7 @@ public class Specification {
             if (object.has(pathPiece)) {
                 object = object.getJSONObject(pathPiece);
             } else {
-                throw new JSONException("Could not find ref");
+                throw new JSONException("Could not find ref: " + ref);
             }
         }
         return object;
