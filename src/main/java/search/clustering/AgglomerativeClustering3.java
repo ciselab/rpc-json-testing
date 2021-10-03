@@ -162,11 +162,12 @@ public class AgglomerativeClustering3 {
             }
         }
 
+        clusters = inBetweenClusters.get(maxJumpIndex);
+
         if (allSame) {
-            maxJumpIndex = similarityJumps.size() - 1;
+            clusters = inBetweenClusters.get(inBetweenClusters.size() - 1);
         }
 
-        clusters = inBetweenClusters.get(maxJumpIndex);
 
         this.clusters = new ArrayList<>();
         // Create actual clusters with representatives and such
