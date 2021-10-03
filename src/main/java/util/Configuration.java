@@ -19,8 +19,8 @@ public final class Configuration {
     public static final int NEW_CLUSTERS_AFTER_GEN = 10;
     // All fitness excl random
     public static final double ARCHIVE_THRESHOLD = 0.8;
-    // Random
-    public static final double ARCHIVE_THRESHOLD_RANDOM = 0.01;
+    // Random fuzzer
+    public static final double PROPORTION_MUTATED = 0.5;
 
     // - Similarity
     public static final double THRESHOLD_DIFFERENT_FEATURES = 0.5;

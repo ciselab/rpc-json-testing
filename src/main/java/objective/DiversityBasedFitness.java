@@ -1,10 +1,12 @@
 package objective;
 
 import connection.ResponseObject;
+
 import search.clustering.AgglomerativeClustering3;
 import search.clustering.Cluster;
 import search.Generator;
 import search.Individual;
+
 import util.Configuration;
 import util.Pair;
 import util.Triple;
@@ -23,6 +25,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import static statistics.Collector.getCollector;
+import static util.ObjectStripper.stripValues;
 
 /**
  * Cluster once every X generations.
@@ -106,10 +109,9 @@ public class DiversityBasedFitness extends Fitness {
 
             individual.setFitness(fitness);
             getCollector().collect(method, responseObject.getResponseCode(), strippedString, String.valueOf(featureAndWeightVector.getKey()));
-            // TODO all general collector things should be grouped together (currently in Main)
 
             // decide whether to add individual to the archive
-            getCollector().addToArchive(stripped.toString(), individual);
+            getCollector().addToArchive(strippedString, individual);
         }
         if (generationCount % Configuration.NEW_CLUSTERS_AFTER_GEN == 0) {
             for (String method : allFeatureVectors.keySet()) {

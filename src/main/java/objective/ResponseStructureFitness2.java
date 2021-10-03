@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Queue;
 
 import static statistics.Collector.getCollector;
+import static util.ObjectStripper.stripValues;
 
 /**
  * Use complexity of the request and response object (layers of JSON object) in the fitness calculation.

@@ -24,7 +24,7 @@ public class CoverageRecorder {
      * @throws IOException
      */
     public void recordCoverage(long time, double branchCoverage, double lineCoverage) {
-        long minutesSinceStart = (time - getStartTime()) * 60 * 1000;
+        long minutesSinceStart = (time - getStartTime()) / (60 * 1000);
 
         this.coverageOverTime.add(new Triple<>(time, branchCoverage, lineCoverage));
 

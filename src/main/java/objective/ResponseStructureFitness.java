@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import static statistics.Collector.getCollector;
+import static util.ObjectStripper.stripValues;
 
 /**
  * This ResponseStructureFitness uses the stripValues function from Fitness.

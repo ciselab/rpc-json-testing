@@ -21,6 +21,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import static statistics.Collector.getCollector;
+import static util.ObjectStripper.stripValues;
 
 /**
  * Cluster once every X generations.
