@@ -95,6 +95,8 @@ public class Client {
             System.out.println("Request was: " + jsonInputString);
             // TODO sometimes there occurs a Connection refused error here but I do not know why
             jsonOutputString = "{}";
+            responseCode = con.getResponseCode();
+            System.out.println("response code was: " + responseCode);
             responseCode = -1;
 
             if (retry < Configuration.MAX_ATTEMPTS) {
