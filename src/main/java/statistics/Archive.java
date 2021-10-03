@@ -14,7 +14,7 @@ public class Archive extends HashMap<String, Individual> {
         } else {
             this.put(key, individual);
         }
-        System.out.println("Archive size: " + this.size());
+//        System.out.println("Archive size: " + this.size());
     }
 
     public void printArchive() {

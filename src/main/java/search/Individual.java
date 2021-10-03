@@ -153,4 +153,14 @@ public class Individual {
     public void setResponseObject(ResponseObject responseObject) {
         this.responseObject = responseObject;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder data = new StringBuilder();
+        for (Chromosome c : dna) {
+            data.append(" -> ").append(c.getHTTPMethod()).append("::").append(c.getApiMethod());
+        }
+
+        return data.toString();
+    }
 }

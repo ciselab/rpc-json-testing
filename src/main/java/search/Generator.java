@@ -206,7 +206,7 @@ public class Generator {
     public String generateHTTPMethod() {
         String[] methods = new String[]{"POST", "GET"};
         String method = methods[0];
-        if (getRandom().nextDouble() > Configuration.HTTP_METHOD_GET_PROB) {
+        if (getRandomBool(Configuration.HTTP_METHOD_GET_PROB)) {
             method = methods[1];
         }
         return method;
