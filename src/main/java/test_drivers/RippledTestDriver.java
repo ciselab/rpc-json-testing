@@ -138,7 +138,7 @@ public class RippledTestDriver extends TestDriver {
         request = replaceKnownStrings(request, "__PUBLIC_KEY_HEX__", publicKeyHexStrings);
 
         ResponseObject responseObject = getClient().createRequest(method, request);
-        manuallyAdvanceLedger();
+//        manuallyAdvanceLedger();
 
         return responseObject;
     }
