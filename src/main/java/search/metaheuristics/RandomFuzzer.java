@@ -33,7 +33,7 @@ public class RandomFuzzer extends Heuristic {
                     mutant = mutant.mutate(getGenerator());
                 }
             } else {
-                mutant = generateRandomIndividual();
+                mutant = getGenerator().generateRandomIndividual();
             }
             nextPopulation.add(mutant);
         }

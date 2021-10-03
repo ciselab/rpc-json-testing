@@ -12,6 +12,7 @@ import openRPC.ParamSpecification;
 import openRPC.SchemaSpecification;
 import openRPC.Specification;
 import util.Configuration;
+import util.RandomSingleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class Generator {
 
     private Specification specification;
     private String regexDefault = "[a-z]*";
+    private String target;
 
     public Generator(Specification specification) {
         this.specification = specification;
@@ -43,8 +45,29 @@ public class Generator {
         throw new IllegalArgumentException("Cannot find schema of type: " + type);
     }
 
+    public Individual generateRandomIndividual() {
+        int nRequests = RandomSingleton.getRandom().nextInt(Configuration.REQUESTS_GENERATOR_LIMIT);
+        List<Chromosome> dna = new ArrayList<>();
+
+        for (int i = 0; i < nRequests; i++) {
+            String methodName = getRandomMethod();
+            ArrayGene method = generateMethod(methodName);
+            Chromosome chromosome = new Chromosome(generateHTTPMethod(), methodName, method);
+            dna.add(chromosome);
+        }
+
+        String methodName = getTarget();
+        ArrayGene method = generateMethod(methodName);
+        Chromosome chromosome = new Chromosome(generateHTTPMethod(), methodName, method);
+        dna.add(chromosome);
+
+        return new Individual(dna);
+    }
+
+
     /**
      * Remove a method from the specification so that it cannot be used again.
+     *
      * @param method
      */
     public void removeMethod(String method) {
@@ -58,6 +81,7 @@ public class Generator {
 
     /**
      * Retrieve the arrayGene from the given specification that corresponds to a method.
+     *
      * @param name
      * @return ArrayGene
      */
@@ -89,6 +113,7 @@ public class Generator {
 
     /**
      * Retrieve the Gene from the given specification that corresponds to the type(s) of a param.
+     *
      * @param schema
      * @return Gene
      */
@@ -188,6 +213,7 @@ public class Generator {
 
     /**
      * Generate a string based on a Regex expression.
+     *
      * @param regex
      * @return String
      */
@@ -201,10 +227,11 @@ public class Generator {
 
     /**
      * Generate the HTTPMethod for an Individual.
+     *
      * @return String the HTTP method
      */
     public String generateHTTPMethod() {
-        String[] methods = new String[]{"POST", "GET"};
+        String[] methods = new String[] {"POST", "GET"};
         String method = methods[0];
         if (getRandomBool(Configuration.HTTP_METHOD_GET_PROB)) {
             method = methods[1];
@@ -212,4 +239,12 @@ public class Generator {
         return method;
     }
 
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
 }

@@ -161,32 +161,72 @@ public class Main {
 
             System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime / 60) + " hour(s)");
 
-            List<Individual> population = heuristic.generatePopulation(Configuration.POPULATION_SIZE);
-            heuristic.gatherResponses(population);
+//            List<Individual> population = heuristic.generatePopulation(Configuration.POPULATION_SIZE);
+//            heuristic.gatherResponses(population);
 
-            // Stopping criterium = time
-            while (testDriver.shouldContinue()) {
-                System.out.println("Starting generation: " + getCollector().getGeneration() + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");
 
-                getCollector().nextGeneration();
-                population = heuristic.nextGeneration(population);
+            List<String> methods = new ArrayList<>(specification.getMethods().keySet());
+            long timePerMethod = testDriver.getTimeLeft() / methods.size();
 
-                // Store some statistics for analysis purposes.
-                if (testDriver.shouldContinue()) {
-                    double maxFitness = 0;
-                    for (Individual ind : population) {
+            for (int i = 0; i < methods.size(); i++) {
+                String method = methods.get(i);
+                heuristic.setTarget(method);
+                long start = System.currentTimeMillis();
 
-                        // Count methods
-                        getCollector().countMethods(ind);
-                        getCollector().countStatusCodes(ind);
+                List<Individual> population = heuristic.generatePopulation(Configuration.POPULATION_SIZE);
+                heuristic.gatherResponses(population);
 
-                        if (ind.getFitness() > maxFitness) {
-                            maxFitness = ind.getFitness();
+                if (!testDriver.shouldContinue()) {
+                    break;
+                }
+
+                while ((System.currentTimeMillis() - start) < timePerMethod && testDriver.shouldContinue()) {
+                    System.out.println("Starting generation: " + getCollector().getGeneration() + " Current target: " + method + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");
+
+                    getCollector().nextGeneration();
+                    population = heuristic.nextGeneration(population);
+
+
+                    // Store some statistics for analysis purposes.
+                    if (testDriver.shouldContinue()) {
+                        double maxFitness = 0;
+                        for (Individual ind : population) {
+
+                            // Count methods
+                            getCollector().countMethods(ind);
+                            getCollector().countStatusCodes(ind);
+
+                            if (ind.getFitness() > maxFitness) {
+                                maxFitness = ind.getFitness();
+                            }
                         }
+                        bestFitness.add(maxFitness);
                     }
-                    bestFitness.add(maxFitness);
                 }
             }
+            // Stopping criterium = time
+//            while (testDriver.shouldContinue()) {
+//                System.out.println("Starting generation: " + getCollector().getGeneration() + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");
+//
+//                getCollector().nextGeneration();
+//                population = heuristic.nextGeneration(population);
+//
+//                // Store some statistics for analysis purposes.
+//                if (testDriver.shouldContinue()) {
+//                    double maxFitness = 0;
+//                    for (Individual ind : population) {
+//
+//                        // Count methods
+//                        getCollector().countMethods(ind);
+//                        getCollector().countStatusCodes(ind);
+//
+//                        if (ind.getFitness() > maxFitness) {
+//                            maxFitness = ind.getFitness();
+//                        }
+//                    }
+//                    bestFitness.add(maxFitness);
+//                }
+//            }
 
             Map<String, MethodCoverage> coverage = getCollector().getInternalCoverage();
             for (String method : coverage.keySet()) {

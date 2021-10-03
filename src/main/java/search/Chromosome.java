@@ -31,7 +31,7 @@ public class Chromosome {
      * @param generator
      * @return mutated individual
      */
-    public Chromosome mutate(Generator generator) {
+    public Chromosome mutate(Generator generator, boolean last) {
         double choice = getRandom().nextDouble();
         if (choice < Configuration.MUTATE_HTTP_METHOD_PROB) {
             // mutate http apiMethod
@@ -39,6 +39,11 @@ public class Chromosome {
         } else if (choice < (Configuration.MUTATE_HTTP_METHOD_PROB + Configuration.MUTATE_API_METHOD_PROB)) {
             // mutate api apiMethod (and corresponding newly generated parameters)
             String methodName = generator.getRandomMethod();
+
+            if (last) {
+                methodName = generator.getTarget();
+            }
+
             ArrayGene method = generator.generateMethod(methodName);
             return new Chromosome(generator.generateHTTPMethod(), methodName, method);
         } else {

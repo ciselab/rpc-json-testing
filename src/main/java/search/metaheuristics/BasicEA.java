@@ -28,7 +28,6 @@ public class BasicEA extends Heuristic{
         List<Individual> offspring = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
-
             // Quit the process if time is up.
             if (!this.getTestDriver().shouldContinue()) {
                 return population;
@@ -40,7 +39,7 @@ public class BasicEA extends Heuristic{
                     String key = (new ArrayList<>(Collector.getCollector().getArchive().keySet())).get(getRandomIndex(Collector.getCollector().getArchive().keySet()));
                     offspring.add(Collector.getCollector().getArchive().get(key));
                 } else {
-                    offspring.add(generateRandomIndividual());
+                    offspring.add(getGenerator().generateRandomIndividual());
                 }
                 continue;
             }
@@ -65,7 +64,7 @@ public class BasicEA extends Heuristic{
             String mutantString = mutant.toTotalJSONObject().toString();
 
             if (parent0String.equals(mutantString) || parent1String.equals(mutantString)) {
-                mutant = generateRandomIndividual();
+                mutant = getGenerator().generateRandomIndividual();
             }
 
             offspring.add(mutant);

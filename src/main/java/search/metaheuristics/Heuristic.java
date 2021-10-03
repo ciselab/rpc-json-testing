@@ -20,6 +20,8 @@ public abstract class Heuristic {
     private Generator generator;
     private TestDriver testDriver;
 
+    private String target;
+
     public Heuristic(Generator generator, TestDriver testDriver) {
         this.generator = generator;
         this.testDriver = testDriver;
@@ -28,25 +30,10 @@ public abstract class Heuristic {
     public List<Individual> generatePopulation(int size) {
         List<Individual> population = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            population.add(generateRandomIndividual());
+            population.add(generator.generateRandomIndividual());
         }
         return population;
     }
-
-    public Individual generateRandomIndividual() {
-        int nRequests = RandomSingleton.getRandom().nextInt(Configuration.REQUESTS_GENERATOR_LIMIT) + 1;
-        List<Chromosome> dna = new ArrayList<>();
-
-        for (int i = 0; i < nRequests; i++) {
-            String methodName = generator.getRandomMethod();
-            ArrayGene method = generator.generateMethod(methodName);
-            Chromosome chromosome = new Chromosome(generator.generateHTTPMethod(), methodName, method);
-            dna.add(chromosome);
-        }
-
-        return new Individual(dna);
-    }
-
 
     /**
      * Get all responses from current generation of requests (i.e. individuals).
@@ -98,5 +85,14 @@ public abstract class Heuristic {
 
     public TestDriver getTestDriver() {
         return testDriver;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+        this.generator.setTarget(target);
     }
 }
