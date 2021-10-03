@@ -5,7 +5,6 @@ import search.Individual;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 public class Collector {
@@ -77,7 +76,7 @@ public class Collector {
             internalCoverage.put(method, new MethodCoverage());
         }
 
-        internalCoverage.get(method).statusses.add(status);
+        internalCoverage.get(method).statuses.add(status);
 
         if (!internalCoverage.get(method).structures.containsKey(structure)) {
             internalCoverage.get(method).structures.put(structure, new HashSet<>());

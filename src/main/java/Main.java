@@ -189,11 +189,11 @@ public class Main {
             }
 
             Map<String, MethodCoverage> coverage = getCollector().getInternalCoverage();
-//            for (String method : coverage.keySet()) {
-//                System.out.println(method);
-//                System.out.println(coverage.get(method).statusses);
-//                System.out.println(coverage.get(method).structures.keySet());
-//            }
+            for (String method : coverage.keySet()) {
+                System.out.println(method);
+                System.out.println(coverage.get(method).statuses);
+                System.out.println(coverage.get(method).structures.keySet());
+            }
 
             if (fitness != null) {
                 // Information on how the fitness function is progressing
