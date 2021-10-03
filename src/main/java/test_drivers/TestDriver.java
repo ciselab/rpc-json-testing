@@ -33,7 +33,7 @@ public abstract class TestDriver {
     }
 
 
-    protected JSONObject replaceAccountStrings(JSONObject request, String constant, List<String> replacements) {
+    protected JSONObject replaceKnownStrings(JSONObject request, String constant, List<String> replacements) {
         String stringObj = request.toString();
 
         for (int i = 0; i < replacements.size(); i++) {

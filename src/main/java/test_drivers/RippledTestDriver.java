@@ -58,7 +58,7 @@ public class RippledTestDriver extends TestDriver {
         return getClient().createRequest("POST", request);
     }
 
-    private ResponseObject createAccounts(JSONObject accounts) throws IOException {
+    private void transferCurrencyToAccounts(JSONObject accounts) throws IOException {
         JSONObject request = new JSONObject();
         request.put("method", "submit");
         JSONArray params = new JSONArray();
@@ -78,7 +78,20 @@ public class RippledTestDriver extends TestDriver {
         params.put(0, paramObj);
         request.put("params", params);
 
-        return getClient().createRequest("POST", request);
+        getClient().createRequest("POST", request);
+    }
+
+    /**
+     * There is no consensus process in stand-alone mode so the ledger index must be manually advanced.
+     * @throws IOException
+     */
+    private void manuallyAdvanceLedger() throws IOException {
+        JSONObject request = new JSONObject();
+        request.put("method", "ledger_accept");
+
+        ResponseObject responseObject = getClient().createRequest("POST", request);
+        // TODO this value could also be used in requests
+        int ledgerIndex = Integer.parseInt(responseObject.getResponseObject().getJSONObject("result").getString("ledger_current_index"));
     }
 
     public void prepTest() throws Exception {
@@ -89,12 +102,11 @@ public class RippledTestDriver extends TestDriver {
 
         for (int i = 0; i < Configuration.NUMBER_OF_ACCOUNTS; i++) {
             ResponseObject accounts = retrieveAccounts();
-            ResponseObject createAccounts = createAccounts(accounts.getResponseObject());
+            transferCurrencyToAccounts(accounts.getResponseObject());
             this.accounts.add(accounts.getResponseObject());
         }
 
     }
-
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
 
@@ -118,14 +130,17 @@ public class RippledTestDriver extends TestDriver {
             publicKeyHexStrings.add(accounts.get(i).getJSONObject("result").getString("public_key_hex"));
         }
 
-        request = replaceAccountStrings(request, "__ACCOUNT__", accountStrings);
-        request = replaceAccountStrings(request, "__MASTER_KEY__", masterKeyStrings);
-        request = replaceAccountStrings(request, "__MASTER_SEED__", masterSeedStrings);
-        request = replaceAccountStrings(request, "__MASTER_SEED_HEX__", masterSeedHexStrings);
-        request = replaceAccountStrings(request, "__PUBLIC_KEY__", publicKeyStrings);
-        request = replaceAccountStrings(request, "__PUBLIC_KEY_HEX__", publicKeyHexStrings);
+        request = replaceKnownStrings(request, "__ACCOUNT__", accountStrings);
+        request = replaceKnownStrings(request, "__MASTER_KEY__", masterKeyStrings);
+        request = replaceKnownStrings(request, "__MASTER_SEED__", masterSeedStrings);
+        request = replaceKnownStrings(request, "__MASTER_SEED_HEX__", masterSeedHexStrings);
+        request = replaceKnownStrings(request, "__PUBLIC_KEY__", publicKeyStrings);
+        request = replaceKnownStrings(request, "__PUBLIC_KEY_HEX__", publicKeyHexStrings);
 
-        return getClient().createRequest(method, request);
+        ResponseObject responseObject = getClient().createRequest(method, request);
+        manuallyAdvanceLedger();
+
+        return responseObject;
     }
 
     public void checkCoverage() throws IOException {

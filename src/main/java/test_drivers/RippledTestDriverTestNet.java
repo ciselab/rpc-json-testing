@@ -27,10 +27,10 @@ public class RippledTestDriverTestNet extends RippledTestDriver {
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
         List<String> accounts = new ArrayList<>();
         accounts.add("r3v7D5Sk5Vc5FEyUDQesg3aP2RLHFuEHG6");
-        request = replaceAccountStrings(request, "__ACCOUNT__", accounts);
+        request = replaceKnownStrings(request, "__ACCOUNT__", accounts);
         List<String> keys = new ArrayList<>();
         keys.add("ssKtprBCgVHc5KWCUawQxqhduPB17");
-        request = replaceAccountStrings(request, "__MASTER_KEY__", keys);
+        request = replaceKnownStrings(request, "__MASTER_KEY__", keys);
 
         return getClient().createRequest(method, request);
     }

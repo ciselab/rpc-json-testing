@@ -116,8 +116,8 @@ public class GanacheTestDriver extends TestDriver {
             throw new Exception("No accounts found! Something went wrong.");
         }
 
-        request = replaceAccountStrings(request, "__ACCOUNT__",  accounts);
-        request = replaceAccountStrings(request, "__MASTER_KEY__",  keys);
+        request = replaceKnownStrings(request, "__ACCOUNT__",  accounts);
+        request = replaceKnownStrings(request, "__MASTER_KEY__",  keys);
 
         // TODO something with private keys as well
         return getClient().createRequest(method, request);
