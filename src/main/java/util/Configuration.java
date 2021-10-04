@@ -56,7 +56,7 @@ public final class Configuration {
     public static final CrossoverType CROSSOVER_TYPE = CrossoverType.ONE_POINT; // RANDOM, ONE_POINT, OR TWO_POINT
 
     // - Test settings
-    public static final int NUMBER_OF_ACCOUNTS = 5;
+    public static final int NUMBER_OF_ACCOUNTS = 3;
 
     // - Attempts allowed to run failed request
     public static final int MAX_ATTEMPTS = 2;

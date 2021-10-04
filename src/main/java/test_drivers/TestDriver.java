@@ -34,12 +34,14 @@ public abstract class TestDriver {
 
 
     protected JSONObject replaceKnownStrings(JSONObject request, String constant, List<String> replacements) {
+        System.out.println("Known strings are replaced.");
         String stringObj = request.toString();
 
         for (int i = 0; i < replacements.size(); i++) {
             stringObj = stringObj.replace(constant + i, replacements.get(i));
         }
 
+        System.out.println("Known strings were successfully replaced.");
         return new JSONObject(stringObj);
     }
 

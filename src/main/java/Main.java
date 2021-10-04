@@ -173,6 +173,7 @@ public class Main {
                 population = heuristic.nextGeneration(population);
 
                 // Store some statistics for analysis purposes.
+                System.out.println("Storing statistics for the previous generation.");
                 if (testDriver.shouldContinue()) {
                     double maxFitness = 0;
                     for (Individual ind : population) {
