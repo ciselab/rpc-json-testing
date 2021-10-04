@@ -13,6 +13,7 @@ public final class Configuration {
     public static final double HTTP_METHOD_GET_PROB = 0.1;
     public static final double INCLUDE_PARAM_PROB = 0.25;
     public static final double SKIP_NONREQUIRED_KEY_PROB = 0.75;
+    public static final double SKIP_REQUIRED_KEY_PROB = 0.01;
 
     // - Fitness functions
     // Fitness with clustering
@@ -41,7 +42,7 @@ public final class Configuration {
     public static final double OTHER_ENUM_PROB = 0.3;
 
     // Type mutation probabilities
-    public static final double CHANGE_TYPE_PROB = 0.05;
+    public static final double CHANGE_TYPE_PROB = 0.10;
     public static final boolean ADVANCED_TYPE_CHANGES = true; // use schema to generate new values (of different types)
 
     public static final double ADD_NEW_RANDOM_INDIVIDUAL = 0.01;

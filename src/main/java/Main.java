@@ -231,9 +231,9 @@ public class Main {
 
             Map<String, MethodCoverage> coverage = getCollector().getInternalCoverage();
             for (String method : coverage.keySet()) {
-                System.out.println(method);
-                System.out.println(coverage.get(method).statuses);
-                System.out.println(coverage.get(method).structures.keySet());
+                System.out.println("Method: " + method);
+                System.out.println("\t Statuses: " + coverage.get(method).statuses);
+                System.out.println("\tStructures: " + coverage.get(method).structures.keySet().size());
             }
 
             if (fitness != null) {

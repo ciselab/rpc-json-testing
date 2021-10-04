@@ -10,6 +10,7 @@ import java.util.Map;
 public class Collector {
 
     private static Collector instance;
+    private static Map<String, Integer> requestArchive;
     private static Archive archive;
     private static int generation;
 
@@ -41,6 +42,7 @@ public class Collector {
         methodCountPerGen = new ArrayList<>();
         methodInArchiveCount = new ArrayList<>();
 
+        requestArchive = new HashMap<>();
     }
 
     public static Collector getCollector() {
@@ -198,4 +200,15 @@ public class Collector {
         return generation;
     }
 
+    public void addRequest(String request) {
+//        System.out.println(request);
+        if (!requestArchive.containsKey(request)) {
+            requestArchive.put(request, 0);
+        }
+        requestArchive.put(request, requestArchive.get(request) + 1);
+    }
+
+    public Map<String, Integer> getRequestArchive() {
+        return requestArchive;
+    }
 }

@@ -64,7 +64,6 @@ public class Generator {
         return new Individual(dna);
     }
 
-
     /**
      * Remove a method from the specification so that it cannot be used again.
      *
@@ -93,7 +92,15 @@ public class Generator {
         arrayGene.addChild(objectGene);
 
         for (ParamSpecification param : params) {
-            if (param.isRequired() || getRandom().nextDouble() < Configuration.INCLUDE_PARAM_PROB) {
+            if (param.isRequired() && !getRandomBool(Configuration.SKIP_REQUIRED_KEY_PROB)) {
+                List<SchemaSpecification> schemaOptions = specification.getSchemas().get(param.getPath());
+                // If there is only one possible schema, this will be the type.
+                int index = getRandom().nextInt(schemaOptions.size());
+
+                SchemaSpecification specification = schemaOptions.get(index);
+
+                objectGene.addChild(new StringGene(null, param.getName()), generateValueGene(specification));
+            } else if (getRandomBool(Configuration.INCLUDE_PARAM_PROB)) {
                 List<SchemaSpecification> schemaOptions = specification.getSchemas().get(param.getPath());
                 // If there is only one possible schema, this will be the type.
                 int index = getRandom().nextInt(schemaOptions.size());
@@ -155,7 +162,11 @@ public class Generator {
 
                 for (String key : children.keySet()) {
                     // If a key is not required there is probability that it is not included
-                    if (!required.contains(key) && getRandom().nextDouble() <= Configuration.SKIP_NONREQUIRED_KEY_PROB) {
+                    if (!required.contains(key) && getRandomBool(Configuration.SKIP_NONREQUIRED_KEY_PROB)) {
+                        continue;
+                    }
+                    // If a key is required there is probability that it is not included
+                    if (required.contains(key) && getRandomBool(Configuration.SKIP_REQUIRED_KEY_PROB)) {
                         continue;
                     }
 

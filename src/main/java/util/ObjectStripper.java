@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,6 +15,7 @@ public final class ObjectStripper {
     private static String STANDARD_STRING = "";
     private static Boolean STANDARD_BOOLEAN = true;
     private static Integer STANDARD_NUMBER = 0;
+
     /**
      * Copy the response JSONObject and remove the values.
      * Also remove keys with values which where given in the request.
@@ -42,10 +44,10 @@ public final class ObjectStripper {
             while (it.hasNext()) {
                 String key = it.next();
 
-                if (requestKeyValuePairs.containsKey(key)) {
-                    // if the key was also in the request we leave it out of the feature vector
-                    continue;
-                }
+//                if (requestKeyValuePairs.containsKey(key)) {
+//                    // if the key was also in the request we leave it out of the feature vector
+//                    continue;
+//                }
 
                 Object smallerObject = object.get(key);
                 if (smallerObject instanceof JSONObject) {
@@ -74,7 +76,10 @@ public final class ObjectStripper {
                             smallerStrippedArray.put(0, STANDARD_BOOLEAN);
                         } else if (array.isNull(0)) {
                             smallerStrippedArray.put(0, "null");
+                        } else if (arrayObject instanceof JSONArray) {
+                            smallerStrippedArray.put(0, new JSONArray());
                         } else {
+                            System.out.println("UNKNOWN ARRAY OBJECT TYPE");
                             System.out.println(arrayObject);
                             System.exit(0);
                         }

@@ -89,7 +89,7 @@ public class BasicEA extends Heuristic{
 
 
         if (Configuration.SELECTION_TYPE == SelectionType.TOURNAMENT) {
-            return tournamentSelection(offspring, Configuration.TOURNAMENT_SIZE);
+            return tournamentSelection(offspring);
         } else if (Configuration.SELECTION_TYPE == SelectionType.ELITIST) {
             return elitistSelection(offspring);
         }
@@ -99,24 +99,23 @@ public class BasicEA extends Heuristic{
     /**
      * Selection based on Tournament Selection.
      * @param population
-     * @param tournamentSize
      * @return the next population of individuals
      */
-    private List<Individual> tournamentSelection(List<Individual> population, int tournamentSize) {
+    private List<Individual> tournamentSelection(List<Individual> population) {
         // select next generation
         List<Individual> newPopulation = new ArrayList<>();
 
-        int champions = tournamentSize / 2;
+        int champions = Configuration.TOURNAMENT_SIZE / 2; // assumes that the given population is twice as big as the original population
 
-        while (!population.isEmpty()) {
+        while (!population.isEmpty() && newPopulation.size() < Configuration.POPULATION_SIZE) {
             List<Individual> tournament = new ArrayList<>();
 
-            for (int i = 0; i < tournamentSize; i++) {
+            for (int i = 0; i < Configuration.TOURNAMENT_SIZE; i++) {
                 if (population.isEmpty()) {
                     break;
                 }
 
-                tournament.add(population.remove(getRandom().nextInt(population.size())));
+                tournament.add(population.remove(getRandom().nextInt(Configuration.POPULATION_SIZE)));
             }
 
             // Sort by descending order
@@ -142,10 +141,10 @@ public class BasicEA extends Heuristic{
         // Sort
         population.sort((o1, o2) -> Double.compare(o2.getFitness(), o1.getFitness()));
 
-        // select next generation
+        // Select next generation
         List<Individual> newPopulation = new ArrayList<>();
 
-        for (int i = 0; i < population.size(); i++) {
+        for (int i = 0; i < Configuration.POPULATION_SIZE; i++) {
             newPopulation.add(population.get(i));
         }
 

@@ -7,6 +7,7 @@ import search.clustering.Cluster;
 import search.Generator;
 import search.Individual;
 
+import statistics.Collector;
 import util.Configuration;
 import util.Pair;
 import util.Triple;
@@ -58,6 +59,10 @@ public class DiversityBasedFitness extends Fitness {
             ResponseObject responseObject = individual.getResponseObject();
             JSONObject request = responseObject.getRequestObject();
             JSONObject response = responseObject.getResponseObject();
+
+            JSONObject strippedRequest = stripValues(request, request);
+
+            Collector.getCollector().addRequest(strippedRequest.toString());
 
             JSONObject stripped = stripValues(request, response);
             String strippedString = stripped.toString();
