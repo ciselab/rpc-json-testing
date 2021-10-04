@@ -126,16 +126,15 @@ public class GanacheTestDriver extends TestDriver {
     public void checkCoverage() throws IOException {
         // Check whether coverage should be measured
         Long currentTime = System.currentTimeMillis();
-        if (currentTime - previousTimeStored >= Configuration.RECORDING_COVERAGE_TIME) {
+        if (currentTime - previousTimeStored >= Configuration.RECORD_COVERAGE_INTERVAL) {
             previousTimeStored = currentTime;
 
             String[] results = retrieveCoverage().split("\\|");
 
             double branchcoverage = Double.parseDouble(results[2].trim());
             double linecoverage = Double.parseDouble(results[4].trim());
-            sk.recordCoverage(currentTime, branchcoverage, linecoverage);
 
-            System.out.println("Intermediate coverage results at time: " + currentTime + " = branch cov: " + branchcoverage + " and line cov: " + linecoverage);
+            sk.recordCoverage(currentTime, branchcoverage, linecoverage);
         }
     }
 
