@@ -166,7 +166,8 @@ public class Main {
 
             // Stopping criterium = time
             while (testDriver.shouldContinue()) {
-                System.out.println("Starting generation: " + getCollector().getGeneration() + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");
+                System.out.println("Starting generation: " + getCollector().getGeneration() + ", "
+                    + (testDriver.getTimeLeft() / 1000) + " seconds = " + (testDriver.getTimeLeft() / (60*1000)) + " minutes left.");
 
                 getCollector().nextGeneration();
                 population = heuristic.nextGeneration(population);
