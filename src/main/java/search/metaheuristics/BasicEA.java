@@ -82,6 +82,12 @@ public class BasicEA extends Heuristic{
         // evaluate entire population
         fitness.evaluate(getGenerator(), offspring);
 
+
+//        for (int i = 0; i < offspring.size(); i++) {
+//            System.out.println("" + offspring.get(i).getFitness() + " " + offspring.get(i).toString());
+//        }
+
+
         if (Configuration.SELECTION_TYPE == SelectionType.TOURNAMENT) {
             return tournamentSelection(offspring, Configuration.TOURNAMENT_SIZE);
         } else if (Configuration.SELECTION_TYPE == SelectionType.ELITIST) {

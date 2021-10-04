@@ -55,20 +55,23 @@ public class Collector {
     }
 
     public void addToArchive(String key, Individual ind) {
-        archive.putWithSecondaryObjectives(key, ind);
+        boolean newMemberInArchive = archive.putWithSecondaryObjectives(key, ind);
 
-        // Update status codes occurrences statistics
-        if (!statusCodesArchive.containsKey(ind.getResponseObject().getResponseCode())) {
-            statusCodesArchive.put(ind.getResponseObject().getResponseCode(), 0);
-        }
-        statusCodesArchive.put(ind.getResponseObject().getResponseCode(), statusCodesArchive.get(ind.getResponseObject().getResponseCode()) + 1);
+        // TODO this method is always called
+        if (newMemberInArchive) {
+            // Update status codes occurrences statistics
+            if (!statusCodesArchive.containsKey(ind.getResponseObject().getResponseCode())) {
+                statusCodesArchive.put(ind.getResponseObject().getResponseCode(), 0);
+            }
+            statusCodesArchive.put(ind.getResponseObject().getResponseCode(), statusCodesArchive.get(ind.getResponseObject().getResponseCode()) + 1);
 
-        // Update API method occurrences statistics
-        String currentMethod = ind.getDna().get(ind.getDna().size()-1).getApiMethod();
-        if (!methodCountArchive.containsKey(currentMethod)) {
-            methodCountArchive.put(currentMethod, 0);
+            // Update API method occurrences statistics
+            String currentMethod = ind.getDna().get(ind.getDna().size() - 1).getApiMethod();
+            if (!methodCountArchive.containsKey(currentMethod)) {
+                methodCountArchive.put(currentMethod, 0);
+            }
+            methodCountArchive.put(currentMethod, methodCountArchive.get(currentMethod) + 1);
         }
-        methodCountArchive.put(currentMethod, methodCountArchive.get(currentMethod) + 1);
     }
 
     public void collect(String method, Integer status, String structure, String vector) {
