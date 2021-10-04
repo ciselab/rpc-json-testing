@@ -18,26 +18,31 @@ public class CoverageRecorder {
 
     /**
      * Record the coverage of a certain time.
-     * @param time
+     * @param milliSecondsSinceStart
      * @param branchCoverage
      * @param lineCoverage
      * @throws IOException
      */
-    public void recordCoverage(long time, double branchCoverage, double lineCoverage) {
-        long minutesSinceStart = (time - getStartTime()) / (60 * 1000);
+    public void recordCoverage(long milliSecondsSinceStart, double branchCoverage, double lineCoverage) {
 
-        this.coverageOverTime.add(new Triple<>(time, branchCoverage, lineCoverage));
+        Long minutesSinceStart = (milliSecondsSinceStart - getStartTime()) / (60 * 1000);
+
+        System.out.println("Intermediate coverage results at time: " + minutesSinceStart + " = branch cov: " + branchCoverage + " and line cov: " + lineCoverage);
+
+        this.coverageOverTime.add(new Triple<>(minutesSinceStart, branchCoverage, lineCoverage));
 
         // Append coverage to file immediately
         try {
             FileWriter writer = new FileWriter("coverage_over_time.txt", true);
+
             // For when coverage should be written to file all at once
 //            for (int i = 0; i < coverageOverTime.size(); i++) {
 //                Long t = coverageOverTime.get(i).getKey();
 //                double bc = coverageOverTime.get(i).getValue();
 //                double lc = coverageOverTime.get(i).getValue2();
-//                writer.write("Time: " + t + ", branch coverage: " + bc +  ", line coverage: " + lc + System.lineSeparator());
+//                writer.write("Time in minutes: " + t + ", branch coverage: " + bc +  ", line coverage: " + lc + System.lineSeparator());
 //            }
+
             writer.write("Time: " + minutesSinceStart + " minutes, branch coverage: " + branchCoverage +  ", line coverage: " + lineCoverage + System.lineSeparator());
             writer.close();
         } catch (IOException e) {

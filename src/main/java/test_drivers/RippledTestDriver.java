@@ -147,7 +147,7 @@ public class RippledTestDriver extends TestDriver {
         // Check whether coverage should be measured
         Long currentTime = System.currentTimeMillis();
 
-        if (currentTime - previousTimeStored >= Configuration.RECORDING_COVERAGE_TIME) {
+        if (currentTime - previousTimeStored >= Configuration.RECORD_COVERAGE_INTERVAL) {
             previousTimeStored = currentTime;
 
             String cov = retrieveCoverage();
@@ -160,8 +160,6 @@ public class RippledTestDriver extends TestDriver {
 
             double lineCovPer = linescovered / linetotal;
             double branchCovPer = branchescovered / branchtotal;
-
-            System.out.println("Intermediate coverage results at time: " + currentTime + " = branch cov: " + branchCovPer + " and line cov: " + lineCovPer);
 
             sk.recordCoverage(currentTime, branchCovPer, lineCovPer);
         }
