@@ -30,12 +30,15 @@ public class RandomFuzzer extends Heuristic {
             Individual mutant = population.get(i);
             if (getRandomBool(PROPORTION_MUTATED)) {
                 for (int j = 0; j < MUTATIONS_PER_INDIVIDUAL; j++) {
+                    System.out.println("Individual " + j + " will be mutated.");
                     mutant = mutant.mutate(getGenerator());
+                    System.out.println("Individual " + j + " was successfully mutated.");
                 }
             } else {
                 mutant = getGenerator().generateRandomIndividual();
             }
             nextPopulation.add(mutant);
+            System.out.println("Entire next population is successfully created.");
         }
 
         this.gatherResponses(nextPopulation);

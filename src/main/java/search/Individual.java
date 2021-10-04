@@ -38,6 +38,7 @@ public class Individual {
         List<Chromosome> newDna = new ArrayList<>();
 
         for (int i = 0; i < dna.size(); i++) {
+            System.out.println("Chromosome " + i + " will be mutated.");
             if (util.RandomSingleton.getRandomBool(1/dna.size())) {
                 if (getRandomBool(0.05)) { // TODO CONFIG
                     // add
@@ -52,8 +53,10 @@ public class Individual {
                 } else {
                     newDna.add(dna.get(i).mutate(generator, i == dna.size() - 1));
                 }
+                System.out.println("Chromosome " + i + " was successfully mutated.");
             } else {
                 newDna.add(dna.get(i));
+                System.out.println("Chromosome " + i + " was not mutated.");
             }
         }
 

@@ -164,7 +164,6 @@ public class Main {
 //            List<Individual> population = heuristic.generatePopulation(Configuration.POPULATION_SIZE);
 //            heuristic.gatherResponses(population);
 
-
             List<String> methods = new ArrayList<>(specification.getMethods().keySet());
             long timePerMethod = testDriver.getTimeLeft() / methods.size();
 
@@ -181,14 +180,16 @@ public class Main {
                 }
 
                 while ((System.currentTimeMillis() - start) < timePerMethod && testDriver.shouldContinue()) {
-                    System.out.println("Starting generation: " + getCollector().getGeneration() + " Current target: " + method + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");
+                    System.out.println("Starting generation: " + getCollector().getGeneration() + ", "
+                        + (testDriver.getTimeLeft() / 1000) + " seconds = " + (testDriver.getTimeLeft() / (60*1000)) + " minutes left.");
 
                     getCollector().nextGeneration();
                     population = heuristic.nextGeneration(population);
 
-
                     // Store some statistics for analysis purposes.
+
                     if (testDriver.shouldContinue()) {
+                         System.out.println("Storing statistics for the previous generation.");
                         double maxFitness = 0;
                         for (Individual ind : population) {
 

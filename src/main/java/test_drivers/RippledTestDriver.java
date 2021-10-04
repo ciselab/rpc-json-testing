@@ -100,15 +100,19 @@ public class RippledTestDriver extends TestDriver {
         startServer();
         this.accounts = new ArrayList<>();
 
+        System.out.println("Test is being prepared.");
         for (int i = 0; i < Configuration.NUMBER_OF_ACCOUNTS; i++) {
             ResponseObject accounts = retrieveAccounts();
             transferCurrencyToAccounts(accounts.getResponseObject());
             this.accounts.add(accounts.getResponseObject());
         }
+        System.out.println("Test was successfully prepared.");
 
     }
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
+
+        System.out.println("Test will now run.");
 
         if (accounts == null) {
             throw new Exception("No accounts found! Please call prepTest before runTest!!");
@@ -139,6 +143,8 @@ public class RippledTestDriver extends TestDriver {
 
         ResponseObject responseObject = getClient().createRequest(method, request);
 //        manuallyAdvanceLedger();
+
+        System.out.println("Test was successfully run.");
 
         return responseObject;
     }

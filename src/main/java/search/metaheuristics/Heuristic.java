@@ -55,8 +55,10 @@ public abstract class Heuristic {
                     ResponseObject responseObject = null;
 
                     for (int j = 0; j < individual.getDna().size(); j++) {
+                        System.out.println("Requests of individual " + j + " are sent to server.");
                         Chromosome chromosome = individual.getDna().get(j);
                         responseObject = testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest());
+                        System.out.println("Requests of individual " + j + " are successfully handled.");
                     }
 
                     if (responseObject == null) {
@@ -73,6 +75,7 @@ public abstract class Heuristic {
                 }
 
                 testDriver.checkWhetherToStop();
+                System.out.println("Requests of all individuals of this generation are successfully processed.");
             }
         }
     }
