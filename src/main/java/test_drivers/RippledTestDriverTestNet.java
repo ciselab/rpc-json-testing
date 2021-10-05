@@ -4,10 +4,11 @@ import connection.Client;
 import connection.ResponseObject;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RippledTestDriverTestNet extends RippledTestDriver {
+public class RippledTestDriverTestNet extends TestDriver {
 
     public RippledTestDriverTestNet(Client client, Long runTime) {
         super(client, runTime);
