@@ -19,16 +19,18 @@ public class RippledTestDriver extends TestDriver {
     private CoverageRecorder sk;
     private Long previousTimeStored;
 
-    public RippledTestDriver(Client client, Long runTime) {
+    public RippledTestDriver(Client client, Long runTime) throws IOException {
         super(client, runTime);
         sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
+        recordCoverage(System.currentTimeMillis());
     }
 
-    public RippledTestDriver(Client client) {
+    public RippledTestDriver(Client client) throws IOException {
         super(client);
         sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
+        recordCoverage(System.currentTimeMillis());
     }
 
     public void startServer() throws IOException {
@@ -155,23 +157,11 @@ public class RippledTestDriver extends TestDriver {
 
         if (currentTime - previousTimeStored >= Configuration.RECORD_COVERAGE_INTERVAL) {
             previousTimeStored = currentTime;
-
-            String cov = retrieveCoverage();
-            String[] results = cov.split(" ");
-
-            double linescovered = Double.parseDouble(results[0].replace("(", ""));
-            double linetotal = Double.parseDouble(results[3].replace(")", ""));
-            double branchescovered = Double.parseDouble(results[4].replace("(", ""));
-            double branchtotal = Double.parseDouble(results[7].replace(")", ""));
-
-            double lineCovPer = linescovered / linetotal;
-            double branchCovPer = branchescovered / branchtotal;
-
-            sk.recordCoverage(currentTime, branchCovPer, lineCovPer);
+            recordCoverage(currentTime);
         }
     }
 
-    public String retrieveCoverage() throws IOException {
+    public String recordCoverage(Long currentTime) throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
         pb.command("/blockchain-testing/scripts/coverageRippled.sh");
@@ -201,7 +191,21 @@ public class RippledTestDriver extends TestDriver {
             p.destroy();
         }
 
-        return coverage.toString().trim();
+        String cov = coverage.toString().trim();
+
+        String[] results = cov.split(" ");
+
+        double linescovered = Double.parseDouble(results[0].replace("(", ""));
+        double linetotal = Double.parseDouble(results[3].replace(")", ""));
+        double branchescovered = Double.parseDouble(results[4].replace("(", ""));
+        double branchtotal = Double.parseDouble(results[7].replace(")", ""));
+
+        double lineCovPer = linescovered / linetotal;
+        double branchCovPer = branchescovered / branchtotal;
+
+        sk.recordCoverage(currentTime, branchCovPer, lineCovPer);
+
+        return cov;
     }
 
 }
