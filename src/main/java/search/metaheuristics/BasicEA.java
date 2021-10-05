@@ -118,6 +118,8 @@ public class BasicEA extends Heuristic{
                 }
 
                 tournament.add(population.remove(getRandom().nextInt(population.size())));
+                
+                System.out.println("Population size = " + population.size());
             }
 
             // Sort by descending order

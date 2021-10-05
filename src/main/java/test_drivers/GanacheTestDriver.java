@@ -23,16 +23,18 @@ public class GanacheTestDriver extends TestDriver {
     private CoverageRecorder sk;
     private Long previousTimeStored;
 
-    public GanacheTestDriver(Client client, Long runTime) {
+    public GanacheTestDriver(Client client, Long runTime) throws IOException {
         super(client, runTime);
         sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
+        recordCoverage(System.currentTimeMillis());
     }
 
-    public GanacheTestDriver(Client client) {
+    public GanacheTestDriver(Client client) throws IOException {
         super(client);
         sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
+        recordCoverage(System.currentTimeMillis());
     }
 
     public void startServer() throws IOException {
@@ -128,17 +130,11 @@ public class GanacheTestDriver extends TestDriver {
         Long currentTime = System.currentTimeMillis();
         if (currentTime - previousTimeStored >= Configuration.RECORD_COVERAGE_INTERVAL) {
             previousTimeStored = currentTime;
-
-            String[] results = retrieveCoverage().split("\\|");
-
-            double branchcoverage = Double.parseDouble(results[2].trim());
-            double linecoverage = Double.parseDouble(results[4].trim());
-
-            sk.recordCoverage(currentTime, branchcoverage, linecoverage);
+            recordCoverage(currentTime);
         }
     }
 
-    public String retrieveCoverage() throws IOException {
+    public String recordCoverage(Long currentTime) throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
         pb.command("/blockchain-testing/scripts/coverageGanache.sh");
@@ -167,7 +163,12 @@ public class GanacheTestDriver extends TestDriver {
             p.destroy();
         }
 
-        return coverage;
+        String[] results = coverage.split("\\|");
+
+        double branchcoverage = Double.parseDouble(results[2].trim());
+        double linecoverage = Double.parseDouble(results[4].trim());
+
+        sk.recordCoverage(currentTime, branchcoverage, linecoverage);
     }
 
 }
