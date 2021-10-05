@@ -134,7 +134,7 @@ public class GanacheTestDriver extends TestDriver {
         }
     }
 
-    public String recordCoverage(Long currentTime) throws IOException {
+    public void recordCoverage(Long currentTime) throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
         pb.command("/blockchain-testing/scripts/coverageGanache.sh");

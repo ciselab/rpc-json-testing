@@ -161,7 +161,7 @@ public class RippledTestDriver extends TestDriver {
         }
     }
 
-    public String recordCoverage(Long currentTime) throws IOException {
+    public void recordCoverage(Long currentTime) throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
         pb.command("/blockchain-testing/scripts/coverageRippled.sh");
@@ -204,8 +204,6 @@ public class RippledTestDriver extends TestDriver {
         double branchCovPer = branchescovered / branchtotal;
 
         sk.recordCoverage(currentTime, branchCovPer, lineCovPer);
-
-        return cov;
     }
 
 }
