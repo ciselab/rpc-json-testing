@@ -14,6 +14,6 @@ done
 
 echo "computing coverage"
 cd /rippled-1.6.0
-gcovr -s -r ./
+gcovr -s -r ./ -f 'src/ripple'
 
 exit 0
