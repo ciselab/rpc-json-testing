@@ -50,7 +50,9 @@ public class RandomFuzzer extends Heuristic {
         if (getTestDriver().shouldContinue()) {
             for (Individual individual : nextPopulation) {
                 ResponseObject responseObject = individual.getResponseObject();
+                System.out.println("Response object is about to be stripped");
                 JSONObject stripped = stripValues(responseObject.getRequestObject(), responseObject.getResponseObject());
+                System.out.println("Response object is successfully stripped");
                 String strippedString = stripped.toString();
                 getCollector().addToArchive(strippedString, individual);
             }
