@@ -37,7 +37,7 @@ public class RippledTestDriver extends TestDriver {
     public void startServer() throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder();
 
-        processBuilder.command("/blockchain-testing/scripts/startRippled.sh");
+        processBuilder.command("/blockchain-testing/scripts/rippled/startRippled.sh");
 
         processBuilder.redirectErrorStream(true);
 
@@ -175,7 +175,7 @@ public class RippledTestDriver extends TestDriver {
     public void recordCoverage(Long currentTime) throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
-        pb.command("/blockchain-testing/scripts/coverageRippled.sh");
+        pb.command("/blockchain-testing/scripts/rippled/coverageRippled.sh");
 
         pb.redirectErrorStream(true);
 
