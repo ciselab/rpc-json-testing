@@ -41,7 +41,7 @@ public class GanacheTestDriver extends TestDriver {
     public void startServer() throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
-        pb.command("/blockchain-testing/scripts/startGanache.sh");
+        pb.command("/blockchain-testing/scripts/ganache/startGanache.sh");
 
         pb.redirectErrorStream(true);
 
@@ -148,7 +148,7 @@ public class GanacheTestDriver extends TestDriver {
     public void recordCoverage(Long currentTime) throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
-        pb.command("/blockchain-testing/scripts/coverageGanache.sh");
+        pb.command("/blockchain-testing/scripts/ganache/coverageGanache.sh");
 
         pb.redirectErrorStream(true);
 
