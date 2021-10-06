@@ -22,19 +22,20 @@ public class GanacheTestDriver extends TestDriver {
     private List<String> keys;
     private CoverageRecorder sk;
     private Long previousTimeStored;
+    private boolean atStart;
 
-    public GanacheTestDriver(Client client, Long runTime) throws IOException {
+    public GanacheTestDriver(Client client, Long runTime) {
         super(client, runTime);
         sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
-        recordCoverage(System.currentTimeMillis());
+        atStart = true;
     }
 
-    public GanacheTestDriver(Client client) throws IOException {
+    public GanacheTestDriver(Client client) {
         super(client);
         sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
-        recordCoverage(System.currentTimeMillis());
+        atStart = true;
     }
 
     public void startServer() throws IOException {
@@ -101,6 +102,16 @@ public class GanacheTestDriver extends TestDriver {
 
     public void prepTest() throws Exception {
         checkCoverage();    // Check whether coverage needs to be documented.
+        prepareServer();
+
+        if (atStart) {
+            recordCoverage(System.currentTimeMillis());
+            atStart = false;
+            prepareServer();
+        }
+    }
+
+    public void prepareServer() throws Exception {
         startServer();
         retrieveAccounts();
     }

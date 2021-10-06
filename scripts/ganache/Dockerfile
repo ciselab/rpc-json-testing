@@ -38,9 +38,9 @@ RUN git clone https://lisv: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@github.com/S
 	cp src/main/resources/ethereum-openrpc.json target/
 
 # Give permission to run scripts.
-RUN cd blockchain-testing/docker/ganache && chmod +x script.sh
-RUN cd blockchain-testing/scripts && chmod +x startGanache.sh
-RUN cd blockchain-testing/scripts && chmod +x coverageGanache.sh
+RUN cd blockchain-testing/scripts/ganache && chmod +x script.sh
+RUN cd blockchain-testing/scripts/ganache && chmod +x startGanache.sh
+RUN cd blockchain-testing/scripts/ganache && chmod +x coverageGanache.sh
 
-ENTRYPOINT ["blockchain-testing/docker/ganache/script.sh"]
+ENTRYPOINT ["blockchain-testing/scripts/ganache/script.sh"]
 CMD ["1", "60", "g"]

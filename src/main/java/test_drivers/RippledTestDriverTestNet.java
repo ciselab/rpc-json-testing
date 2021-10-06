@@ -4,11 +4,10 @@ import connection.Client;
 import connection.ResponseObject;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RippledTestDriverTestNet extends TestDriver {
+public class RippledTestDriverTestNet extends RippledTestDriver {
 
     public RippledTestDriverTestNet(Client client, Long runTime) {
         super(client, runTime);
@@ -20,7 +19,7 @@ public class RippledTestDriverTestNet extends TestDriver {
 
 
     @Override
-    public void prepTest() throws Exception {
+    public void prepTest() {
 
     }
 

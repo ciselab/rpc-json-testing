@@ -30,9 +30,9 @@ RUN git clone https://lisv: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@github.com/S
 	cp src/main/resources/ripple-openrpc.json target/
 	
 # Give permission to run scripts.
-RUN cd blockchain-testing/docker/rippled && chmod +x script.sh
-RUN cd blockchain-testing/scripts && chmod +x startRippled.sh
-RUN cd blockchain-testing/scripts && chmod +x coverageRippled.sh
+RUN cd blockchain-testing/scripts/rippled && chmod +x script.sh
+RUN cd blockchain-testing/scripts/rippled && chmod +x startRippled.sh
+RUN cd blockchain-testing/scripts/rippled && chmod +x coverageRippled.sh
 
-ENTRYPOINT ["blockchain-testing/docker/rippled/script.sh"]
+ENTRYPOINT ["blockchain-testing/scripts/rippled/script.sh"]
 CMD ["1", "60", "r"]
