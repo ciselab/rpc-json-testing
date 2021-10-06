@@ -18,19 +18,20 @@ public class RippledTestDriver extends TestDriver {
     private List<JSONObject> accounts;
     private CoverageRecorder sk;
     private Long previousTimeStored;
+    private boolean atStart;
 
-    public RippledTestDriver(Client client, Long runTime) throws IOException {
+    public RippledTestDriver(Client client, Long runTime) {
         super(client, runTime);
         sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
-        recordCoverage(System.currentTimeMillis());
+        atStart = true;
     }
 
-    public RippledTestDriver(Client client) throws IOException {
+    public RippledTestDriver(Client client) {
         super(client);
         sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
-        recordCoverage(System.currentTimeMillis());
+        atStart = true;
     }
 
     public void startServer() throws IOException {
@@ -98,8 +99,19 @@ public class RippledTestDriver extends TestDriver {
 
     public void prepTest() throws Exception {
         checkCoverage(); // check whether coverage should be stored
+        prepareServer();
 
+        if (atStart) {
+            recordCoverage(System.currentTimeMillis());
+            atStart = false;
+            prepareServer();
+        }
+
+    }
+
+    public void prepareServer() throws IOException {
         startServer();
+
         this.accounts = new ArrayList<>();
 
         System.out.println("Test is being prepared.");
@@ -109,7 +121,6 @@ public class RippledTestDriver extends TestDriver {
             this.accounts.add(accounts.getResponseObject());
         }
         System.out.println("Test was successfully prepared.");
-
     }
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {

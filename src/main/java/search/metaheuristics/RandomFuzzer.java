@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import search.Generator;
 import search.Individual;
 import test_drivers.TestDriver;
+import util.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +39,10 @@ public class RandomFuzzer extends Heuristic {
                 mutant = generateRandomIndividual();
             }
             nextPopulation.add(mutant);
-            System.out.println("Entire next population is successfully created.");
+            System.out.println("Individual: " + i + " was added to next population.");
         }
+        System.out.println("Population size: " + population.size() + "while initial population was: " + Configuration.POPULATION_SIZE);
+        System.out.println("Entire next population is successfully created.");
 
         this.gatherResponses(nextPopulation);
 
