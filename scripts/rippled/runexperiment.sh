@@ -15,9 +15,13 @@ docker cp $3_container_$1_$2:/rippled-1.6.0/final_lcoverage_archive.txt ./exp_$3
 
 docker cp $3_container_$1_$2:/blockchain-testing/coverage_over_time.txt ./exp_$3_$1_$2/
 docker cp $3_container_$1_$2:/blockchain-testing/fitness_progress.txt ./exp_$3_$1_$2/
-docker cp $3_container_$1_$2:/blockchain-testing/status_codes_total.txt ./exp_$3_$1_$2/
-docker cp $3_container_$1_$2:/blockchain-testing/status_codes_archive.txt ./exp_$3_$1_$2/
 docker cp $3_container_$1_$2:/blockchain-testing/archive_size.txt ./exp_$3_$1_$2/
 docker cp $3_container_$1_$2:/blockchain-testing/best_fitness_values.txt ./exp_$3_$1_$2/
+docker cp $3_container_$1_$2:/blockchain-testing/methods_per_gen.txt ./exp_$3_$1_$2/
+docker cp $3_container_$1_$2:/blockchain-testing/methods__total.txt ./exp_$3_$1_$2/
+docker cp $3_container_$1_$2:/blockchain-testing/methods__archive.txt ./exp_$3_$1_$2/
+docker cp $3_container_$1_$2:/blockchain-testing/status_codes_per_gen.txt ./exp_$3_$1_$2/
+docker cp $3_container_$1_$2:/blockchain-testing/status_codes_total.txt ./exp_$3_$1_$2/
+docker cp $3_container_$1_$2:/blockchain-testing/status_codes_archive.txt ./exp_$3_$1_$2/
 
 docker cp $3_container_$1_$2:/blockchain-testing/src/test/java/generated/. ./exp_$3_$1_$2/tests/
