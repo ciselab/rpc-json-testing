@@ -25,6 +25,18 @@ public final class ObjectStripper {
      * @return JSONObject with standard values, but key structure intact.
      */
     public static JSONObject stripValues(JSONObject request, JSONObject response) {
+        return stripValues(request, response, false);
+    }
+
+    /**
+     * Copy the response JSONObject and remove the values.
+     * Also remove keys with values which where given in the request.
+     * Finally also remove keys which are possibly random.
+     *
+     * @param response
+     * @return JSONObject with standard values, but key structure intact.
+     */
+    public static JSONObject stripValues(JSONObject request, JSONObject response, boolean stripKeysAlso) {
         JSONObject structure = new JSONObject(response.toString());
         JSONObject copy = new JSONObject();
 
@@ -44,10 +56,10 @@ public final class ObjectStripper {
             while (it.hasNext()) {
                 String key = it.next();
 
-//                if (requestKeyValuePairs.containsKey(key)) {
-//                    // if the key was also in the request we leave it out of the feature vector
-//                    continue;
-//                }
+                if (stripKeysAlso && requestKeyValuePairs.containsKey(key)) {
+                    // if the key was also in the request we leave it out of the feature vector
+                    continue;
+                }
 
                 Object smallerObject = object.get(key);
                 if (smallerObject instanceof JSONObject) {
@@ -79,8 +91,8 @@ public final class ObjectStripper {
                         } else if (arrayObject instanceof JSONArray) {
                             smallerStrippedArray.put(0, new JSONArray());
                         } else {
-                            System.out.println("UNKNOWN ARRAY OBJECT TYPE");
-                            System.out.println(arrayObject);
+                            // System.out.println("UNKNOWN ARRAY OBJECT TYPE");
+                            // System.out.println(arrayObject);
                             System.exit(0);
                         }
                         // TODO currently it is assuming no arrays in arrays

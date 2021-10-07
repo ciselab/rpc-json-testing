@@ -34,9 +34,10 @@ public class BasicEA extends Heuristic{
             }
 
             if (getRandomBool(Configuration.ADD_NEW_RANDOM_INDIVIDUAL)) {
-
                 if (getRandomBool(Configuration.SAMPLE_FROM_ARCHIVE)) {
-                    String key = (new ArrayList<>(Collector.getCollector().getArchive().keySet())).get(getRandomIndex(Collector.getCollector().getArchive().keySet()));
+                    // TODO make sure that the last method is actually the target method
+                    int randomIndex = getRandomIndex(Collector.getCollector().getArchive().keySet());
+                    String key = (new ArrayList<>(Collector.getCollector().getArchive().keySet())).get(randomIndex);
                     offspring.add(Collector.getCollector().getArchive().get(key));
                 } else {
                     offspring.add(getGenerator().generateRandomIndividual());
@@ -57,8 +58,11 @@ public class BasicEA extends Heuristic{
                 mutant = parent0;
             }
 
-            for (int j = 0; j < Configuration.MUTATIONS_PER_INDIVIDUAL; j++) {
-                mutant = mutant.mutate(getGenerator());
+            // mutate if crossover is disabled or with a probability
+            if (!Configuration.CROSSOVER_ENABLED || getRandomBool(Configuration.MUTATE_AFTER_CROSSOVER_PROB)) {
+                for (int j = 0; j < Configuration.MUTATIONS_PER_INDIVIDUAL; j++) {
+                    mutant = mutant.mutate(getGenerator());
+                }
             }
 
             String mutantString = mutant.toTotalJSONObject().toString();
@@ -84,7 +88,7 @@ public class BasicEA extends Heuristic{
 
 
 //        for (int i = 0; i < offspring.size(); i++) {
-//            System.out.println("" + offspring.get(i).getFitness() + " " + offspring.get(i).toString());
+//            // // System.out.println("" + offspring.get(i).getFitness() + " " + offspring.get(i).toString());
 //        }
 
 
@@ -117,7 +121,7 @@ public class BasicEA extends Heuristic{
                 
                 tournament.add(population.remove(getRandom().nextInt(population.size())));
                 
-                System.out.println("Population size = " + population.size());
+                // // System.out.println("Population size = " + population.size());
             }
 
             // Sort by descending order

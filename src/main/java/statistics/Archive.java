@@ -16,13 +16,13 @@ public class Archive extends HashMap<String, Individual> {
             this.put(key, individual);
             wasPutInArchive = true;
         }
-//        System.out.println("Archive size: " + this.size());
+//        // System.out.println("Archive size: " + this.size());
         return wasPutInArchive;
     }
 
     public void printArchive() {
         for (String key : this.keySet()) {
-            System.out.println(key);
+            // System.out.println(key);
         }
     }
 }

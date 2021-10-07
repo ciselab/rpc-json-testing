@@ -58,8 +58,8 @@
 //
 //            population.get(i).setFitness(minSimilarity);
 //
-//            System.out.println(population.get(i).toRequest().toString());
-//            System.out.println("fitness: " + minSimilarity);
+//            // System.out.println(population.get(i).toRequest().toString());
+//            // System.out.println("fitness: " + minSimilarity);
 //        }
 //    }
 //

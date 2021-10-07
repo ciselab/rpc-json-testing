@@ -13,14 +13,7 @@ public class SimilarityMetric {
      * @return the average Euclidean similarity
      */
     public double calculateSimilarity(List<List<Object>> a, List<List<Object>> b, List<Integer> weightVector) {
-        Double distance = 0.0;
-        for (List<Object> featureVectorA : a) {
-            for (List<Object> featureVectorB : b) {
-                distance += calculateFeatureVectorDistance(featureVectorA, featureVectorB, weightVector);
-            }
-        }
-
-        distance /= (a.size() * b.size());
+        Double distance = calculateFeatureVectorDistance(a, b, weightVector);
 
         return 1.0 / (1.0 + distance);
     }
@@ -32,9 +25,21 @@ public class SimilarityMetric {
      * @return the average Euclidean similarity
      */
     public double calculateSimilaritySingle(List<Object> a, List<Object> b, List<Integer> weightVector) {
-        Double distance = calculateFeatureVectorDistance(a, b, weightVector);
+        Double distance = calculateFeatureVectorDistanceSingle(a, b, weightVector);
 
         return 1.0 / (1.0 + distance);
+    }
+
+    public double calculateFeatureVectorDistance(List<List<Object>> a, List<List<Object>> b, List<Integer> weightVector) {
+        Double distance = 0.0;
+        for (List<Object> featureVectorA : a) {
+            for (List<Object> featureVectorB : b) {
+                distance += calculateFeatureVectorDistanceSingle(featureVectorA, featureVectorB, weightVector);
+            }
+        }
+
+        distance /= (a.size() * b.size());
+        return distance;
     }
 
     /**
@@ -43,7 +48,7 @@ public class SimilarityMetric {
      * @param b
      * @return
      */
-    private double calculateFeatureVectorDistance(List<Object> a, List<Object> b, List<Integer> weightVector) {
+    public double calculateFeatureVectorDistanceSingle(List<Object> a, List<Object> b, List<Integer> weightVector) {
         double distance = 0;
         int differentFeatures = 0;
 
@@ -125,7 +130,7 @@ public class SimilarityMetric {
         }
 
 //        for (int i = 0; i < distance.length; i++) {
-//            System.out.println(Arrays.toString(distance[i]));
+//            // // System.out.println(Arrays.toString(distance[i]));
 //        }
         double dist = distance[a.length()][b.length()];
 

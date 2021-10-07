@@ -123,6 +123,7 @@ public class AgglomerativeClustering3 {
                 }
             }
 
+            // remove rows
             similarityMatrix.remove(index2);
             similarityMatrix.remove(index1);
 
@@ -135,20 +136,22 @@ public class AgglomerativeClustering3 {
 
             clusters.add(cluster1);
 
+            // calculate similarity column
             for (int i = 0; i < clusters.size() - 1; i++) {
                 double similarity = this.metric.calculateSimilarity(cluster1, clusters.get(i), weightVector);
                 similarityMatrix.get(i).add(similarity);
             }
 
+            // calculate similarity row
             similarityMatrix.add(new ArrayList<>());
         }
 
         double maxJump = 0.0;
         int maxJumpIndex = 0;
-        boolean allSame = true;
+        boolean allSame = similarityJumps.get(0) == 1.0;
 
         for (int i = 0; i < similarityJumps.size() - 1; i++) {
-            if (similarityJumps.get(0).equals(similarityJumps.get(i + 1))) {
+            if (similarityJumps.get(i + 1) != 1.0) {
                 allSame = false;
             }
 
@@ -165,6 +168,15 @@ public class AgglomerativeClustering3 {
         clusters = inBetweenClusters.get(maxJumpIndex);
 
         if (allSame) {
+            if (similarityJumps.size() > 1) {
+                System.out.println("ALL SAME");
+                System.out.println(similarityJumps);
+                System.out.println("n inbetween clusters " + inBetweenClusters.size());
+                System.out.println("n similarity jumps " + similarityJumps.size());
+
+                System.out.println(inBetweenClusters.get(inBetweenClusters.size() - 1).size());
+                System.out.println();
+            }
             clusters = inBetweenClusters.get(inBetweenClusters.size() - 1);
         }
 
@@ -199,17 +211,22 @@ public class AgglomerativeClustering3 {
     }
 
     /**
-     * Called for each individual to retrieve fitness value.
+     * Called for each individual to retrieve distance value.
      * Individual is added to be clustered later if distance is large enough.
      * @param value a feature vector
-     * @return fitness value
+     * @return cost
      */
     public double addOne(List<Object> value) {
+        // For number safety return / 2
+        Double closestCluster = Double.MAX_VALUE / 2;
         for (Cluster cluster : clusters) {
             Pair<Boolean, Double> result = cluster.isWithin(value);
+
+            closestCluster = Math.min(closestCluster, result.getValue());
+
             // Assumes that values cannot belong to two clusters
             if (result.getKey()) {
-                // TODO what should this return (should be low fitness value since it is within other cluster (maybe something with the number of members, then we also update the number of members))
+                // similarity
                 return result.getValue();
             }
         }
@@ -217,7 +234,8 @@ public class AgglomerativeClustering3 {
         // When feature vector did not belong to a cluster, save it to cluster later
         nonBelongers.add(value);
 
-        return 1000; // TODO what is a realistic fitness value? distance?
+        // returns the distance to the closest cluster
+        return closestCluster;
     }
 
     public List<Cluster> getClusters() {

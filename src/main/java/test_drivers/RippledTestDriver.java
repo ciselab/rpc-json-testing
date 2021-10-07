@@ -10,6 +10,7 @@ import util.Configuration;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,21 +115,28 @@ public class RippledTestDriver extends TestDriver {
 
         this.accounts = new ArrayList<>();
 
-        System.out.println("Test is being prepared.");
+        // System.out.println("Test is being prepared.");
         for (int i = 0; i < Configuration.NUMBER_OF_ACCOUNTS; i++) {
             ResponseObject accounts = retrieveAccounts();
+            if (!accounts.getResponseObject().has("result")) {
+                continue;
+            }
             transferCurrencyToAccounts(accounts.getResponseObject());
             this.accounts.add(accounts.getResponseObject());
         }
-        System.out.println("Test was successfully prepared.");
+        // System.out.println("Test was successfully prepared.");
     }
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
 
-        System.out.println("Test will now run.");
+        // System.out.println("Test will now run.");
 
         if (accounts == null) {
             throw new Exception("No accounts found! Please call prepTest before runTest!!");
+        }
+
+        if (accounts.size() == 0) {
+            System.out.println("No accounts found due to errors! Current test will be useless!");
         }
 
         List<String> accountStrings = new ArrayList<>();
@@ -138,13 +146,13 @@ public class RippledTestDriver extends TestDriver {
         List<String> publicKeyStrings = new ArrayList<>();
         List<String> publicKeyHexStrings = new ArrayList<>();
 
-        for (int i = 0; i < accounts.size(); i++) {
-            accountStrings.add(accounts.get(i).getJSONObject("result").getString("account_id"));
-            masterKeyStrings.add(accounts.get(i).getJSONObject("result").getString("master_key"));
-            masterSeedStrings.add(accounts.get(i).getJSONObject("result").getString("master_seed"));
-            masterSeedHexStrings.add(accounts.get(i).getJSONObject("result").getString("master_seed_hex"));
-            publicKeyStrings.add(accounts.get(i).getJSONObject("result").getString("public_key"));
-            publicKeyHexStrings.add(accounts.get(i).getJSONObject("result").getString("public_key_hex"));
+        for (JSONObject account : accounts) {
+            accountStrings.add(account.getJSONObject("result").getString("account_id"));
+            masterKeyStrings.add(account.getJSONObject("result").getString("master_key"));
+            masterSeedStrings.add(account.getJSONObject("result").getString("master_seed"));
+            masterSeedHexStrings.add(account.getJSONObject("result").getString("master_seed_hex"));
+            publicKeyStrings.add(account.getJSONObject("result").getString("public_key"));
+            publicKeyHexStrings.add(account.getJSONObject("result").getString("public_key_hex"));
         }
 
         request = replaceKnownStrings(request, "__ACCOUNT__", accountStrings);
@@ -157,7 +165,7 @@ public class RippledTestDriver extends TestDriver {
         ResponseObject responseObject = getClient().createRequest(method, request);
 //        manuallyAdvanceLedger();
 
-        System.out.println("Test was successfully run.");
+        // System.out.println("Test was successfully run.");
 
         return responseObject;
     }
