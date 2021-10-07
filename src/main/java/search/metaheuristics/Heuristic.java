@@ -63,16 +63,19 @@ public abstract class Heuristic {
             if (testDriver.shouldContinue()) {
 
                 try {
+                    System.out.println("Preparing tests");
                     testDriver.prepTest();
+                    System.out.println("Tests prepared");
 
                     ResponseObject responseObject = null;
 
                     for (int j = 0; j < individual.getDna().size(); j++) {
-                        System.out.println("Requests of individual " + j + " are sent to server.");
+                        System.out.println("Chromosome " + j + " are sent to server.");
                         Chromosome chromosome = individual.getDna().get(j);
                         responseObject = testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest());
-                        System.out.println("Requests of individual " + j + " are successfully handled.");
+                        System.out.println("Chromosome " + j + " are successfully handled.");
                     }
+                    System.out.println("Requests of individual are successfully handled.");
 
                     if (responseObject == null) {
                         ResponseObject ro = new ResponseObject("", new JSONObject(),-999, new JSONObject());
@@ -88,9 +91,9 @@ public abstract class Heuristic {
                 }
 
                 testDriver.checkWhetherToStop();
-                System.out.println("Requests of all individuals of this generation are successfully processed.");
             }
         }
+        System.out.println("Requests of all individuals of this generation are successfully processed.");
     }
 
     public abstract List<Individual> nextGeneration(List<Individual> population);
