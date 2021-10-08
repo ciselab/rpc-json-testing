@@ -61,7 +61,7 @@ public class Client {
             os.write(input, 0, input.length);
         } catch (ConnectException e) {
 //            e.printStackTrace();
-            System.out.println("ConnectException occurred while trying to get output stream! Looking into this.");
+            // // System.out.println("ConnectException occurred while trying to get output stream! Looking into this.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,42 +81,42 @@ public class Client {
             jsonOutputString = response.toString();
             responseCode = con.getResponseCode();
         } catch (SocketTimeoutException e) {
-            System.out.println("SocketTimeoutException! Response gets assigned statusCode -3.");
+            // // System.out.println("SocketTimeoutException! Response gets assigned statusCode -3.");
             jsonOutputString = "{}";
             responseCode = -3;
 
             if (retry < Configuration.MAX_ATTEMPTS) {
-                System.out.println("Retrying... " + (retry + 1));
+                // // System.out.println("Retrying... " + (retry + 1));
                 return this.createRequest(method, request, retry + 1);
             }
         } catch (ConnectException e) {
 //            e.printStackTrace();
-            System.out.println("ConnectException! Response gets assigned statusCode -1.");
-            System.out.println("Request was: " + jsonInputString);
+            // // System.out.println("ConnectException! Response gets assigned statusCode -1.");
+            // // System.out.println("Request was: " + jsonInputString);
             // TODO sometimes there occurs a Connection refused error here but I do not know why
             jsonOutputString = "{}";
             responseCode = -1;
 
             if (retry < Configuration.MAX_ATTEMPTS) {
-                System.out.println("Retrying... " + (retry + 1));
+                // // System.out.println("Retrying... " + (retry + 1));
                 return this.createRequest(method, request, retry + 1);
             }
         } catch (SocketException e) {
 //            e.printStackTrace();
-            System.out.println("SocketException! Response gets assigned statusCode -2.");
-            System.out.println("Request was: " + jsonInputString);
+            // // System.out.println("SocketException! Response gets assigned statusCode -2.");
+            // // System.out.println("Request was: " + jsonInputString);
             jsonOutputString = "{}";
             responseCode = -2;
 
             if (retry < Configuration.MAX_ATTEMPTS) {
-                System.out.println("Retrying... " + (retry + 1));
+                // // System.out.println("Retrying... " + (retry + 1));
                 return this.createRequest(method, request, retry + 1);
             }
         } catch (IOException e) {
 //            e.printStackTrace();
             //TODO: do something for responses without a response object (perhaps create extra field for statuscode or responsemessage)
-//            System.out.println("IOException occurred! No response body but status code was " + con.getResponseCode());
-//            System.out.println("Request was: " + jsonInputString);
+//            // System.out.println("IOException occurred! No response body but status code was " + con.getResponseCode());
+//            // System.out.println("Request was: " + jsonInputString);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("responseMessage", con.getResponseMessage());
             // Add the request to make sure that we get a different response structure if the request is different

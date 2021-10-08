@@ -67,7 +67,9 @@ public class DiversityBasedFitness extends Fitness {
             JSONObject stripped = stripValues(request, response);
             String strippedString = stripped.toString();
 
-            Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripped);
+            // TODO should be true
+            // but that gives the error "Comparing different classes is not possible" in the similarityMetric 
+            Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripValues(request, response, false));
 
             // If the response is an empty object just give it a fitness of zero
             if (featureAndWeightVector.getKey().size() == 0) {
@@ -103,7 +105,7 @@ public class DiversityBasedFitness extends Fitness {
             double cost = clustering.addOne(featureAndWeightVector.getKey());
 
             // Fitness is between 0 and 1.
-            double fitness = 1.0 / (1 + cost);
+            double fitness = 1.0 - Math.exp(-0.5*cost);
 
             // TODO not use this hack for worst output
             if (individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("random") ||
@@ -127,12 +129,12 @@ public class DiversityBasedFitness extends Fitness {
                 }
             }
 
-//            System.out.println("Methods covered: " + clusteringPerResponseStructure.keySet().size());
+//            // System.out.println("Methods covered: " + clusteringPerResponseStructure.keySet().size());
 //            for (String method: clusteringPerResponseStructure.keySet()) {
-//                System.out.println("\t" + method + ": ");
-//                System.out.println("\t\tStatuses covered: " + statuses.get(method).size() + ", namely: " + statuses.get(method).toString());
+//                // System.out.println("\t" + method + ": ");
+//                // System.out.println("\t\tStatuses covered: " + statuses.get(method).size() + ", namely: " + statuses.get(method).toString());
 //
-//                System.out.println("\t\tStructures covered: " + clusteringPerResponseStructure.get(method).keySet().size());
+//                // System.out.println("\t\tStructures covered: " + clusteringPerResponseStructure.get(method).keySet().size());
 //            }
         }
         generationCount += 1;
@@ -234,8 +236,8 @@ public class DiversityBasedFitness extends Fitness {
 
                     Object arrayObject = array.get(0);
                     if (strippedArray.length() == 0) {
-                        System.out.println(array);
-                        System.out.println(strippedArray);
+                        // // System.out.println(array);
+                        // // System.out.println(strippedArray);
                     }
                     Object strippedArrayObject = strippedArray.get(0);
 

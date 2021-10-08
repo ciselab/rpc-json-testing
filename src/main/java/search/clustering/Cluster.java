@@ -29,13 +29,21 @@ public class Cluster {
         }
     }
 
+    /**
+     * Calculates whether the value is within a cluster and the similarity
+     * @param value
+     * @return
+     */
     public Pair<Boolean, Double> isWithin(List<Object> value) {
-        double similarity = metric.calculateSimilaritySingle(this.representative, value, weightVector);
+        double distance = metric.calculateFeatureVectorDistanceSingle(this.representative, value, weightVector);
 
-        return new Pair<>(similarity < radius, similarity);
+        return new Pair<>(distance < radius, distance);
     }
 
-    // TODO unnecessary re-calculation of similarity
+    /**
+     * Calculate the representative which is the member with the smallest average distance
+     * Calculate the radius which is the maximum distance form the representative to the farthest feature vector
+     */
     public void findRepresentativeAndRadius() {
         int best = -1;
         double bestMean = Double.MAX_VALUE;
@@ -48,10 +56,9 @@ public class Cluster {
                 if (i == j) {
                     continue;
                 }
-                double similarity = metric.calculateSimilaritySingle(members.get(i), members.get(j), weightVector);
-                mean += similarity;
-
-                max = Math.max(max, similarity);
+                double distance = metric.calculateFeatureVectorDistanceSingle(members.get(i), members.get(j), weightVector);
+                mean += distance;
+                max = Math.max(max, distance);
             }
 
             mean /= members.size();

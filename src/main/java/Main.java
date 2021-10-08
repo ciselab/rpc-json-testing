@@ -50,7 +50,7 @@ public class Main {
 
         // Read the input arguments (heuristic, running time, server).
         String fitnessFunction = "8";
-        int runningTime = 3; //default value
+        int runningTime = 15; //default value
         String server = "";
 
         try {
@@ -58,9 +58,9 @@ public class Main {
             runningTime = Integer.parseInt(args[1]); // time in minutes, default is 1 hour
             server = args[2];
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Argument(s) not specified. Default value(s) used.");
+            // // System.out.println("Argument(s) not specified. Default value(s) used.");
         } catch (NumberFormatException e) {
-            System.out.println("Time limit argument is not an integer. Default time limit used: 24 hours.");
+            // // System.out.println("Time limit argument is not an integer. Default time limit used: 24 hours.");
         }
 
         // Set the specification and the url for the server to be used.
@@ -98,15 +98,15 @@ public class Main {
             TestDriver testDriver;
             String testDriverString;
             if (server.equals("g")) {
-                System.out.println("Using g: Ganache server");
+                // // System.out.println("Using g: Ganache server");
                 testDriver = new GanacheTestDriver(client, runTime);
                 testDriverString = "GanacheTestDriver";
             } else if (server.equals("r")) {
-                System.out.println("Using r: Rippled server");
+                // // System.out.println("Using r: Rippled server");
                 testDriver = new RippledTestDriver(client, runTime);
                 testDriverString = "RippledTestDriver";
             } else {
-                System.out.println("No or invalid argument specified for server. Using default server: Rippled TestNet");
+                // // System.out.println("No or invalid argument specified for server. Using default server: Rippled TestNet");
                 testDriver = new RippledTestDriverTestNet(client, runTime);
                 testDriverString = "RippledTestDriverTestNet";
             }
@@ -116,50 +116,50 @@ public class Main {
             Fitness fitness = null;
             switch (fitnessFunction) {
                 case "1":
-                    System.out.println("Using 1: RandomFuzzer");
+                    // // System.out.println("Using 1: RandomFuzzer");
                     heuristic = new RandomFuzzer(generator, testDriver);
                     break;
                 case "2":
-                    System.out.println("Using 2: StatusCodeFitness");
+                    // // System.out.println("Using 2: StatusCodeFitness");
                     fitness = new StatusCodeFitness();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "3":
-                    System.out.println("Using 3: ResponseFitnessPredefinedTypes");
+                    // // System.out.println("Using 3: ResponseFitnessPredefinedTypes");
                     fitness = new ResponseFitnessPredefinedTypes();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "4":
-                    System.out.println("Using 4: ResponseFitnessClustering");
+                    // // System.out.println("Using 4: ResponseFitnessClustering");
                     fitness = new ResponseFitnessClustering();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "5":
-                    System.out.println("Using 5: ResponseFitnessClustering2");
+                    // // System.out.println("Using 5: ResponseFitnessClustering2");
                     fitness = new ResponseFitnessClustering2();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "6":
-                    System.out.println("Using 6: ResponseStructureFitness");
+                    // // System.out.println("Using 6: ResponseStructureFitness");
                     fitness = new ResponseStructureFitness();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "7":
-                    System.out.println("Using 7: ResponseStructureFitness2");
+                    // // System.out.println("Using 7: ResponseStructureFitness2");
                     fitness = new ResponseStructureFitness2();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "8":
-                    System.out.println("Using 8: DiversityBasedFitness");
+                    // // System.out.println("Using 8: DiversityBasedFitness");
                     fitness = new DiversityBasedFitness();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 default:
-                    System.out.println("No or invalid argument specified for fitness. Using default heuristic: RandomFuzzer");
+                    // // System.out.println("No or invalid argument specified for fitness. Using default heuristic: RandomFuzzer");
                     heuristic = new RandomFuzzer(generator, testDriver);
             }
 
-            System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime / 60) + " hour(s)");
+            // // System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime / 60) + " hour(s)");
 
 //            List<Individual> population = heuristic.generatePopulation(Configuration.POPULATION_SIZE);
 //            heuristic.gatherResponses(population);
@@ -167,8 +167,7 @@ public class Main {
             List<String> methods = new ArrayList<>(specification.getMethods().keySet());
             long timePerMethod = testDriver.getTimeLeft() / methods.size();
 
-            for (int i = 0; i < methods.size(); i++) {
-                String method = methods.get(i);
+            for (String method : methods) {
                 heuristic.setTarget(method);
                 long start = System.currentTimeMillis();
 
@@ -180,8 +179,8 @@ public class Main {
                 }
 
                 while ((System.currentTimeMillis() - start) < timePerMethod && testDriver.shouldContinue()) {
-                    System.out.println("Starting generation: " + getCollector().getGeneration() + ", "
-                        + (testDriver.getTimeLeft() / 1000) + " seconds = " + (testDriver.getTimeLeft() / (60*1000)) + " minutes left.");
+                    // // System.out.println("Starting generation: " + getCollector().getGeneration() + ", "
+//                            + (testDriver.getTimeLeft() / 1000) + " seconds = " + (testDriver.getTimeLeft() / (60 * 1000)) + " minutes left.");
 
                     getCollector().nextGeneration();
                     population = heuristic.nextGeneration(population);
@@ -189,7 +188,7 @@ public class Main {
                     // Store some statistics for analysis purposes.
 
                     if (testDriver.shouldContinue()) {
-                         System.out.println("Storing statistics for the previous generation.");
+                        // // System.out.println("Storing statistics for the previous generation.");
                         double maxFitness = 0;
                         for (Individual ind : population) {
 
@@ -207,7 +206,7 @@ public class Main {
             }
             // Stopping criterium = time
 //            while (testDriver.shouldContinue()) {
-//                System.out.println("Starting generation: " + getCollector().getGeneration() + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");
+//                // System.out.println("Starting generation: " + getCollector().getGeneration() + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");
 //
 //                getCollector().nextGeneration();
 //                population = heuristic.nextGeneration(population);
@@ -231,9 +230,9 @@ public class Main {
 
             Map<String, MethodCoverage> coverage = getCollector().getInternalCoverage();
             for (String method : coverage.keySet()) {
-                System.out.println("Method: " + method);
-                System.out.println("\t Statuses: " + coverage.get(method).statuses);
-                System.out.println("\tStructures: " + coverage.get(method).structures.keySet().size());
+                // // System.out.println("Method: " + method);
+                // // System.out.println("\t Statuses: " + coverage.get(method).statuses);
+                // // System.out.println("\tStructures: " + coverage.get(method).structures.keySet().size());
             }
 
             if (fitness != null) {
@@ -267,7 +266,7 @@ public class Main {
                     file.delete();
                 }
             }
-            System.out.println("Tests in the archive: " + archive.size());
+            // // System.out.println("Tests in the archive: " + archive.size());
             int i = 0;
             for (String key : archive.keySet()) {
                 testWriter.writeTest(archive.get(key), "ind" + i + "Test");

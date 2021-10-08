@@ -10,6 +10,7 @@ import util.Configuration;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,19 +36,24 @@ public class RippledTestDriver extends TestDriver {
     }
 
     public void startServer() throws IOException {
+        System.out.println("Starting server function");
         ProcessBuilder processBuilder = new ProcessBuilder();
 
         processBuilder.command("/blockchain-testing/scripts/rippled/startRippled.sh");
 
         processBuilder.redirectErrorStream(true);
+        System.out.println("starting");
 
         Process p = processBuilder.start();
 
         try {
+            System.out.println("waiting");
             p.waitFor();
         } catch (InterruptedException ex) {
             p.destroy();
         }
+        System.out.println("done waiting");
+
     }
 
     private ResponseObject retrieveAccounts() throws IOException {
@@ -98,14 +104,18 @@ public class RippledTestDriver extends TestDriver {
     }
 
     public void prepTest() throws Exception {
+        System.out.println("checking coverage");
         checkCoverage(); // check whether coverage should be stored
+        System.out.println("preparing server");
         prepareServer();
+        System.out.println("atstart");
 
         if (atStart) {
             recordCoverage(System.currentTimeMillis());
             atStart = false;
             prepareServer();
         }
+        System.out.println("end of preperations");
 
     }
 
@@ -114,21 +124,33 @@ public class RippledTestDriver extends TestDriver {
 
         this.accounts = new ArrayList<>();
 
-        System.out.println("Test is being prepared.");
+         System.out.println("Accounts are being gathered.");
         for (int i = 0; i < Configuration.NUMBER_OF_ACCOUNTS; i++) {
+            System.out.println("retrieving account " + i);
             ResponseObject accounts = retrieveAccounts();
+            if (!accounts.getResponseObject().has("result")) {
+                continue;
+            }
+            System.out.println("filling account " + i);
+
             transferCurrencyToAccounts(accounts.getResponseObject());
             this.accounts.add(accounts.getResponseObject());
+            System.out.println("done account " + i);
+
         }
-        System.out.println("Test was successfully prepared.");
+         System.out.println("Accounts are successfully prepared.");
     }
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
 
-        System.out.println("Test will now run.");
+        // System.out.println("Test will now run.");
 
         if (accounts == null) {
             throw new Exception("No accounts found! Please call prepTest before runTest!!");
+        }
+
+        if (accounts.size() == 0) {
+            System.out.println("No accounts found due to errors! Current test will be useless!");
         }
 
         List<String> accountStrings = new ArrayList<>();
@@ -138,13 +160,13 @@ public class RippledTestDriver extends TestDriver {
         List<String> publicKeyStrings = new ArrayList<>();
         List<String> publicKeyHexStrings = new ArrayList<>();
 
-        for (int i = 0; i < accounts.size(); i++) {
-            accountStrings.add(accounts.get(i).getJSONObject("result").getString("account_id"));
-            masterKeyStrings.add(accounts.get(i).getJSONObject("result").getString("master_key"));
-            masterSeedStrings.add(accounts.get(i).getJSONObject("result").getString("master_seed"));
-            masterSeedHexStrings.add(accounts.get(i).getJSONObject("result").getString("master_seed_hex"));
-            publicKeyStrings.add(accounts.get(i).getJSONObject("result").getString("public_key"));
-            publicKeyHexStrings.add(accounts.get(i).getJSONObject("result").getString("public_key_hex"));
+        for (JSONObject account : accounts) {
+            accountStrings.add(account.getJSONObject("result").getString("account_id"));
+            masterKeyStrings.add(account.getJSONObject("result").getString("master_key"));
+            masterSeedStrings.add(account.getJSONObject("result").getString("master_seed"));
+            masterSeedHexStrings.add(account.getJSONObject("result").getString("master_seed_hex"));
+            publicKeyStrings.add(account.getJSONObject("result").getString("public_key"));
+            publicKeyHexStrings.add(account.getJSONObject("result").getString("public_key_hex"));
         }
 
         request = replaceKnownStrings(request, "__ACCOUNT__", accountStrings);
@@ -157,7 +179,7 @@ public class RippledTestDriver extends TestDriver {
         ResponseObject responseObject = getClient().createRequest(method, request);
 //        manuallyAdvanceLedger();
 
-        System.out.println("Test was successfully run.");
+        // System.out.println("Test was successfully run.");
 
         return responseObject;
     }
@@ -173,14 +195,17 @@ public class RippledTestDriver extends TestDriver {
     }
 
     public void recordCoverage(Long currentTime) throws IOException {
+        System.out.println("Recording coverage function");
         ProcessBuilder pb = new ProcessBuilder();
 
         pb.command("/blockchain-testing/scripts/rippled/coverageRippled.sh");
 
         pb.redirectErrorStream(true);
 
+        System.out.println("starting coverage process");
         Process p = pb.start();
 
+        System.out.println("reading");
         StringBuilder coverage = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(
             new InputStreamReader(p.getInputStream()))) {
@@ -195,12 +220,15 @@ public class RippledTestDriver extends TestDriver {
                 }
             }
         }
+        System.out.println("done reading");
 
         try {
+            System.out.println("waiting on process");
             p.waitFor();
         } catch (InterruptedException e) {
             p.destroy();
         }
+        System.out.println("done waiting on process");
 
         String cov = coverage.toString().trim();
 
@@ -214,7 +242,9 @@ public class RippledTestDriver extends TestDriver {
         double lineCovPer = linescovered / linetotal;
         double branchCovPer = branchescovered / branchtotal;
 
+        System.out.println("recording coverage");
         sk.recordCoverage(currentTime, branchCovPer, lineCovPer);
+        System.out.println("done recording");
     }
 
 }

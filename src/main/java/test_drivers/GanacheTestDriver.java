@@ -95,7 +95,7 @@ public class GanacheTestDriver extends TestDriver {
             }
             myReader.close();
         } catch (FileNotFoundException e) {
-            System.out.println("File not found!");
+            // System.out.println("File not found!");
             e.printStackTrace();
         }
     }

@@ -31,18 +31,18 @@ public class RandomFuzzer extends Heuristic {
             Individual mutant = population.get(i);
             if (getRandomBool(PROPORTION_MUTATED)) {
                 for (int j = 0; j < MUTATIONS_PER_INDIVIDUAL; j++) {
-                    System.out.println("Individual " + j + " will be mutated.");
+                    // // System.out.println("Individual " + j + " will be mutated.");
                     mutant = mutant.mutate(getGenerator());
-                    System.out.println("Individual " + j + " was successfully mutated.");
+                    // // System.out.println("Individual " + j + " was successfully mutated.");
                 }
             } else {
                 mutant = getGenerator().generateRandomIndividual();
             }
             nextPopulation.add(mutant);
-            System.out.println("Individual: " + i + " was added to next population.");
+            // // System.out.println("Individual: " + i + " was added to next population.");
         }
-        System.out.println("Population size: " + population.size() + "while initial population was: " + Configuration.POPULATION_SIZE);
-        System.out.println("Entire next population is successfully created.");
+        // // System.out.println("Population size: " + population.size() + "while initial population was: " + Configuration.POPULATION_SIZE);
+        // // System.out.println("Entire next population is successfully created.");
 
         this.gatherResponses(nextPopulation);
 
@@ -50,9 +50,9 @@ public class RandomFuzzer extends Heuristic {
         if (getTestDriver().shouldContinue()) {
             for (Individual individual : nextPopulation) {
                 ResponseObject responseObject = individual.getResponseObject();
-                System.out.println("Response object is about to be stripped");
+                // System.out.println("Response object is about to be stripped");
                 JSONObject stripped = stripValues(responseObject.getRequestObject(), responseObject.getResponseObject());
-                System.out.println("Response object is successfully stripped");
+                // System.out.println("Response object is successfully stripped");
                 String strippedString = stripped.toString();
                 getCollector().addToArchive(strippedString, individual);
             }

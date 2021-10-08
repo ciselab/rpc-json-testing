@@ -6,9 +6,17 @@ id=$(lsof -t -i:5005 -sTCP:LISTEN) # without the LISTEN part the Java process wi
 
 echo "killing: $id"
 kill "$id"
+count=0
 
 while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" != "" ]; do
  echo "waiting at kill...  -$(lsof -t -i:5005 -sTCP:LISTEN)-"
+ if [[ $count == 100 ]]; then
+   id=$(lsof -t -i:5005 -sTCP:LISTEN)
+   echo "killing: $id"
+   kill "$id"
+   count=0
+ fi
+ count=$((count+1))
  sleep 0.1
 done
 
@@ -20,8 +28,15 @@ echo "starting server at port 5005"
 cd /rippled-1.6.0/build/cmake/coverage
 ./rippled -a --start -v --debug &
 
+count=0
+
 while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" == "" ]; do
  echo "waiting at server... $(lsof -t -i:5005 -sTCP:LISTEN)"
+ if [[ $count == 100 ]]; then
+    ./rippled -a --start -v --debug &
+    count=0
+ fi
+ count=$((count+1))
  sleep 0.1
 done
 

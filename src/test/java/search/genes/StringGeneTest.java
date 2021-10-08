@@ -13,6 +13,6 @@ class StringGeneTest {
         String originalRegex = "$abc584";
         String mutatedRegex = sg.mutateRegex(originalRegex);
         assertTrue(!mutatedRegex.equals(originalRegex));
-        System.out.println(mutatedRegex);
+        // // System.out.println(mutatedRegex);
     }
 }

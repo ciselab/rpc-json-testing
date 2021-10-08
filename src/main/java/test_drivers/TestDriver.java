@@ -28,20 +28,20 @@ public abstract class TestDriver {
     public void checkWhetherToStop() {
         if (System.currentTimeMillis() - startTime >= runTime) {
             this.greenLightSignal = false;
-            System.out.println("Stop signal is given! The run time of the experiment is up.");
+            // System.out.println("Stop signal is given! The run time of the experiment is up.");
         }
     }
 
 
     protected JSONObject replaceKnownStrings(JSONObject request, String constant, List<String> replacements) {
-        System.out.println("Known strings are replaced.");
+        // System.out.println("Known strings are replaced.");
         String stringObj = request.toString();
 
         for (int i = 0; i < replacements.size(); i++) {
             stringObj = stringObj.replace(constant + i, replacements.get(i));
         }
 
-        System.out.println("Known strings were successfully replaced.");
+        // System.out.println("Known strings were successfully replaced.");
         return new JSONObject(stringObj);
     }
 

@@ -27,7 +27,7 @@ public class CoverageRecorder {
 
         Long minutesSinceStart = (milliSecondsSinceStart - getStartTime()) / (60 * 1000);
 
-        System.out.println("Intermediate coverage results at time: " + minutesSinceStart + " = branch cov: " + branchCoverage + " and line cov: " + lineCoverage);
+        // System.out.println("Intermediate coverage results at time: " + minutesSinceStart + " = branch cov: " + branchCoverage + " and line cov: " + lineCoverage);
 
         this.coverageOverTime.add(new Triple<>(minutesSinceStart, branchCoverage, lineCoverage));
 

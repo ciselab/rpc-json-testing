@@ -55,6 +55,7 @@ public final class Configuration {
     // - Crossover settings
     public static final boolean CROSSOVER_ENABLED = true;
     public static final CrossoverType CROSSOVER_TYPE = CrossoverType.ONE_POINT; // RANDOM, ONE_POINT, OR TWO_POINT
+    public static final double MUTATE_AFTER_CROSSOVER_PROB = 0.8;
 
     // - Test settings
     public static final int NUMBER_OF_ACCOUNTS = 3;
