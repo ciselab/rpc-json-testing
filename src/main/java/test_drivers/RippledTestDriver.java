@@ -69,7 +69,7 @@ public class RippledTestDriver extends TestDriver {
 
     private void transferCurrencyToAccounts(JSONObject accounts) throws IOException {
         JSONObject request = new JSONObject();
-        request.put("method", "acccount_info");
+        request.put("method", "account_info");
         JSONArray params = new JSONArray();
         JSONObject paramObj = new JSONObject();
         paramObj.put("account", accounts.getJSONObject("result").getString("account_id")); // genesis secret
@@ -105,7 +105,7 @@ public class RippledTestDriver extends TestDriver {
 
 
         request = new JSONObject();
-        request.put("method", "acccount_info");
+        request.put("method", "account_info");
         params = new JSONArray();
         paramObj = new JSONObject();
         paramObj.put("account", accounts.getJSONObject("result").getString("account_id")); // genesis secret
