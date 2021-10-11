@@ -314,6 +314,7 @@
         },
         {
           "name": "role",
+          "required": true,
           "description": "Whether the address refers to a gateway or user. Recommendations depend on the role of the account. Issuers must have Default Ripple enabled and must disable No Ripple on all trust lines. Users should have Default Ripple disabled, and should enable No Ripple on all trust lines.",
           "schema": {
             "type": "string",
@@ -456,6 +457,15 @@
       "description": "Get one element from a ledger version.",
       "params": [
         {
+          "$ref": "#/components/contentDescriptors/Binary"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerHash"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerIndex"
+        },
+        {
           "name": "index",
           "description": "Specify the object ID of a single object to retrieve from the ledger.",
           "schema": {
@@ -470,8 +480,52 @@
           }
         },
         {
+          "name": "directory",
+          "description": "Specify a DirectoryNode to retrieve. If a string, must be the object ID of the directory, as hexadecimal. If an object, requires either dir_root or owner as a sub-field, plus optionally a sub_index sub-field.",
+          "schema": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/ObjectID" },
+              { "$ref": "#/components/schemas/DirectoryNode" }
+            ]
+          }
+        },
+        {
+          "name": "offer",
+          "description": "Specify an Offer object to retrieve. If a string, interpret as the unique index to the Offer. If an object, requires the sub-fields account and seq to uniquely identify the offer.",
+          "schema": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/ObjectID" },
+              { "$ref": "#/components/schemas/Offer" }
+            ]
+          }
+        },
+        {
+          "name": "ripple_state",
+          "description": "Object specifying the RippleState (trust line) object to retrieve. The accounts and currency sub-fields are required to uniquely specify the RippleState entry to retrieve.",
+          "schema": {
+            "$ref": "#/components/schemas/RippleState"
+          }
+        },
+        {
           "name": "check",
           "description": "Specify the object ID of a Check object to retrieve.",
+          "schema": {
+            "$ref": "#/components/schemas/ObjectID"
+          }
+        },
+        {
+          "name": "escrow",
+          "description": "Specify an Escrow object to retrieve. If a string, must be the object ID of the Escrow, as hexadecimal. If an object, requires owner and seq sub-fields.",
+          "schema": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/ObjectID" },
+              { "$ref": "#/components/schemas/Escrow" }
+            ]
+          }
+        },
+        {
+          "name": "payment_channel",
+          "description": "Specify the object ID of a PayChannel object to retrieve.",
           "schema": {
             "$ref": "#/components/schemas/ObjectID"
           }
@@ -487,26 +541,6 @@
           }
         },
         {
-          "name": "directory",
-          "description": "Specify a DirectoryNode to retrieve. If a string, must be the object ID of the directory, as hexadecimal. If an object, requires either dir_root or owner as a sub-field, plus optionally a sub_index sub-field.",
-          "schema": {
-            "oneOf": [
-              { "$ref": "#/components/schemas/ObjectID" },
-              { "$ref": "#/components/schemas/DirectoryNode" }
-            ]
-          }
-        },
-        {
-          "name": "escrow",
-          "description": "Specify an Escrow object to retrieve. If a string, must be the object ID of the Escrow, as hexadecimal. If an object, requires owner and seq sub-fields.",
-          "schema": {
-            "oneOf": [
-              { "$ref": "#/components/schemas/ObjectID" },
-              { "$ref": "#/components/schemas/Escrow" }
-            ]
-          }
-        },
-        {
           "name": "ticket",
           "description": "Retrieve a Ticket object, which represents a sequence number set aside for future use. Can be provided as string (object ID of the Ticket) or as an object.",
           "schema": {
@@ -515,39 +549,6 @@
               { "$ref": "#/components/schemas/Ticket" }
             ]
           }
-        },
-        {
-          "name": "offer",
-          "description": "Specify an Offer object to retrieve. If a string, interpret as the unique index to the Offer. If an object, requires the sub-fields account and seq to uniquely identify the offer.",
-          "schema": {
-            "oneOf": [
-              { "$ref": "#/components/schemas/ObjectID" },
-              { "$ref": "#/components/schemas/Offer" }
-            ]
-          }
-        },
-        {
-          "name": "payment_channel",
-          "description": "Specify the object ID of a PayChannel object to retrieve.",
-          "schema": {
-            "$ref": "#/components/schemas/ObjectID"
-          }
-        },
-        {
-          "name": "ripple_state",
-          "description": "Object specifying the RippleState (trust line) object to retrieve. The accounts and currency sub-fields are required to uniquely specify the RippleState entry to retrieve.",
-          "schema": {
-            "$ref": "#/components/schemas/RippleState"
-          }
-        },
-        {
-          "$ref": "#/components/contentDescriptors/Binary"
-        },
-        {
-          "$ref": "#/components/contentDescriptors/LedgerHash"
-        },
-        {
-          "$ref": "#/components/contentDescriptors/LedgerIndex"
         }
       ],
       "result": {
