@@ -15,7 +15,8 @@ import static util.RandomSingleton.getRandomBool;
 public class Individual {
     private List<Chromosome> dna;
     private ResponseObject responseObject = null;
-    private double fitness;
+    private double[] fitness;
+    private int score;
 
     public Individual(List<Chromosome> dna) {
         this.dna = dna;
@@ -118,11 +119,11 @@ public class Individual {
         return new Individual(mixedDna);
     }
 
-    public double getFitness() {
+    public double[] getFitness() {
         return fitness;
     }
 
-    public void setFitness(double fitness) {
+    public void setFitness(double[] fitness) {
         this.fitness = fitness;
     }
 
@@ -176,5 +177,13 @@ public class Individual {
         }
 
         return data.toString();
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 }

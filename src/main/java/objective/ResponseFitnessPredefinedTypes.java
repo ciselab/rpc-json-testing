@@ -40,7 +40,7 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
             // Fitness is between 0 and 1.
             Double fitness = 1.0 / cost;
 
-            individual.setFitness(fitness);
+            individual.setFitness(new double[]{});
 
             // decide whether to add individual to the archive
             if (individual.getResponseObject().getResponseCode() > 499) {

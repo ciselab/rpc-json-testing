@@ -25,6 +25,10 @@ import static util.RandomSingleton.getRandomIndex;
 
 public class Generator {
 
+    public Specification getSpecification() {
+        return specification;
+    }
+
     private Specification specification;
     private String regexDefault = "[a-z]*";
     private String target;
@@ -55,11 +59,6 @@ public class Generator {
             Chromosome chromosome = new Chromosome(generateHTTPMethod(), methodName, method);
             dna.add(chromosome);
         }
-
-//        String methodName = getTarget();
-//        ArrayGene method = generateMethod(methodName);
-//        Chromosome chromosome = new Chromosome(generateHTTPMethod(), methodName, method);
-//        dna.add(chromosome);
 
         return new Individual(dna);
     }

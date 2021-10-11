@@ -8,17 +8,17 @@ public class AgglomerativeClustering2 {
     private SimilarityMetric metric;
 
     // Each value in the feature vector has a certain weight/importance
-    private List<Integer> weightVector;
+    private List<Integer> depthVector;
 
     // List of all the clusters (each cluster in the list has one or more items in its cluster (items are featureVector (of different types)).
     private List<List<List<Object>>> clusters;
     private List<List<Double>> similarityMatrix;
 
-    public AgglomerativeClustering2(List<Integer> weightVector) {
+    public AgglomerativeClustering2(List<Integer> depthVector) {
         this.metric = new SimilarityMetric();
         this.clusters = new ArrayList<>();
         this.similarityMatrix = new ArrayList<>();
-        this.weightVector = weightVector;
+        this.depthVector = depthVector;
     }
 
     /**
@@ -41,7 +41,7 @@ public class AgglomerativeClustering2 {
         for (int i = 0; i < clusters.size(); i++) {
             similarityMatrix.add(new ArrayList<>());
             for (int j = i + 1; j < clusters.size(); j++) {
-                double similarity = this.metric.calculateSimilarity(clusters.get(i), clusters.get(j), weightVector);
+                double similarity = this.metric.calculateSimilarity(clusters.get(i), clusters.get(j), depthVector);
                 similarityMatrix.get(i).add(similarity);
             }
         }
@@ -103,7 +103,7 @@ public class AgglomerativeClustering2 {
             clusters.add(cluster1);
 
             for (int i = 0; i < clusters.size() - 1; i++) {
-                double similarity = this.metric.calculateSimilarity(cluster1, clusters.get(i), weightVector);
+                double similarity = this.metric.calculateSimilarity(cluster1, clusters.get(i), depthVector);
                 similarityMatrix.get(i).add(similarity);
             }
 
@@ -157,7 +157,7 @@ public class AgglomerativeClustering2 {
         List<List<Object>> newList = new ArrayList<>();
         newList.add(newValue);
         for (int i = 0; i < clusters.size(); i++) {
-            double sim = this.metric.calculateSimilarity(clusters.get(i), newList, weightVector);
+            double sim = this.metric.calculateSimilarity(clusters.get(i), newList, depthVector);
             if (sim > maxSimilarity) {
                 maxSimilarity = sim;
             }

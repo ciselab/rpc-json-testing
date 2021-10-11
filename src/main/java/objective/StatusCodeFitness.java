@@ -31,7 +31,7 @@ public class StatusCodeFitness extends Fitness {
             // Fitness is between 0 and 1.
             double fitness = 1 / statusFrequencyTable.get(ind.getResponseObject().getResponseCode());
 
-            ind.setFitness(fitness);
+            ind.setFitness(new double[]{});
 
             // If statuscode is relatively rare, add to archive.
             double archive_threshold = Math.min((100 / statusFrequencyTable.size()), Configuration.ARCHIVE_THRESHOLD);

@@ -57,11 +57,11 @@ public class ResponseFitnessClustering2 extends Fitness {
             JSONObject stripped = stripValues(request, response);
             String strippedString = stripped.toString();
 
-            Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripped);
+            Pair<List<Object>, List<Integer>> featureAnddepthVector = getVector(response, stripped);
 
             // If the response is an empty object just give it a fitness of zero
-            if (featureAndWeightVector.getKey().size() == 0) {
-                individual.setFitness(0);
+            if (featureAnddepthVector.getKey().size() == 0) {
+                individual.setFitness(new double[]{});
                 continue;
             }
 
@@ -74,7 +74,7 @@ public class ResponseFitnessClustering2 extends Fitness {
                 allFeatureVectors.get(method).put(strippedString, new ArrayList<>());
             }
             // Add the feature vector to the right place in the map.
-            allFeatureVectors.get(method).get(strippedString).add(featureAndWeightVector.getKey());
+            allFeatureVectors.get(method).get(strippedString).add(featureAnddepthVector.getKey());
 
             if (!clusteringPerResponseStructure.containsKey(method)) {
                 clusteringPerResponseStructure.put(method, new HashMap<>());
@@ -84,13 +84,13 @@ public class ResponseFitnessClustering2 extends Fitness {
             statuses.get(method).add(individual.getResponseObject().getResponseCode());
 
             if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
-                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering2(featureAndWeightVector.getValue()));
+                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering2(featureAnddepthVector.getValue()));
             }
 
             AgglomerativeClustering2 clustering = clusteringPerResponseStructure.get(method).get(strippedString);
 
             // calculate the minimum distance of the individual to the clusters
-            double cost = clustering.calculateMaxSimilarity(featureAndWeightVector.getKey());
+            double cost = clustering.calculateMaxSimilarity(featureAnddepthVector.getKey());
 
             // Fitness is between 0 and 1.
             double fitness = 1.0 / (1 + cost);
@@ -102,7 +102,7 @@ public class ResponseFitnessClustering2 extends Fitness {
                 fitness = 0;
             }
 
-            individual.setFitness(fitness);
+            individual.setFitness(new double[]{});
 
             // decide whether to add individual to the archive
             if (individual.getResponseObject().getResponseCode() > 499) {
@@ -160,13 +160,13 @@ public class ResponseFitnessClustering2 extends Fitness {
      *
      * @param stripped the stripped response JSONObject
      * @param response the response JSONObject
-     * @return featureVector and weightVector
+     * @return featureVector and depthVector
      */
     public Pair<List<Object>, List<Integer>> getVector(JSONObject response, JSONObject stripped) {
         JSONObject structure = new JSONObject(response.toString());
 
         List<Object> featureVector = new ArrayList<>();
-        List<Integer> weightVector = new ArrayList<>();
+        List<Integer> depthVector = new ArrayList<>();
 
         Queue<Triple<JSONObject, Integer, JSONObject>> queue = new LinkedList<>();
         queue.add(new Triple<>(structure, 0, stripped));
@@ -186,7 +186,7 @@ public class ResponseFitnessClustering2 extends Fitness {
                     // If there is a null value, null is added as a string to the vector.
                     if (stripped.has(key)) {
                         featureVector.add("null");
-                        weightVector.add(depth+1);
+                        depthVector.add(depth+1);
                     }
                     continue;
                 }
@@ -222,15 +222,15 @@ public class ResponseFitnessClustering2 extends Fitness {
                         queue.add(new Triple<>((JSONObject) arrayObject, depth+1, (JSONObject) strippedArrayObject));
                     } else {
                         featureVector.add(arrayObject);
-                        weightVector.add(depth+1);
+                        depthVector.add(depth+1);
                     }
                 } else {
                     featureVector.add(smallerObject);
-                    weightVector.add(depth+1);
+                    depthVector.add(depth+1);
                 }
             }
         }
-        return new Pair<>(featureVector, weightVector);
+        return new Pair<>(featureVector, depthVector);
     }
 
 }

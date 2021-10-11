@@ -17,7 +17,7 @@ public final class Configuration {
 
     // - Fitness functions
     // Fitness with clustering
-    public static final int NEW_CLUSTERS_AFTER_GEN = 3;
+    public static final int NEW_CLUSTERS_AFTER_GEN = 1;
     // All fitness excl random
     public static final double ARCHIVE_THRESHOLD = 0.8;
     // Random fuzzer

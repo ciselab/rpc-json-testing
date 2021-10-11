@@ -71,7 +71,7 @@
                     <!--<archive>-->
                         <!--<manifestFile>src/main/java/META-INF/MANIFEST.MF</manifestFile>-->
                         <!--&lt;!&ndash;<manifest>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<mainClass>com.src.main.java.Main</mainClass>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<mainClass>com.src.main.java.util.Main</mainClass>&ndash;&gt;-->
                         <!--&lt;!&ndash;</manifest>&ndash;&gt;-->
                     <!--</archive>-->
                 <!--</configuration>-->
@@ -89,7 +89,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        Main
+                                        util.Main
                                     </mainClass>
                                 </manifest>
                             </archive>

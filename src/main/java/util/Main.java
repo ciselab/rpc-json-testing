@@ -1,20 +1,14 @@
+package util;
+
 import connection.Client;
 
+import objective.*;
 import search.Chromosome;
 import search.metaheuristics.BasicEA;
 import search.Generator;
 import search.Individual;
 import search.metaheuristics.Heuristic;
 import search.metaheuristics.RandomFuzzer;
-
-import objective.DiversityBasedFitness;
-import objective.Fitness;
-import objective.ResponseFitnessClustering;
-import objective.ResponseFitnessClustering2;
-import objective.ResponseFitnessPredefinedTypes;
-import objective.ResponseStructureFitness;
-import objective.ResponseStructureFitness2;
-import objective.StatusCodeFitness;
 
 import openRPC.Specification;
 import statistics.Archive;
@@ -25,8 +19,6 @@ import test_drivers.RippledTestDriver;
 import test_drivers.RippledTestDriverTestNet;
 import test_drivers.TestDriver;
 import test_generation.TestWriter;
-
-import util.Configuration;
 
 import org.json.JSONObject;
 
@@ -48,11 +40,13 @@ public class Main {
 
     private static ArrayList<Double> bestFitness = new ArrayList<>();
 
+    public static int GENERATION = 0;
+
     public static void main(String args[]) {
 
         // Read the input arguments (heuristic, running time, server).
-        String fitnessFunction = "8";
-        int runningTime = 15; //default value
+        String fitnessFunction = "9";
+        int runningTime = 5; //default value
         String server = "";
 
         try {
@@ -118,42 +112,47 @@ public class Main {
             Fitness fitness = null;
             switch (fitnessFunction) {
                 case "1":
-                    // // System.out.println("Using 1: RandomFuzzer");
+                    System.out.println("Using 1: RandomFuzzer");
                     heuristic = new RandomFuzzer(generator, testDriver);
                     break;
                 case "2":
-                    // // System.out.println("Using 2: StatusCodeFitness");
+                    System.out.println("Using 2: StatusCodeFitness");
                     fitness = new StatusCodeFitness();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "3":
-                    // // System.out.println("Using 3: ResponseFitnessPredefinedTypes");
+                    System.out.println("Using 3: ResponseFitnessPredefinedTypes");
                     fitness = new ResponseFitnessPredefinedTypes();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "4":
-                    // // System.out.println("Using 4: ResponseFitnessClustering");
+                    System.out.println("Using 4: ResponseFitnessClustering");
                     fitness = new ResponseFitnessClustering();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "5":
-                    // // System.out.println("Using 5: ResponseFitnessClustering2");
+                    System.out.println("Using 5: ResponseFitnessClustering2");
                     fitness = new ResponseFitnessClustering2();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "6":
-                    // // System.out.println("Using 6: ResponseStructureFitness");
+                    System.out.println("Using 6: ResponseStructureFitness");
                     fitness = new ResponseStructureFitness();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "7":
-                    // // System.out.println("Using 7: ResponseStructureFitness2");
+                    System.out.println("Using 7: ResponseStructureFitness2");
                     fitness = new ResponseStructureFitness2();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 case "8":
-                    // // System.out.println("Using 8: DiversityBasedFitness");
+                    System.out.println("Using 8: DiversityBasedFitness");
                     fitness = new DiversityBasedFitness();
+                    heuristic = new BasicEA(generator, testDriver, fitness);
+                    break;
+                case "9":
+                    System.out.println("Using 9: DistanceFitness");
+                    fitness = new DistanceFitness();
                     heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 default:
@@ -161,64 +160,50 @@ public class Main {
                     heuristic = new RandomFuzzer(generator, testDriver);
             }
 
-            // // System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime / 60) + " hour(s)");
-
-//            List<Individual> population = heuristic.generatePopulation(Configuration.POPULATION_SIZE);
-//            heuristic.gatherResponses(population);
-
             ArrayList<Map<String, Integer>> methodsPerGeneration = new ArrayList<>();
 
             List<String> methods = new ArrayList<>(specification.getMethods().keySet());
-//            long timePerMethod = testDriver.getTimeLeft() / methods.size();
 
-//            for (String method : methods) {
-//                heuristic.setTarget(method);
-//                long start = System.currentTimeMillis();
+            List<Individual> population = heuristic.generatePopulation(Configuration.POPULATION_SIZE);
+            heuristic.gatherResponses(population);
 
-                List<Individual> population = heuristic.generatePopulation(Configuration.POPULATION_SIZE);
-                heuristic.gatherResponses(population);
+            while (testDriver.shouldContinue()) {
+                GENERATION += 1;
+                  System.out.println("Starting generation: " + getCollector().getGeneration() + ", "
+                        + (testDriver.getTimeLeft() / 1000) + " seconds = " + (testDriver.getTimeLeft() / (60 * 1000)) + " minutes left.");
 
-//                if (!testDriver.shouldContinue()) {
-//                    break;
-//                }
+                Map<String, Integer> methodsThisGeneration = new HashMap<>();
+                methodsPerGeneration.add(methodsThisGeneration);
 
-                while (testDriver.shouldContinue()) {
-                    // // System.out.println("Starting generation: " + getCollector().getGeneration() + ", "
-//                            + (testDriver.getTimeLeft() / 1000) + " seconds = " + (testDriver.getTimeLeft() / (60 * 1000)) + " minutes left.");
+                getCollector().nextGeneration();
+                population = heuristic.nextGeneration(population);
 
-                    Map<String, Integer> methodsThisGeneration = new HashMap<>();
-                    methodsPerGeneration.add(methodsThisGeneration);
+                for (Individual individual : population) {
+                    Chromosome last = individual.getDna().get(individual.getDna().size() - 1);
 
-                    getCollector().nextGeneration();
-                    population = heuristic.nextGeneration(population);
-
-                    for (Individual individual : population) {
-                        Chromosome last = individual.getDna().get(individual.getDna().size() - 1);
-
-                        if (!methodsThisGeneration.containsKey(last.getApiMethod())) {
-                            methodsThisGeneration.put(last.getApiMethod(), 0);
-                        }
-                        methodsThisGeneration.put(last.getApiMethod(), methodsThisGeneration.get(last.getApiMethod()) + 1);
+                    if (!methodsThisGeneration.containsKey(last.getApiMethod())) {
+                        methodsThisGeneration.put(last.getApiMethod(), 0);
                     }
-                    // Store some statistics for analysis purposes.
-
-                    if (testDriver.shouldContinue()) {
-                        // // System.out.println("Storing statistics for the previous generation.");
-                        double maxFitness = 0;
-                        for (Individual ind : population) {
-
-                            // Count methods
-                            getCollector().countMethods(ind);
-                            getCollector().countStatusCodes(ind);
-
-                            if (ind.getFitness() > maxFitness) {
-                                maxFitness = ind.getFitness();
-                            }
-                        }
-                        bestFitness.add(maxFitness);
-                    }
+                    methodsThisGeneration.put(last.getApiMethod(), methodsThisGeneration.get(last.getApiMethod()) + 1);
                 }
-//            }
+                // Store some statistics for analysis purposes.
+
+                if (testDriver.shouldContinue()) {
+                    // // System.out.println("Storing statistics for the previous generation.");
+                    double maxFitness = 0;
+                    for (Individual ind : population) {
+
+                        // Count methods
+                        getCollector().countMethods(ind);
+                        getCollector().countStatusCodes(ind);
+
+//                        if (ind.getFitness() > maxFitness) {
+//                            maxFitness = ind.getFitness();
+//                        }
+                    }
+                    bestFitness.add(maxFitness);
+                }
+            }
 
             StringBuilder data = new StringBuilder();
             for (String method : methods) {

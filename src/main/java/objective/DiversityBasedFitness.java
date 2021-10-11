@@ -26,6 +26,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import static statistics.Collector.getCollector;
+import static util.Main.GENERATION;
 import static util.ObjectStripper.stripValues;
 
 /**
@@ -69,11 +70,11 @@ public class DiversityBasedFitness extends Fitness {
 
             // TODO should be true
             // but that gives the error "Comparing different classes is not possible" in the similarityMetric 
-            Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripValues(request, response, false));
+            Pair<List<Object>, List<Integer>> featureAnddepthVector = getVector(response, stripValues(request, response, false));
 
             // If the response is an empty object just give it a fitness of zero
-            if (featureAndWeightVector.getKey().size() == 0) {
-                individual.setFitness(0);
+            if (featureAnddepthVector.getKey().size() == 0) {
+                individual.setFitness(new double[]{});
                 continue;
             }
 
@@ -86,7 +87,7 @@ public class DiversityBasedFitness extends Fitness {
                 allFeatureVectors.get(method).put(strippedString, new ArrayList<>());
             }
             // Add the feature vector to the right place in the map.
-            allFeatureVectors.get(method).get(strippedString).add(featureAndWeightVector.getKey());
+            allFeatureVectors.get(method).get(strippedString).add(featureAnddepthVector.getKey());
 
             if (!clusteringPerResponseStructure.containsKey(method)) {
                 clusteringPerResponseStructure.put(method, new HashMap<>());
@@ -96,13 +97,13 @@ public class DiversityBasedFitness extends Fitness {
             statuses.get(method).add(responseObject.getResponseCode());
 
             if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
-                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering3(featureAndWeightVector.getValue()));
+                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering3(featureAnddepthVector.getValue()));
             }
 
             AgglomerativeClustering3 clustering = clusteringPerResponseStructure.get(method).get(strippedString);
 
             // calculate the minimum distance of the individual to the clusters
-            double cost = clustering.addOne(featureAndWeightVector.getKey());
+            double cost = clustering.addOne(featureAnddepthVector.getKey());
 
             // Fitness is between 0 and 1.
             double fitness = 1.0 - Math.exp(-0.5*cost);
@@ -115,13 +116,13 @@ public class DiversityBasedFitness extends Fitness {
                 fitness = 0;
             }
 
-            individual.setFitness(fitness);
-            getCollector().collect(method, responseObject.getResponseCode(), strippedString, String.valueOf(featureAndWeightVector.getKey()));
+            individual.setFitness(new double[]{});
+            getCollector().collect(method, responseObject.getResponseCode(), strippedString, String.valueOf(featureAnddepthVector.getKey()));
 
             // decide whether to add individual to the archive
             getCollector().addToArchive(strippedString, individual);
         }
-        if (generationCount % Configuration.NEW_CLUSTERS_AFTER_GEN == 0) {
+        if (GENERATION % Configuration.NEW_CLUSTERS_AFTER_GEN == 0) {
             for (String method : allFeatureVectors.keySet()) {
                 //TODO make sure all strings are in there
                 for (String responseStructure : allFeatureVectors.get(method).keySet()) {
@@ -181,13 +182,13 @@ public class DiversityBasedFitness extends Fitness {
      *
      * @param stripped the stripped response JSONObject
      * @param response the response JSONObject
-     * @return featureVector and weightVector
+     * @return featureVector and depthVector
      */
     public Pair<List<Object>, List<Integer>> getVector(JSONObject response, JSONObject stripped) {
         JSONObject structure = new JSONObject(response.toString());
 
         List<Object> featureVector = new ArrayList<>();
-        List<Integer> weightVector = new ArrayList<>();
+        List<Integer> depthVector = new ArrayList<>();
 
         Queue<Triple<JSONObject, Integer, JSONObject>> queue = new LinkedList<>();
         queue.add(new Triple<>(structure, 0, stripped));
@@ -207,7 +208,7 @@ public class DiversityBasedFitness extends Fitness {
                     // If there is a null value, null is added as a string to the vector.
                     if (stripped.has(key)) {
                         featureVector.add("null");
-                        weightVector.add(depth+1);
+                        depthVector.add(depth+1);
                     }
                     continue;
                 }
@@ -247,15 +248,15 @@ public class DiversityBasedFitness extends Fitness {
                         queue.add(new Triple<>((JSONObject) arrayObject, depth+1, (JSONObject) strippedArrayObject));
                     } else {
                         featureVector.add(arrayObject);
-                        weightVector.add(depth+1);
+                        depthVector.add(depth+1);
                     }
                 } else {
                     featureVector.add(smallerObject);
-                    weightVector.add(depth+1);
+                    depthVector.add(depth+1);
                 }
             }
         }
-        return new Pair<>(featureVector, weightVector);
+        return new Pair<>(featureVector, depthVector);
     }
 
 }

@@ -21,6 +21,7 @@ public class Specification {
 
     private static String separator = "/";
 
+    private ArrayList<String> methodNames;
     private Map<String, List<ParamSpecification>> methods;
     private Map<String, List<SchemaSpecification>> schemas;
     private JSONObject object;
@@ -28,6 +29,7 @@ public class Specification {
     public Specification(JSONObject object) {
         this.object = object;
 
+        this.methodNames = new ArrayList<>();
         this.methods = new HashMap<>();
         this.schemas = new HashMap<>();
 
@@ -110,7 +112,8 @@ public class Specification {
                             JSONObject method = array.getJSONObject(i);
                             List<ParamSpecification> paramSpecifications = getParamInfo(newPath + i, method);
 
-                            methods.put(method.getString("name"), paramSpecifications);
+                            this.methods.put(method.getString("name"), paramSpecifications);
+                            this.methodNames.add(method.getString("name"));
                         }
                     }
 
@@ -204,5 +207,9 @@ public class Specification {
 
     public Map<String, List<SchemaSpecification>> getSchemas() {
         return schemas;
+    }
+
+    public ArrayList<String> getMethodNames() {
+        return methodNames;
     }
 }

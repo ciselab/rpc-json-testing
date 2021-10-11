@@ -58,7 +58,7 @@ public class ResponseStructureFitness2 extends Fitness {
 
             double fitness = exploitationFitness * explorationFitness;
             totalFitness += fitness;
-            individual.setFitness(fitness);
+            individual.setFitness(new double[]{});
 
 //            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.
             // decide whether to add individual to the archive

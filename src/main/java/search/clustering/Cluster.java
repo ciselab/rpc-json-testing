@@ -12,16 +12,16 @@ import java.util.List;
 public class Cluster {
 
     private SimilarityMetric metric;
-    private List<Integer> weightVector;
+    private List<Integer> depthVector;
 
     private List<List<Object>> members;
 
     private List<Object> representative;
     private Double radius;
 
-    public Cluster(SimilarityMetric metric, List<Integer> weightVector, List<List<Object>> members) {
+    public Cluster(SimilarityMetric metric, List<Integer> depthVector, List<List<Object>> members) {
         this.metric = metric;
-        this.weightVector = weightVector;
+        this.depthVector = depthVector;
         this.members = new ArrayList<>();
 
         for (List<Object> member : members) {
@@ -35,7 +35,7 @@ public class Cluster {
      * @return
      */
     public Pair<Boolean, Double> isWithin(List<Object> value) {
-        double distance = metric.calculateFeatureVectorDistanceSingle(this.representative, value, weightVector);
+        double distance = metric.calculateFeatureVectorDistanceSingle(this.representative, value, depthVector);
 
         return new Pair<>(distance < radius, distance);
     }
@@ -56,7 +56,7 @@ public class Cluster {
                 if (i == j) {
                     continue;
                 }
-                double distance = metric.calculateFeatureVectorDistanceSingle(members.get(i), members.get(j), weightVector);
+                double distance = metric.calculateFeatureVectorDistanceSingle(members.get(i), members.get(j), depthVector);
                 mean += distance;
                 max = Math.max(max, distance);
             }

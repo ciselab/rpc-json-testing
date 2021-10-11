@@ -42,7 +42,7 @@ public class ResponseStructureFitness extends Fitness {
             // Evaluate individual compared to the map
             // Fitness is between 0 and 1.
             double fitness = (double) 1 / structureFrequencyTable.get(stripValues(individual.toTotalJSONObject(), individual.getResponseObject().getResponseObject()).toString());
-            individual.setFitness(fitness);
+            individual.setFitness(new double[]{});
 
 //            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.
             // decide whether to add individual to the archive

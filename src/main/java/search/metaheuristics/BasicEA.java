@@ -11,6 +11,7 @@ import util.SelectionType;
 import java.util.ArrayList;
 import java.util.List;
 
+import static search.operators.NonDominatedSorting.compare;
 import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomBool;
 import static util.RandomSingleton.getRandomIndex;
@@ -91,7 +92,7 @@ public class BasicEA extends Heuristic{
 //            // // System.out.println("" + offspring.get(i).getFitness() + " " + offspring.get(i).toString());
 //        }
 
-
+        compare(offspring);
         if (Configuration.SELECTION_TYPE == SelectionType.TOURNAMENT) {
             return tournamentSelection(offspring);
         } else if (Configuration.SELECTION_TYPE == SelectionType.ELITIST) {
@@ -125,7 +126,7 @@ public class BasicEA extends Heuristic{
             }
 
             // Sort by descending order
-            tournament.sort((o1, o2) -> Double.compare(o2.getFitness(), o1.getFitness()));
+            tournament.sort((o1, o2) -> Double.compare(o2.getScore(), o1.getScore()));
 
             for (int i = 0; i < champions; i++) {
                 if (tournament.size() - 1 <= i) {
@@ -145,7 +146,7 @@ public class BasicEA extends Heuristic{
      */
     private List<Individual> elitistSelection(List<Individual> population) {
         // Sort
-        population.sort((o1, o2) -> Double.compare(o2.getFitness(), o1.getFitness()));
+        population.sort((o1, o2) -> Double.compare(o2.getScore(), o1.getScore()));
 
         // Select next generation
         List<Individual> newPopulation = new ArrayList<>();
