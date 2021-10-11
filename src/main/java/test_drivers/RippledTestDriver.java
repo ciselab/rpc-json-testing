@@ -78,7 +78,7 @@ public class RippledTestDriver extends TestDriver {
         request.put("params", params);
 
         System.out.println("BEFORE");
-        System.out.println(getClient().createRequest("POST", request));;
+        System.out.println(getClient().createRequest("POST", request).getResponseObject().toString());;
 
 
         request = new JSONObject();
@@ -114,7 +114,7 @@ public class RippledTestDriver extends TestDriver {
         request.put("params", params);
 
         System.out.println("AFTER");
-        System.out.println(getClient().createRequest("POST", request));;
+        System.out.println(getClient().createRequest("POST", request).getResponseObject().toString());
     }
 
     /**
