@@ -104,19 +104,14 @@ public class RippledTestDriver extends TestDriver {
     }
 
     public void prepTest() throws Exception {
-        System.out.println("checking coverage");
         checkCoverage(); // check whether coverage should be stored
-        System.out.println("preparing server");
         prepareServer();
-        System.out.println("atstart");
 
         if (atStart) {
             recordCoverage(System.currentTimeMillis());
             atStart = false;
             prepareServer();
         }
-        System.out.println("end of preperations");
-
     }
 
     public void prepareServer() throws IOException {
@@ -124,21 +119,16 @@ public class RippledTestDriver extends TestDriver {
 
         this.accounts = new ArrayList<>();
 
-         System.out.println("Accounts are being gathered.");
         for (int i = 0; i < Configuration.NUMBER_OF_ACCOUNTS; i++) {
-            System.out.println("retrieving account " + i);
             ResponseObject accounts = retrieveAccounts();
             if (!accounts.getResponseObject().has("result")) {
                 continue;
             }
-            System.out.println("filling account " + i);
 
             transferCurrencyToAccounts(accounts.getResponseObject());
             this.accounts.add(accounts.getResponseObject());
-            System.out.println("done account " + i);
 
         }
-         System.out.println("Accounts are successfully prepared.");
     }
 
     public ResponseObject runTest(String method, JSONObject request) throws Exception {

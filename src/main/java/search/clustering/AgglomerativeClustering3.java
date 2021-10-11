@@ -5,6 +5,8 @@ import util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
+import static util.Main.GENERATION;
+
 /**
  * Agglomerative clustering every few generations. Makes use of mean and radius per cluster.
  * Used in DiversityBasedFitness.
@@ -12,7 +14,7 @@ import java.util.List;
 public class AgglomerativeClustering3 {
 
     // Each value in the feature vector has a certain weight/importance.
-    private List<Integer> weightVector;
+    private List<Integer> depthVector;
 
     private SimilarityMetric metric;
 
@@ -24,8 +26,8 @@ public class AgglomerativeClustering3 {
     // List of feature vectors of individuals that do not belong to existing clusters.
     private List<List<Object>> nonBelongers;
 
-    public AgglomerativeClustering3(List<Integer> weightVector) {
-        this.weightVector = weightVector;
+    public AgglomerativeClustering3(List<Integer> depthVector) {
+        this.depthVector = depthVector;
         this.metric = new SimilarityMetric();
         this.similarityMatrix = new ArrayList<>();
         this.clusters = new ArrayList<>();
@@ -48,6 +50,7 @@ public class AgglomerativeClustering3 {
         // Reset the list of individuals that did not belong to existing clusters.
         nonBelongers = new ArrayList<>();
 
+        System.out.println("" + GENERATION + ": " + values.size());
         return values;
     }
 
@@ -74,7 +77,7 @@ public class AgglomerativeClustering3 {
         for (int i = 0; i < clusters.size(); i++) {
             similarityMatrix.add(new ArrayList<>());
             for (int j = i + 1; j < clusters.size(); j++) {
-                double similarity = this.metric.calculateSimilarity(clusters.get(i), clusters.get(j), weightVector);
+                double similarity = this.metric.calculateSimilarity(clusters.get(i), clusters.get(j), depthVector);
                 similarityMatrix.get(i).add(similarity);
             }
         }
@@ -138,7 +141,7 @@ public class AgglomerativeClustering3 {
 
             // calculate similarity column
             for (int i = 0; i < clusters.size() - 1; i++) {
-                double similarity = this.metric.calculateSimilarity(cluster1, clusters.get(i), weightVector);
+                double similarity = this.metric.calculateSimilarity(cluster1, clusters.get(i), depthVector);
                 similarityMatrix.get(i).add(similarity);
             }
 
@@ -184,7 +187,7 @@ public class AgglomerativeClustering3 {
         this.clusters = new ArrayList<>();
         // Create actual clusters with representatives and such
         for (List<List<Object>> cluster : clusters) {
-            Cluster c = new Cluster(metric, weightVector, cluster);
+            Cluster c = new Cluster(metric, depthVector, cluster);
             c.findRepresentativeAndRadius();
             this.clusters.add(c);
         }
@@ -231,6 +234,8 @@ public class AgglomerativeClustering3 {
             }
         }
 
+//        System.out.println("NON BELONGER");
+//        System.out.println(value);
         // When feature vector did not belong to a cluster, save it to cluster later
         nonBelongers.add(value);
 

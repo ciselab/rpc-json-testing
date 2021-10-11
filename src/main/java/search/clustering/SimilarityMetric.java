@@ -12,8 +12,8 @@ public class SimilarityMetric {
      * @param b cluster b
      * @return the average Euclidean similarity
      */
-    public double calculateSimilarity(List<List<Object>> a, List<List<Object>> b, List<Integer> weightVector) {
-        Double distance = calculateFeatureVectorDistance(a, b, weightVector);
+    public double calculateSimilarity(List<List<Object>> a, List<List<Object>> b, List<Integer> depthVector) {
+        Double distance = calculateFeatureVectorDistance(a, b, depthVector);
 
         return 1.0 / (1.0 + distance);
     }
@@ -24,17 +24,17 @@ public class SimilarityMetric {
      * @param b cluster b
      * @return the average Euclidean similarity
      */
-    public double calculateSimilaritySingle(List<Object> a, List<Object> b, List<Integer> weightVector) {
-        Double distance = calculateFeatureVectorDistanceSingle(a, b, weightVector);
+    public double calculateSimilaritySingle(List<Object> a, List<Object> b, List<Integer> depthVector) {
+        Double distance = calculateFeatureVectorDistanceSingle(a, b, depthVector);
 
         return 1.0 / (1.0 + distance);
     }
 
-    public double calculateFeatureVectorDistance(List<List<Object>> a, List<List<Object>> b, List<Integer> weightVector) {
+    public double calculateFeatureVectorDistance(List<List<Object>> a, List<List<Object>> b, List<Integer> depthVector) {
         Double distance = 0.0;
         for (List<Object> featureVectorA : a) {
             for (List<Object> featureVectorB : b) {
-                distance += calculateFeatureVectorDistanceSingle(featureVectorA, featureVectorB, weightVector);
+                distance += calculateFeatureVectorDistanceSingle(featureVectorA, featureVectorB, depthVector);
             }
         }
 
@@ -48,9 +48,8 @@ public class SimilarityMetric {
      * @param b
      * @return
      */
-    public double calculateFeatureVectorDistanceSingle(List<Object> a, List<Object> b, List<Integer> weightVector) {
+    public double calculateFeatureVectorDistanceSingle(List<Object> a, List<Object> b, List<Integer> depthVector) {
         double distance = 0;
-        int differentFeatures = 0;
 
         for (int i = 0; i < a.size(); i++) {
             Object objectA = a.get(i);
@@ -59,33 +58,17 @@ public class SimilarityMetric {
                 throw new IllegalArgumentException("Comparing different classes is not possible\n" + a + "\n" + b);
             }
 
-            if (objectA instanceof String) {
-                double maxStringDistance = 20;
-                double tempDistance = Math.pow(Math.min(stringDistance((String) objectA, (String) objectB), maxStringDistance), 2) * (1.0 / (double) weightVector.get(i));
-                distance += tempDistance;
-                if (tempDistance != 0) {
-                    differentFeatures += 1;
-                }
+            double scalar = (1.0 / (double) depthVector.get(i));
 
+            if (objectA instanceof String) {
+                distance += Math.pow(stringDistance((String) objectA, (String) objectB), 2) * scalar;
             } else if (objectA instanceof Boolean) {
-                double tempDistance = Math.pow(boolDistance((Boolean) objectA, (Boolean) objectB), 2) * (1.0 / (double) weightVector.get(i));
-                distance += tempDistance;
-                if (tempDistance != 0) {
-                    differentFeatures += 1;
-                }
+                distance += Math.pow(boolDistance((Boolean) objectA, (Boolean) objectB), 2) * scalar;
             } else if (objectA instanceof Number) {
-                double tempDistance = Math.pow(numberDistance(((Number) objectA).doubleValue(), ((Number) objectB).doubleValue()), 2) * (1.0 / (double) weightVector.get(i));
-                distance += tempDistance;
-                if (tempDistance != 0) {
-                    differentFeatures += 1;
-                }
+                distance += Math.pow(numberDistance(((Number) objectA).doubleValue(), ((Number) objectB).doubleValue()), 2) * scalar;
             }
         }
-        // TODO
-        // If half of the features in the vector are not different, two vectors are not different enough and distance should be 0.
-//        if (differentFeatures / a.size() < Configuration.getTHRESHOLD_DIFFERENT_FEATURES()) {
-//            return 0;
-//        }
+
         return Math.sqrt(distance);
     }
 
@@ -94,7 +77,7 @@ public class SimilarityMetric {
     }
 
     public static double numberDistance(Double a, Double b) {
-        return Math.abs(a - b);
+        return Math.abs(a - b) / Math.max(1, Math.max(Math.abs(a), Math.abs(b)));
     }
 
     /**
@@ -129,12 +112,9 @@ public class SimilarityMetric {
             }
         }
 
-//        for (int i = 0; i < distance.length; i++) {
-//            // // System.out.println(Arrays.toString(distance[i]));
-//        }
         double dist = distance[a.length()][b.length()];
 
-        return dist;
+        return dist / Math.max(1, Math.max(a.length(), b.length()));
     }
 
 }

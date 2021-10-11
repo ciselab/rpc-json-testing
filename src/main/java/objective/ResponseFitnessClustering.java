@@ -51,10 +51,10 @@ public class ResponseFitnessClustering extends Fitness {
             JSONObject stripped = stripValues(request, response);
             String strippedString = stripped.toString();
 
-            Pair<List<Object>, List<Integer>> featureAndWeightVector = getVector(response, stripped);
+            Pair<List<Object>, List<Integer>> featureAnddepthVector = getVector(response, stripped);
 
             // If empty object just give it a fitness of zero
-            if (featureAndWeightVector.getKey().size() == 0) {
+            if (featureAnddepthVector.getKey().size() == 0) {
                 individual.setFitness(0);
                 continue;
             }
@@ -68,12 +68,12 @@ public class ResponseFitnessClustering extends Fitness {
 
 
             if (!clusteringPerResponseStructure.get(method).containsKey(strippedString)) {
-                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering(featureAndWeightVector.getValue()));
+                clusteringPerResponseStructure.get(method).put(strippedString, new AgglomerativeClustering(featureAnddepthVector.getValue()));
             }
 
             AgglomerativeClustering clustering = clusteringPerResponseStructure.get(method).get(strippedString);
 
-            double cost = clustering.cluster(featureAndWeightVector.getKey());
+            double cost = clustering.cluster(featureAnddepthVector.getKey());
 
             // Fitness is between 0 and 1.
             double fitness = 1.0 / (1 + cost);
@@ -131,13 +131,13 @@ public class ResponseFitnessClustering extends Fitness {
      * Calculate the feature vector and the weight vector.
      *
      * @param response the response JSONObject
-     * @return featureVector and weightVector
+     * @return featureVector and depthVector
      */
     public Pair<List<Object>, List<Integer>> getVector(JSONObject response, JSONObject stripped) {
         JSONObject structure = new JSONObject(response.toString());
 
         List<Object> featureVector = new ArrayList<>();
-        List<Integer> weightVector = new ArrayList<>();
+        List<Integer> depthVector = new ArrayList<>();
 
         Queue<Triple<JSONObject, Integer, JSONObject>> queue = new LinkedList<>();
         queue.add(new Triple<>(structure, 0, stripped));
@@ -157,7 +157,7 @@ public class ResponseFitnessClustering extends Fitness {
                     // TODO should we do this? It  can occur that an error_message is null for example.
                     if (stripped.has(key)) {
                         featureVector.add("null");
-                        weightVector.add(depth + 1);
+                        depthVector.add(depth + 1);
                     }
                     continue;
                 }
@@ -194,16 +194,16 @@ public class ResponseFitnessClustering extends Fitness {
                         queue.add(new Triple<>((JSONObject) arrayObject, depth + 1, (JSONObject) strippedArrayObject));
                     } else {
                         featureVector.add(arrayObject);
-                        weightVector.add(depth + 1);
+                        depthVector.add(depth + 1);
                     }
                 } else {
                     featureVector.add(smallerObject);
-                    weightVector.add(depth + 1);
+                    depthVector.add(depth + 1);
                 }
             }
         }
 
-        return new Pair<>(featureVector, weightVector);
+        return new Pair<>(featureVector, depthVector);
     }
 
 }
