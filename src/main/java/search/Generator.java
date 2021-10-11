@@ -46,7 +46,7 @@ public class Generator {
     }
 
     public Individual generateRandomIndividual() {
-        int nRequests = RandomSingleton.getRandom().nextInt(Configuration.REQUESTS_GENERATOR_LIMIT);
+        int nRequests = RandomSingleton.getRandom().nextInt(Configuration.REQUESTS_GENERATOR_LIMIT) + 1;
         List<Chromosome> dna = new ArrayList<>();
 
         for (int i = 0; i < nRequests; i++) {
@@ -56,10 +56,10 @@ public class Generator {
             dna.add(chromosome);
         }
 
-        String methodName = getTarget();
-        ArrayGene method = generateMethod(methodName);
-        Chromosome chromosome = new Chromosome(generateHTTPMethod(), methodName, method);
-        dna.add(chromosome);
+//        String methodName = getTarget();
+//        ArrayGene method = generateMethod(methodName);
+//        Chromosome chromosome = new Chromosome(generateHTTPMethod(), methodName, method);
+//        dna.add(chromosome);
 
         return new Individual(dna);
     }

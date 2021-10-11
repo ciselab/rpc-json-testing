@@ -1,5 +1,6 @@
 import connection.Client;
 
+import search.Chromosome;
 import search.metaheuristics.BasicEA;
 import search.Generator;
 import search.Individual;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -164,27 +166,40 @@ public class Main {
 //            List<Individual> population = heuristic.generatePopulation(Configuration.POPULATION_SIZE);
 //            heuristic.gatherResponses(population);
 
-            List<String> methods = new ArrayList<>(specification.getMethods().keySet());
-            long timePerMethod = testDriver.getTimeLeft() / methods.size();
+            ArrayList<Map<String, Integer>> methodsPerGeneration = new ArrayList<>();
 
-            for (String method : methods) {
-                heuristic.setTarget(method);
-                long start = System.currentTimeMillis();
+            List<String> methods = new ArrayList<>(specification.getMethods().keySet());
+//            long timePerMethod = testDriver.getTimeLeft() / methods.size();
+
+//            for (String method : methods) {
+//                heuristic.setTarget(method);
+//                long start = System.currentTimeMillis();
 
                 List<Individual> population = heuristic.generatePopulation(Configuration.POPULATION_SIZE);
                 heuristic.gatherResponses(population);
 
-                if (!testDriver.shouldContinue()) {
-                    break;
-                }
+//                if (!testDriver.shouldContinue()) {
+//                    break;
+//                }
 
-                while ((System.currentTimeMillis() - start) < timePerMethod && testDriver.shouldContinue()) {
+                while (testDriver.shouldContinue()) {
                     // // System.out.println("Starting generation: " + getCollector().getGeneration() + ", "
 //                            + (testDriver.getTimeLeft() / 1000) + " seconds = " + (testDriver.getTimeLeft() / (60 * 1000)) + " minutes left.");
+
+                    Map<String, Integer> methodsThisGeneration = new HashMap<>();
+                    methodsPerGeneration.add(methodsThisGeneration);
 
                     getCollector().nextGeneration();
                     population = heuristic.nextGeneration(population);
 
+                    for (Individual individual : population) {
+                        Chromosome last = individual.getDna().get(individual.getDna().size() - 1);
+
+                        if (!methodsThisGeneration.containsKey(last.getApiMethod())) {
+                            methodsThisGeneration.put(last.getApiMethod(), 0);
+                        }
+                        methodsThisGeneration.put(last.getApiMethod(), methodsThisGeneration.get(last.getApiMethod()) + 1);
+                    }
                     // Store some statistics for analysis purposes.
 
                     if (testDriver.shouldContinue()) {
@@ -203,7 +218,25 @@ public class Main {
                         bestFitness.add(maxFitness);
                     }
                 }
+//            }
+
+            StringBuilder data = new StringBuilder();
+            for (String method : methods) {
+                data.append(method).append(",");
             }
+            data.append("\n");
+            for (Map<String, Integer> aMethodsPerGeneration : methodsPerGeneration) {
+                for (String method : methods) {
+                    if (aMethodsPerGeneration.containsKey(method)) {
+                        data.append(aMethodsPerGeneration.get(method)).append(",");
+                    } else {
+                        data.append("0,");
+                    }
+                }
+                data.append("\n");
+            }
+
+            writeFile(data.toString(), "methods_per_generation.csv");
             // Stopping criterium = time
 //            while (testDriver.shouldContinue()) {
 //                // System.out.println("Starting generation: " + getCollector().getGeneration() + ", " + (testDriver.getTimeLeft() / 1000) + " seconds left");

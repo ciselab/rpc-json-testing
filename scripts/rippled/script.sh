@@ -20,9 +20,9 @@ done
 
 # compute test coverage achieved by running the tool
 cd /rippled-1.6.0
-gcovr -s -b -r ./ -o final_bcoverage_total.txt
+gcovr -s -b -r ./ -f 'src/ripple' -o final_bcoverage_total.txt
 echo "These results are based on server: " $3", fitness function:" $1 ", and time:" $2 "minutes." >> final_bcoverage_total.txt cat final_bcoverage_total.txt
-gcovr -s -r ./ -o final_lcoverage_total.txt
+gcovr -s -r ./ -f 'src/ripple' -o final_lcoverage_total.txt
 echo "These results are based on server: " $3", fitness function:" $1 ", and time:" $2 "minutes." >> final_lcoverage_total.txt cat final_lcoverage_total.txt
 
 # reset coverage and run the generated tests
@@ -41,9 +41,10 @@ done
 
 # compute test coverage achieved by running the generated tests
 cd /rippled-1.6.0
-gcovr -s -b -r ./ -o final_bcoverage_archive.txt
+gcovr -s -b -r ./ -f 'src/ripple' -o final_bcoverage_archive.txt
+
 echo "These archive tests were based on server: " $3", fitness function:" $1 ", and time:" $2 "minutes." >> final_bcoverage_archive.txt cat final_bcoverage_archive.txt
-gcovr -s -r ./ -o final_lcoverage_archive.txt
+gcovr -s -r ./ -f 'src/ripple' -o final_lcoverage_archive.txt
 echo "These archive tests were based on server: " $3", fitness function:" $1 ", and time:" $2 "minutes." >> final_lcoverage_archive.txt cat final_lcoverage_archive.txt
 
 exit

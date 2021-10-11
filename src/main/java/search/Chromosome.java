@@ -40,10 +40,6 @@ public class Chromosome {
             // mutate api apiMethod (and corresponding newly generated parameters)
             String methodName = generator.getRandomMethod();
 
-            if (last) {
-                methodName = generator.getTarget();
-            }
-
             ArrayGene method = generator.generateMethod(methodName);
             return new Chromosome(generator.generateHTTPMethod(), methodName, method);
         } else {
