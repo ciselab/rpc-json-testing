@@ -69,22 +69,9 @@ public class RippledTestDriver extends TestDriver {
 
     private void transferCurrencyToAccounts(JSONObject accounts) throws IOException {
         JSONObject request = new JSONObject();
-        request.put("method", "account_info");
+        request.put("method", "submit");
         JSONArray params = new JSONArray();
         JSONObject paramObj = new JSONObject();
-        paramObj.put("account", accounts.getJSONObject("result").getString("account_id")); // genesis secret
-
-        params.put(0, paramObj);
-        request.put("params", params);
-
-        System.out.println("BEFORE");
-        System.out.println(getClient().createRequest("POST", request).getResponseObject().toString());;
-
-
-        request = new JSONObject();
-        request.put("method", "submit");
-        params = new JSONArray();
-        paramObj = new JSONObject();
         paramObj.put("secret", "snoPBrXtMeMyMHUVTgbuqAfg1SUTb"); // genesis secret
 //        paramObj.put("offline", false);
 //        paramObj.put("fee_multi_max", 1000);
@@ -101,20 +88,6 @@ public class RippledTestDriver extends TestDriver {
         request.put("params", params);
 
         getClient().createRequest("POST", request);
-
-
-
-        request = new JSONObject();
-        request.put("method", "account_info");
-        params = new JSONArray();
-        paramObj = new JSONObject();
-        paramObj.put("account", accounts.getJSONObject("result").getString("account_id")); // genesis secret
-
-        params.put(0, paramObj);
-        request.put("params", params);
-
-        System.out.println("AFTER");
-        System.out.println(getClient().createRequest("POST", request).getResponseObject().toString());
     }
 
     /**
