@@ -72,9 +72,12 @@ public class DiversityBasedFitness extends Fitness {
             // but that gives the error "Comparing different classes is not possible" in the similarityMetric 
             Pair<List<Object>, List<Integer>> featureAnddepthVector = getVector(response, stripValues(request, response, false));
 
+            // for multi objective
+            double[] fitness = new double[generator.getSpecification().getMethods().size()];
+
             // If the response is an empty object just give it a fitness of zero
             if (featureAnddepthVector.getKey().size() == 0) {
-                individual.setFitness(new double[]{});
+                individual.setFitness(fitness);
                 continue;
             }
 
@@ -105,18 +108,18 @@ public class DiversityBasedFitness extends Fitness {
             // calculate the minimum distance of the individual to the clusters
             double cost = clustering.addOne(featureAnddepthVector.getKey());
 
-            // Fitness is between 0 and 1.
-            double fitness = 1.0 - Math.exp(-0.5*cost);
+
 
             // TODO not use this hack for worst output
-            if (individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("random") ||
-                individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("tx") ||
-                individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("server_info") ||
-                individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("server_state")) {
-                fitness = 0;
+            if (method.equals("random") ||
+                method.equals("tx") ||
+                method.equals("server_info") ||
+                method.equals("server_state")) {
+            } else {
+                fitness[generator.getSpecification().getMethodNames().indexOf(method)] = 1.0 - Math.exp(-0.5*cost);
             }
 
-            individual.setFitness(new double[]{});
+            individual.setFitness(fitness);
             getCollector().collect(method, responseObject.getResponseCode(), strippedString, String.valueOf(featureAnddepthVector.getKey()));
 
             // decide whether to add individual to the archive
