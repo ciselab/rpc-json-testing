@@ -2,6 +2,7 @@ package search;
 
 import connection.ResponseObject;
 import org.json.JSONObject;
+import search.genes.ArrayGene;
 import util.Configuration;
 import util.CrossoverType;
 
@@ -38,9 +39,19 @@ public class Individual {
 
         for (int i = 0; i < dna.size(); i++) {
             if (util.RandomSingleton.getRandomBool(1/dna.size())) {
-                System.out.println("Chromosome " + i + " will be mutated.");
-                newDna.add(dna.get(i).mutate(generator));
-                System.out.println("Chromosome " + i + " was successfully mutated.");
+                if (getRandomBool(0.05)) { // TODO CONFIG
+                    // add
+                    String methodName = generator.getRandomMethod();
+                    ArrayGene method = generator.generateMethod(methodName);
+                    Chromosome chromosome = new Chromosome(generator.generateHTTPMethod(), methodName, method);
+                    newDna.add(chromosome);
+                    newDna.add(dna.get(i));
+                } else if (i != dna.size() -1 && getRandomBool(0.05)) { // TODO CONFIG
+                    // delete
+                    continue;
+                } else {
+                    newDna.add(dna.get(i).mutate(generator));
+                }
             } else {
                 newDna.add(dna.get(i));
             }

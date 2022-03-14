@@ -1,0 +1,24 @@
+FROM ubuntu:18.04
+
+# Install required packages and boost.
+RUN apt-get -y update && \
+	apt-get -y install --no-install-recommends npm git default-jdk maven lsof procps && rm -rf /var/lib/apt/lists/* && \
+	
+# Install ganache client.
+RUN wget https://lisv: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@github.com/ripple/rippled/archive/refs/tags/1.6.0.zip && \
+	mv 1.6.0.zip rippled-1.6.0.zip && \
+	unzip rippled-1.6.0.zip
+RUN cd rippled-1.6.0 && \
+	python3 ./Builds/Test.py -v --dir coverage -- -j 4
+
+# Pull tool repo and compile it.
+RUN git clone https://lisv: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@github.com/SERG-Delft/blockchain-testing.git && cd blockchain-testing && \
+	git pull && \
+	mvn clean install -DskipTests && \
+	cp src/main/resources/ripple-openrpc.json target/
+	
+# Give permission to run script
+RUN cd blockchain-testing/docker && chmod +x script.sh
+
+ENTRYPOINT ["blockchain-testing/docker/script.sh"]
+CMD ["1", "60"]

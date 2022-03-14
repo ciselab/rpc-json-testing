@@ -12,17 +12,19 @@ public abstract class TestDriver {
     private Long runTime;
     private boolean greenLightSignal;
     private static Long startTime;
+    private boolean checkCoverage;
 
-    public TestDriver (Client client, Long runTime) {
+    public TestDriver (Client client, Long runTime, boolean checkCoverage) {
         this.client = client;
         this.runTime = runTime;
         this.greenLightSignal = true;
         this.startTime = System.currentTimeMillis();
+        this.checkCoverage = checkCoverage;
     }
 
-    public TestDriver (Client client) {
+    public TestDriver (Client client, boolean checkCoverage) {
         // runtime is set on 5 minutes, necessary for tests
-        this(client, (5 * 60 * 1000L));
+        this(client, (5 * 60 * 1000L), checkCoverage);
     }
 
     public void checkWhetherToStop() {
@@ -34,14 +36,12 @@ public abstract class TestDriver {
 
 
     protected JSONObject replaceKnownStrings(JSONObject request, String constant, List<String> replacements) {
-        System.out.println("Known strings are replaced.");
         String stringObj = request.toString();
 
         for (int i = 0; i < replacements.size(); i++) {
             stringObj = stringObj.replace(constant + i, replacements.get(i));
         }
 
-        System.out.println("Known strings were successfully replaced.");
         return new JSONObject(stringObj);
     }
 
@@ -65,4 +65,7 @@ public abstract class TestDriver {
         return greenLightSignal;
     }
 
+    public boolean shouldCheckCoverage() {
+        return checkCoverage;
+    }
 }

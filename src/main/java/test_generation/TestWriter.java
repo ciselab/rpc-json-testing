@@ -48,7 +48,7 @@ public class TestWriter {
             "    public static void prep () {\n" +
             "        try {\n" +
             "            Client client = new Client(new URL(url_server));\n" +
-            "            testDriver = new " + testDriver + "(client);\n" +
+            "            testDriver = new " + testDriver + "(client, false);\n" +
             "        } catch (MalformedURLException e) {\n" +
             "            e.printStackTrace();\n" +
             "        } catch (IOException e) {\n" +

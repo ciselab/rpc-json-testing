@@ -1,19 +1,11 @@
 import connection.Client;
 
-import search.metaheuristics.BasicEA;
 import search.Generator;
 import search.Individual;
 import search.metaheuristics.Heuristic;
 import search.metaheuristics.RandomFuzzer;
 
-import objective.DiversityBasedFitness;
 import objective.Fitness;
-import objective.ResponseFitnessClustering;
-import objective.ResponseFitnessClustering2;
-import objective.ResponseFitnessPredefinedTypes;
-import objective.ResponseStructureFitness;
-import objective.ResponseStructureFitness2;
-import objective.StatusCodeFitness;
 
 import openRPC.Specification;
 import statistics.Archive;
@@ -38,9 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import static statistics.Collector.getCollector;
-
-import static util.IO.readFile;
-import static util.IO.writeFile;
+import static util.IO.*;
 
 public class Main {
 
@@ -50,7 +40,7 @@ public class Main {
 
         // Read the input arguments (heuristic, running time, server).
         String fitnessFunction = "8";
-        int runningTime = 3; //default value
+        int runningTime = 1; //default value
         String server = "";
 
         try {
@@ -99,60 +89,24 @@ public class Main {
             String testDriverString;
             if (server.equals("g")) {
                 System.out.println("Using g: Ganache server");
-                testDriver = new GanacheTestDriver(client, runTime);
+                testDriver = new GanacheTestDriver(client, runTime, true);
                 testDriverString = "GanacheTestDriver";
             } else if (server.equals("r")) {
                 System.out.println("Using r: Rippled server");
-                testDriver = new RippledTestDriver(client, runTime);
+                testDriver = new RippledTestDriver(client, runTime, true);
                 testDriverString = "RippledTestDriver";
             } else {
                 System.out.println("No or invalid argument specified for server. Using default server: Rippled TestNet");
-                testDriver = new RippledTestDriverTestNet(client, runTime);
+                testDriver = new RippledTestDriverTestNet(client, runTime, true);
                 testDriverString = "RippledTestDriverTestNet";
             }
 
             // Create the selected heuristic and fitness function object.
             Heuristic heuristic;
-            Fitness fitness = null;
             switch (fitnessFunction) {
                 case "1":
                     System.out.println("Using 1: RandomFuzzer");
                     heuristic = new RandomFuzzer(generator, testDriver);
-                    break;
-                case "2":
-                    System.out.println("Using 2: StatusCodeFitness");
-                    fitness = new StatusCodeFitness();
-                    heuristic = new BasicEA(generator, testDriver, fitness);
-                    break;
-                case "3":
-                    System.out.println("Using 3: ResponseFitnessPredefinedTypes");
-                    fitness = new ResponseFitnessPredefinedTypes();
-                    heuristic = new BasicEA(generator, testDriver, fitness);
-                    break;
-                case "4":
-                    System.out.println("Using 4: ResponseFitnessClustering");
-                    fitness = new ResponseFitnessClustering();
-                    heuristic = new BasicEA(generator, testDriver, fitness);
-                    break;
-                case "5":
-                    System.out.println("Using 5: ResponseFitnessClustering2");
-                    fitness = new ResponseFitnessClustering2();
-                    heuristic = new BasicEA(generator, testDriver, fitness);
-                    break;
-                case "6":
-                    System.out.println("Using 6: ResponseStructureFitness");
-                    fitness = new ResponseStructureFitness();
-                    heuristic = new BasicEA(generator, testDriver, fitness);
-                    break;
-                case "7":
-                    System.out.println("Using 7: ResponseStructureFitness2");
-                    fitness = new ResponseStructureFitness2();
-                    heuristic = new BasicEA(generator, testDriver, fitness);
-                    break;
-                case "8":
-                    System.out.println("Using 8: DiversityBasedFitness");
-                    fitness = new DiversityBasedFitness();
-                    heuristic = new BasicEA(generator, testDriver, fitness);
                     break;
                 default:
                     System.out.println("No or invalid argument specified for fitness. Using default heuristic: RandomFuzzer");
@@ -197,28 +151,7 @@ public class Main {
                 System.out.println(coverage.get(method).structures.keySet());
             }
 
-            if (fitness != null) {
-                // Information on how the fitness function is progressing
-                writeFile(fitness.storeInformation(), "fitness_progress.txt");
-
-                // Write best fitness values of each generation to file
-                writeFile(bestFitness.toString(), "best_fitness_values.txt");
-            }
-
-            // Information on API methods that occurred
-            writeFile(getCollector().getMethodCountTotal().toString(), "methods_total.txt");
-            writeFile(getCollector().getMethodCountArchive().toString(), "methods_archive.txt");
-            writeFile(getCollector().getMethodCountPerGen().toString(), "methods_per_gen.txt");
-
-            // Information on status codes that occurred
-            writeFile(getCollector().getStatusCodesTotal().toString(), "status_codes_total.txt");
-            writeFile(getCollector().getStatusCodesArchive().toString(), "status_codes_archive.txt");
-            writeFile(getCollector().getStatusCodesPerGen().toString(), "status_codes_per_gen.txt");
-
-            // Information on the amount of tests in the archive
-            Archive archive = getCollector().getArchive();
-            String testInArchive = "Amount of tests in the archive: " + archive.size() + ", stopped at generation: " + getCollector().getGeneration();
-            writeFile(testInArchive, "archive_size.txt");
+            collectStatistics();
 
             // Delete old test files and write archive to tests
             String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
@@ -228,6 +161,8 @@ public class Main {
                     file.delete();
                 }
             }
+
+            Archive archive = getCollector().getArchive();
             System.out.println("Tests in the archive: " + archive.size());
             int i = 0;
             for (String key : archive.keySet()) {
@@ -241,5 +176,24 @@ public class Main {
             e.printStackTrace();
         }
 
+    }
+
+    public static void collectStatistics() throws IOException {
+        (new File(testDirectory)).mkdir();
+
+        // Information on API methods that occurred
+        writeFile(getCollector().getMethodCountTotal().toString(), "methods_total.txt");
+        writeFile(getCollector().getMethodCountArchive().toString(), "methods_archive.txt");
+        writeFile(getCollector().getMethodCountPerGen().toString(), "methods_per_gen.txt");
+
+        // Information on status codes that occurred
+        writeFile(getCollector().getStatusCodesTotal().toString(), "status_codes_total.txt");
+        writeFile(getCollector().getStatusCodesArchive().toString(), "status_codes_archive.txt");
+        writeFile(getCollector().getStatusCodesPerGen().toString(), "status_codes_per_gen.txt");
+
+        // Information on the amount of tests in the archive
+        Archive archive = getCollector().getArchive();
+        String testInArchive = "Amount of tests in the archive: " + archive.size() + ", stopped at generation: " + getCollector().getGeneration();
+        writeFile(testInArchive, "archive_size.txt");
     }
 }

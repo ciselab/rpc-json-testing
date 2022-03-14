@@ -24,15 +24,15 @@ public class GanacheTestDriver extends TestDriver {
     private Long previousTimeStored;
     private boolean atStart;
 
-    public GanacheTestDriver(Client client, Long runTime) {
-        super(client, runTime);
+    public GanacheTestDriver(Client client, Long runTime, boolean checkCoverage) {
+        super(client, runTime, checkCoverage);
         sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
         atStart = true;
     }
 
-    public GanacheTestDriver(Client client) {
-        super(client);
+    public GanacheTestDriver(Client client, boolean checkCoverage) {
+        super(client, checkCoverage);
         sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
         atStart = true;
@@ -101,7 +101,10 @@ public class GanacheTestDriver extends TestDriver {
     }
 
     public void prepTest() throws Exception {
-        checkCoverage();    // Check whether coverage needs to be documented.
+        if (shouldCheckCoverage()) {
+            checkCoverage();    // Check whether coverage needs to be documented.
+        }
+
         prepareServer();
 
         if (atStart) {

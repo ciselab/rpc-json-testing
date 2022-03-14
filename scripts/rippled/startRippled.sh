@@ -10,13 +10,13 @@ count=0
 
 while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" != "" ]; do
  echo "waiting at kill...  -$(lsof -t -i:5005 -sTCP:LISTEN)-"
- if [[ count == 100 ]]; then
+ if [[ $count == 100 ]]; then
    id=$(lsof -t -i:5005 -sTCP:LISTEN)
    echo "killing: $id"
    kill "$id"
    count=0
  fi
- count=count+1
+ count=$((count+1))
  sleep 0.1
 done
 
@@ -30,13 +30,15 @@ cd /rippled-1.6.0/build/cmake/coverage
 
 count=0
 
-while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" == "" ]; do
- echo "waiting at server... $(lsof -t -i:5005 -sTCP:LISTEN)"
- if [[ count == 100 ]]; then
-    ./rippled -a --start -v --debug &
-    count=0
+while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" != "" ]; do
+ echo "waiting at kill...  -$(lsof -t -i:5005 -sTCP:LISTEN)-"
+ if [[ $count == 100 ]]; then
+   id=$(lsof -t -i:5005 -sTCP:LISTEN)
+   echo "killing: $id"
+   kill "$id"
+   count=0
  fi
- count=count+1
+ count=$((count+1))
  sleep 0.1
 done
 

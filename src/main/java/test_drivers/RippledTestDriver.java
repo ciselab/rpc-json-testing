@@ -20,15 +20,15 @@ public class RippledTestDriver extends TestDriver {
     private Long previousTimeStored;
     private boolean atStart;
 
-    public RippledTestDriver(Client client, Long runTime) {
-        super(client, runTime);
+    public RippledTestDriver(Client client, Long runTime, boolean checkCoverage) {
+        super(client, runTime, checkCoverage);
         sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
         atStart = true;
     }
 
-    public RippledTestDriver(Client client) {
-        super(client);
+    public RippledTestDriver(Client client, boolean checkCoverage) {
+        super(client, checkCoverage);
         sk = new CoverageRecorder();
         previousTimeStored = System.currentTimeMillis();
         atStart = true;
@@ -98,7 +98,9 @@ public class RippledTestDriver extends TestDriver {
     }
 
     public void prepTest() throws Exception {
-        checkCoverage(); // check whether coverage should be stored
+        if (this.shouldCheckCoverage()) {
+            checkCoverage(); // check whether coverage should be stored
+        }
         prepareServer();
 
         if (atStart) {

@@ -10,7 +10,7 @@ import java.util.List;
 
 public final class IO {
 
-    private static String testDirectory = System.getProperty("user.dir") + "/output";
+    public static final String testDirectory = System.getProperty("user.dir") + "/output";
 
     public static String readFile(String filepath) throws IOException {
         filepath = URLDecoder.decode(filepath, "UTF-8");
@@ -47,7 +47,7 @@ public final class IO {
      * @throws IOException
      */
     public static void writeFile(String information, String fileName) throws IOException {
-        FileWriter writer = new FileWriter(new File(testDirectory + "/" + fileName), false);
+        FileWriter writer = new FileWriter(new File(testDirectory + File.separator + fileName), false);
 
         writer.write(information + System.lineSeparator());
         writer.close();

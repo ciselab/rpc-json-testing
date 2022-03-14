@@ -9,12 +9,12 @@ import java.util.List;
 
 public class RippledTestDriverTestNet extends RippledTestDriver {
 
-    public RippledTestDriverTestNet(Client client, Long runTime) {
-        super(client, runTime);
+    public RippledTestDriverTestNet(Client client, Long runTime, boolean checkCoverage) {
+        super(client, runTime, checkCoverage);
     }
 
-    public RippledTestDriverTestNet(Client client) {
-        super(client);
+    public RippledTestDriverTestNet(Client client, boolean checkCoverage) {
+        super(client, checkCoverage);
     }
 
 
