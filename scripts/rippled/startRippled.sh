@@ -10,7 +10,7 @@ count=0
 
 while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" != "" ]; do
  echo "waiting at kill...  -$(lsof -t -i:5005 -sTCP:LISTEN)-"
- if [[ $count == 100 ]]; then
+ if [[ $count == 1000 ]]; then
    id=$(lsof -t -i:5005 -sTCP:LISTEN)
    echo "killing: $id"
    kill "$id"
@@ -32,7 +32,7 @@ count=0
 
 while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" != "" ]; do
  echo "waiting at kill...  -$(lsof -t -i:5005 -sTCP:LISTEN)-"
- if [[ $count == 100 ]]; then
+ if [[ $count == 1000 ]]; then
    id=$(lsof -t -i:5005 -sTCP:LISTEN)
    echo "killing: $id"
    kill "$id"
