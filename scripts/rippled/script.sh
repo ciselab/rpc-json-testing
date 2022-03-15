@@ -6,8 +6,8 @@ find . -type f -name "*.gcda" -delete
 
 # run the tool
 cd /blockchain-testing
-# the first argument is the fitness function used (1-8), the second arg is the time the experiment will run (in mins) and the third arg is the server used (g or r).
-java -jar target/blockchain-testing-1.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3
+# the first argument is the fitness function used (1-8), the second arg is the time the experiment will run (in mins) and the third arg is the server used (g or r). The fourth argument is the proportion of individuals to be mutated.
+java -jar target/blockchain-testing-1.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3 $4
 
 # kill current rippled server at port 5005
 id=$(lsof -t -i:5005 -sTCP:LISTEN)
