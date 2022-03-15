@@ -20,7 +20,7 @@ public final class Configuration {
     // All fitness excl random
     public static final double ARCHIVE_THRESHOLD = 0.8;
     // Random fuzzer
-    public static final double PROPORTION_MUTATED = 0.0;
+    public static double PROPORTION_MUTATED = 0.0;
 
     // - Similarity
     public static final double THRESHOLD_DIFFERENT_FEATURES = 0.5;
@@ -64,7 +64,6 @@ public final class Configuration {
     public static final double SAMPLE_FROM_ARCHIVE = 0.0;
 
     public static final SelectionType SELECTION_TYPE = SelectionType.TOURNAMENT;
-
 }
 
 

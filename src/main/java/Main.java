@@ -47,6 +47,7 @@ public class Main {
             fitnessFunction = args[0]; // 1, 2, 3, 4, 5, 6, 7 or 8, default is 1
             runningTime = Integer.parseInt(args[1]); // time in minutes, default is 1 hour
             server = args[2];
+            Configuration.PROPORTION_MUTATED = Double.parseDouble(args[3]);
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Argument(s) not specified. Default value(s) used.");
         } catch (NumberFormatException e) {
