@@ -1,9 +1,12 @@
 #!/bin/bash
 
-
-# kill previous session server
 # kill current rippled server at port 5005
-# without the LISTEN part the Java process will be killed as well
+id=$(lsof -t -i:5005 -sTCP:LISTEN) # without the LISTEN part the Java process will be killed as well
+
+echo "killing: $id"
+kill "$id"
+
+# kill previous session server if it is still running
 count=0
 while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" != "" ]; do
  echo "waiting at kill...  -$(lsof -t -i:5005 -sTCP:LISTEN)-"

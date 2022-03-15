@@ -39,7 +39,7 @@ public class Main {
     public static void main(String args[]) {
 
         // Read the input arguments (heuristic, running time, server).
-        String fitnessFunction = "8";
+        String fitnessFunction = "1";
         int runningTime = 1; //default value
         String server = "";
 
