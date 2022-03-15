@@ -124,7 +124,6 @@ public class RippledTestDriver extends TestDriver {
             }
             transferCurrencyToAccounts(accounts.getResponseObject());
             this.accounts.add(accounts.getResponseObject());
-            System.out.println("There was a result: " + accounts.getResponseObject().toString());
         }
         System.out.println("Test was successfully prepared.");
     }

@@ -155,6 +155,7 @@ public class Main {
 
             // Delete old test files and write archive to tests
             String testDirectory = System.getProperty("user.dir") + "/src/test/java/generated";
+            (new File(testDirectory)).mkdir();
             TestWriter testWriter = new TestWriter(url_server, testDirectory, testDriverString);
             for (File file : new java.io.File(testDirectory).listFiles()) {
                 if (!file.isDirectory()) {
