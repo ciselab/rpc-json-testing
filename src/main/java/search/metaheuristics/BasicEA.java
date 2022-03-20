@@ -5,8 +5,8 @@ import search.Individual;
 import objective.Fitness;
 import statistics.Collector;
 import test_drivers.TestDriver;
-import util.Configuration;
-import util.SelectionType;
+import util.config.Configuration;
+import util.config.SelectionType;
 
 import java.util.ArrayList;
 import java.util.List;

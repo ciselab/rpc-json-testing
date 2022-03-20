@@ -3,7 +3,7 @@ package search.genes;
 import org.json.JSONArray;
 import search.Generator;
 import openRPC.SchemaSpecification;
-import util.Configuration;
+import util.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;

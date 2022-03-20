@@ -7,13 +7,11 @@ import search.Generator;
 import search.Individual;
 import search.genes.ArrayGene;
 import test_drivers.TestDriver;
-import util.Configuration;
+import util.config.Configuration;
 import util.RandomSingleton;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static statistics.Collector.getCollector;
 
 public abstract class Heuristic {
 
@@ -35,6 +33,7 @@ public abstract class Heuristic {
 
     public Individual generateRandomIndividual() {
         int nRequests = RandomSingleton.getRandom().nextInt(Configuration.REQUESTS_GENERATOR_LIMIT) + 1;
+
         List<Chromosome> dna = new ArrayList<>();
 
         for (int i = 0; i < nRequests; i++) {

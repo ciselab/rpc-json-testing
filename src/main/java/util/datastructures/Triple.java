@@ -1,13 +1,15 @@
-package util;
+package util.datastructures;
 
-public class Pair<T, S> {
+public class Triple<T, S, R> {
 
     private T t;
     private S s;
+    private R r;
 
-    public Pair(T t, S s) {
+    public Triple(T t, S s, R r) {
         this.t = t;
         this.s = s;
+        this.r = r;
     }
 
     public T getKey() {
@@ -16,4 +18,5 @@ public class Pair<T, S> {
     public S getValue() {
         return s;
     }
+    public R getValue2() { return r; }
 }

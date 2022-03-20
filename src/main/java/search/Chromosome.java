@@ -2,7 +2,7 @@ package search;
 
 import org.json.JSONObject;
 import search.genes.ArrayGene;
-import util.Configuration;
+import util.config.Configuration;
 
 import java.util.Objects;
 

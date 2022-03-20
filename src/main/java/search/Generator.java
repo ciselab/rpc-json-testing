@@ -11,7 +11,7 @@ import search.genes.StringGene;
 import openRPC.ParamSpecification;
 import openRPC.SchemaSpecification;
 import openRPC.Specification;
-import util.Configuration;
+import util.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;

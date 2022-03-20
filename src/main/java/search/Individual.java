@@ -3,14 +3,15 @@ package search;
 import connection.ResponseObject;
 import org.json.JSONObject;
 import search.genes.ArrayGene;
-import util.Configuration;
-import util.CrossoverType;
+import util.config.Configuration;
+import util.config.CrossoverType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomBool;
+import static util.config.Configuration.*;
 
 public class Individual {
     private List<Chromosome> dna;
@@ -38,15 +39,15 @@ public class Individual {
         List<Chromosome> newDna = new ArrayList<>();
 
         for (int i = 0; i < dna.size(); i++) {
-            if (util.RandomSingleton.getRandomBool(1/dna.size())) {
-                if (getRandomBool(0.05)) { // TODO CONFIG
+            if (util.RandomSingleton.getRandomBool(((double) MUTATIONS_PER_INDIVIDUAL)/((double) dna.size()))) {
+                if (dna.size() <= REQUESTS_GENERATOR_LIMIT && getRandomBool(ADD_CHROMOSOME_PROP)) {
                     // add
                     String methodName = generator.getRandomMethod();
                     ArrayGene method = generator.generateMethod(methodName);
                     Chromosome chromosome = new Chromosome(generator.generateHTTPMethod(), methodName, method);
                     newDna.add(chromosome);
                     newDna.add(dna.get(i));
-                } else if (i != dna.size() -1 && getRandomBool(0.05)) { // TODO CONFIG
+                } else if (i != dna.size() -1 && getRandomBool(DELETE_CHROMOSOME_PROP)) {
                     // delete
                     continue;
                 } else {
@@ -171,7 +172,7 @@ public class Individual {
     public String toString() {
         StringBuilder data = new StringBuilder();
         for (Chromosome c : dna) {
-            data.append(" -> ").append(c.getHTTPMethod()).append("::").append(c.getApiMethod());
+            data.append(" -> ").append(c.getHTTPMethod()).append("::").append(c.getApiMethod()).append("[ ").append(c.toRequest().toString()).append(" ]");
         }
 
         return data.toString();

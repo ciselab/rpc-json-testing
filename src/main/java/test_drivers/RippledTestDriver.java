@@ -5,7 +5,7 @@ import connection.ResponseObject;
 import statistics.CoverageRecorder;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import util.Configuration;
+import util.config.Configuration;
 
 import java.io.BufferedReader;
 import java.io.IOException;

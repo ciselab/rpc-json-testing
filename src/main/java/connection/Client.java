@@ -1,7 +1,7 @@
 package connection;
 
 import org.json.JSONObject;
-import util.Configuration;
+import util.config.Configuration;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,11 +1,11 @@
-package util;
+package util.config;
 
 public final class Configuration {
 
     // - General
     public static final int POPULATION_SIZE = 30;
     public static final int TOURNAMENT_SIZE = 4;
-    public static final int REQUESTS_GENERATOR_LIMIT = 8;
+    public static final int REQUESTS_GENERATOR_LIMIT = 1;
 
     public static final Long RECORD_COVERAGE_INTERVAL = (long) 5 * 60 * 1000; // 5 minutes
 
@@ -50,6 +50,9 @@ public final class Configuration {
     public static final int MUTATIONS_PER_INDIVIDUAL = 3;
     public static final double MUTATE_HTTP_METHOD_PROB = 0.05;
     public static final double MUTATE_API_METHOD_PROB = 0.005;
+    public static final double ADD_CHROMOSOME_PROP = 0.05;
+    public static final double DELETE_CHROMOSOME_PROP = 0.05;
+
 
     // - Crossover settings
     public static final boolean CROSSOVER_ENABLED = true;

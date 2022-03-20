@@ -2,7 +2,7 @@ package search.genes;
 
 import search.Generator;
 import openRPC.SchemaSpecification;
-import util.Configuration;
+import util.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,6 +60,7 @@ public class StringGene extends ValueGene<String> {
 //                return new StringGene(this.getSchema(), Generator.generateRandomValue(mutatedRegex));
 //            }
 
+            // Option 4: Mutate the chars
             String mutatedValue = mutateCharacters(this.getValue());
 
             return new StringGene(this.getSchema(), mutatedValue);

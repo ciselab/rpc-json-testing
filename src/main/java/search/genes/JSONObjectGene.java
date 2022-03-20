@@ -3,7 +3,7 @@ package search.genes;
 import org.json.JSONObject;
 import search.Generator;
 import openRPC.SchemaSpecification;
-import util.Configuration;
+import util.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,15 +64,20 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
             return clone;
         }
 
+        // because its a clone you do not really "addChild" you replace the original key
+
         // If there is no schema it means this is the main parameters object.
         if (getSchema() == null) {
-            for (int i = 0; i < keys.size(); i++) {
-                if (util.RandomSingleton.getRandomBool(1 / keys.size())) {
-                    StringGene key = keys.get(i);
+
+            int index = util.RandomSingleton.getRandomIndex(keys);
+
+//            for (int i = 0; i < keys.size(); i++) {
+//                if (util.RandomSingleton.getRandomBool(1 / keys.size())) {
+                    StringGene key = keys.get(index);
                     Gene child = clone.children.get(key);
                     clone.addChild(key, child.mutate(generator));
-                }
-            }
+//                }
+//            }
             return clone;
         }
 
@@ -83,28 +88,31 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
 
         Map<String, List<SchemaSpecification>> children = getSchema().getChildSchemaSpecification();
 
-        for (int i = 0; i < keys.size(); i++) {
-            if (util.RandomSingleton.getRandomBool(1 / keys.size())) {
+        int index = util.RandomSingleton.getRandomIndex(keys);
+//        for (int i = 0; i < keys.size(); i++) {
+//            if (util.RandomSingleton.getRandomBool(1 / keys.size())) {
                 double choice = getRandom().nextDouble();
 
-                if ((choice <= Configuration.ADD_NONREQUIRED_CHILD_PROB || keys.isEmpty()) && clone.addChild(generator)) {
+                if ((choice <= Configuration.ADD_NONREQUIRED_CHILD_PROB) && clone.addChild(generator)) {
                     // Add missing child/parameter to the object
-                    i -= 1;
-                } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB) && clone.removeChild(keys.get(i).getValue())) {
+                } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB) && clone.removeChild(keys.get(index).getValue())) {
                     // Remove child/parameter from the object
-                } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB + (1 - Configuration.MUTATION_INSTEAD_OF_GENERATION)) && !keys.isEmpty()) {
+                } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB + (1 - Configuration.MUTATION_INSTEAD_OF_GENERATION))) {
                     // Replace value of child/parameter with a newly generated one
-                    StringGene key = keys.get(i);
+                    StringGene key = keys.get(index);
                     List<SchemaSpecification> options = children.get(key.getValue());
                     clone.addChild(key, generator.generateValueGene(options.get(getRandomIndex(options))));
-                } else if (!keys.isEmpty()) {
+                } else {
                     // Mutate child/parameter
-                    StringGene key = keys.get(i);
+                    StringGene key = keys.get(index);
                     Gene child = clone.children.get(key);
                     clone.addChild(key, child.mutate(generator));
+//                } else {
+//                    // should not happen that there is no mutation at all
+//                    throw new IllegalStateException("Should not happen");
                 }
-            }
-        }
+//            }
+//        }
         return clone;
     }
     

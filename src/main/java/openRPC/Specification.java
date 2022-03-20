@@ -1,6 +1,6 @@
 package openRPC;
 
-import util.Pair;
+import util.datastructures.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +45,7 @@ public class Specification {
             if (x instanceof JSONObject) {
                 JSONObject object = (JSONObject) x;
 
-                for (Iterator it = object.keys(); it.hasNext();) {
+                for (Iterator it = object.keys(); it.hasNext(); ) {
                     String key = (String) it.next();
                     if (key.equals("$ref")) {
                         JSONObject ref = resolveRef(object.getString("$ref"));
@@ -54,7 +54,7 @@ public class Specification {
                         copyKeyValuePairToObject(ref, object);
                     }
                 }
-                for (Iterator it = object.keys(); it.hasNext();) {
+                for (Iterator it = object.keys(); it.hasNext(); ) {
                     String key = (String) it.next();
 
                     pq.add(object.get(key));
@@ -72,7 +72,7 @@ public class Specification {
     }
 
     private void copyKeyValuePairToObject(JSONObject donor, JSONObject target) {
-        for (Iterator it = donor.keys(); it.hasNext();) {
+        for (Iterator it = donor.keys(); it.hasNext(); ) {
             String key = (String) it.next();
             target.put(key, donor.get(key));
         }
@@ -95,8 +95,7 @@ public class Specification {
                 if (key.equals("result")) {
                     // nothing should be done with the result object (for now at least)
                     continue;
-                }
-                else if (key.equals("schema")) {
+                } else if (key.equals("schema")) {
                     // value
                     this.schemas.put(path + separator + key, extractTypes(object.getJSONObject(key)));
                 } else if (object.get(key) instanceof JSONObject) {
@@ -133,7 +132,7 @@ public class Specification {
 
     }
 
-    private List<ParamSpecification> getParamInfo (String path, JSONObject object) {
+    private List<ParamSpecification> getParamInfo(String path, JSONObject object) {
         List<ParamSpecification> paramSpecifications = new ArrayList<>();
 
         JSONArray params = object.getJSONArray("params");

@@ -1,4 +1,4 @@
-package util;
+package util.config;
 
 public enum CrossoverType {
     RANDOM,

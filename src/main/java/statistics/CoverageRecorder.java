@@ -1,6 +1,6 @@
 package statistics;
 
-import util.Triple;
+import util.datastructures.Triple;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;

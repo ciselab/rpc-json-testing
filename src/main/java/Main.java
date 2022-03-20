@@ -5,8 +5,6 @@ import search.Individual;
 import search.metaheuristics.Heuristic;
 import search.metaheuristics.RandomFuzzer;
 
-import objective.Fitness;
-
 import openRPC.Specification;
 import statistics.Archive;
 import statistics.MethodCoverage;
@@ -17,7 +15,7 @@ import test_drivers.RippledTestDriverTestNet;
 import test_drivers.TestDriver;
 import test_generation.TestWriter;
 
-import util.Configuration;
+import util.config.Configuration;
 
 import org.json.JSONObject;
 
@@ -115,6 +113,7 @@ public class Main {
             }
 
             System.out.println("Experiment will run for " + runningTime + " minute(s) = " + ((double) runningTime / 60) + " hour(s)");
+            System.out.println("Mutation percentage: " + Configuration.PROPORTION_MUTATED);
 
             List<Individual> population = heuristic.generatePopulation(Configuration.POPULATION_SIZE);
             heuristic.gatherResponses(population);
