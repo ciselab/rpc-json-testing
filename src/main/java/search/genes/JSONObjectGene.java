@@ -68,16 +68,19 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
 
         // If there is no schema it means this is the main parameters object.
         if (getSchema() == null) {
-
-            int index = util.RandomSingleton.getRandomIndex(keys);
+            if (keys.size() > 0) {
+                int index = util.RandomSingleton.getRandomIndex(keys);
 
 //            for (int i = 0; i < keys.size(); i++) {
 //                if (util.RandomSingleton.getRandomBool(1 / keys.size())) {
-                    StringGene key = keys.get(index);
-                    Gene child = clone.children.get(key);
-                    clone.addChild(key, child.mutate(generator));
+                StringGene key = keys.get(index);
+                Gene child = clone.children.get(key);
+                clone.addChild(key, child.mutate(generator));
 //                }
 //            }
+            }
+
+
             return clone;
         }
 
@@ -88,34 +91,39 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
 
         Map<String, List<SchemaSpecification>> children = getSchema().getChildSchemaSpecification();
 
-        int index = util.RandomSingleton.getRandomIndex(keys);
+        if (keys.size() > 0) {
+            int index = util.RandomSingleton.getRandomIndex(keys);
 //        for (int i = 0; i < keys.size(); i++) {
 //            if (util.RandomSingleton.getRandomBool(1 / keys.size())) {
-                double choice = getRandom().nextDouble();
+            double choice = getRandom().nextDouble();
 
-                if ((choice <= Configuration.ADD_NONREQUIRED_CHILD_PROB) && clone.addChild(generator)) {
-                    // Add missing child/parameter to the object
-                } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB) && clone.removeChild(keys.get(index).getValue())) {
-                    // Remove child/parameter from the object
-                } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB + (1 - Configuration.MUTATION_INSTEAD_OF_GENERATION))) {
-                    // Replace value of child/parameter with a newly generated one
-                    StringGene key = keys.get(index);
-                    List<SchemaSpecification> options = children.get(key.getValue());
-                    clone.addChild(key, generator.generateValueGene(options.get(getRandomIndex(options))));
-                } else {
-                    // Mutate child/parameter
-                    StringGene key = keys.get(index);
-                    Gene child = clone.children.get(key);
-                    clone.addChild(key, child.mutate(generator));
+            if ((choice <= Configuration.ADD_NONREQUIRED_CHILD_PROB) && clone.addChild(generator)) {
+                // Add missing child/parameter to the object
+            } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB) && clone.removeChild(keys.get(index).getValue())) {
+                // Remove child/parameter from the object
+            } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB + (1 - Configuration.MUTATION_INSTEAD_OF_GENERATION))) {
+                // Replace value of child/parameter with a newly generated one
+                StringGene key = keys.get(index);
+                List<SchemaSpecification> options = children.get(key.getValue());
+                clone.addChild(key, generator.generateValueGene(options.get(getRandomIndex(options))));
+            } else {
+                // Mutate child/parameter
+                StringGene key = keys.get(index);
+                Gene child = clone.children.get(key);
+                clone.addChild(key, child.mutate(generator));
 //                } else {
 //                    // should not happen that there is no mutation at all
 //                    throw new IllegalStateException("Should not happen");
-                }
+            }
 //            }
 //        }
+        } else {
+            clone.addChild(generator);
+        }
+
         return clone;
     }
-    
+
     /**
      * Add one of the missing children of the JSONObjectGene.
      */
