@@ -14,7 +14,7 @@ If you want more insights into what is going on, it is best to run the experimen
 </li>
 -----------
 <li>
-To then create a docker container based on the image, use the following command:
+To create a docker container based on the image manually, use the following command:
 
 `docker run -it <name_image> $1 $2 $3 $4`
 
@@ -26,10 +26,22 @@ Or to tag the container with a name (makes it easier to access later):
 * The third argument $3 is the server used (g for ganache or r for rippled).
 * The fourth argument $4 is the proportion of the population that will be mutated (rather than a new individual being generated to replace the individual).
 
+**Important!** The commands above assume that the Docker image was built with an entry point. If this is not the case, use the following commands:
+
+`docker run -it <name_image>`
+
+And then for an experiment on the rippled server:
+
+`./blockchain-testing/scripts/rippled/script.sh $1 $2 $3 $4`
+
+Or for an experiment on the ganache server:
+
+`./blockchain-testing/scripts/ganache/script.sh $1 $2 $3 $4`
+
 </li>
 -----------
 <li>
-After running the command specified at Step 2, the experiment will start (specifically, script.sh is called and executed). 
+After running the commands specified at Step 2, the experiment will start (specifically, script.sh is called and executed). 
 
 After the experiment has (successfully) finished, the following files are generated:
 
@@ -51,6 +63,7 @@ And specifically for rippled:
 Or for ganache:
 * /ganache-cli/final_coverage_total.txt (branch and line coverage report after experiment)
 * /ganache-cli/final_coverage_archive.txt (branch and line coverage report based on tests in archive)
+
 
 </li>
 -----------
