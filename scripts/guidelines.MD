@@ -14,7 +14,9 @@ If you want more insights into what is going on, it is best to run the experimen
 </li>
 -----------
 <li>
-To create a docker container based on the image manually, use the following command:
+To create a docker container based on the image manually, use the following command. 
+
+**Note that this requires the docker image to have an entry point. If not, go to Step 3.**
 
 `docker run -it <name_image> $1 $2 $3 $4`
 
@@ -22,11 +24,15 @@ Or to tag the container with a name (makes it easier to access later):
 
 `docker run -it --name <name_container> <name_image> $1 $2 $3 $4`
 * The first argument $1 is the fitness function used (the only option is 1: the grammar-based fuzzer), 
-* The second argument $2 is the time the experiment will run (in mins).
+* The second argument $2 is the time the experiment will run (in mins, e.g. 30).
 * The third argument $3 is the server used (g for ganache or r for rippled).
-* The fourth argument $4 is the proportion of the population that will be mutated (rather than a new individual being generated to replace the individual).
+* The fourth argument $4 is the proportion of the population that will be mutated (rather than a new individual being generated to replace the individual) (e.g. 0.5).
 
-**Important!** The commands above assume that the Docker image was built with an entry point. If this is not the case, use the following commands:
+</li>
+-----------
+<li>
+
+The commands at Step 3 assume that the Docker image was built with an entry point. If this is not the case, use the following commands. Otherwise, continue with Step 4.
 
 `docker run -it <name_image>`
 
@@ -38,10 +44,12 @@ Or for an experiment on the ganache server:
 
 `./blockchain-testing/scripts/ganache/script.sh $1 $2 $3 $4`
 
+An example would be: `./blockchain-testing/scripts/ganache/script.sh 1 30 g 0.5` (for an experiment on the ganache server with the grammar-based fuzzer and 50% mutation proportion for 30 minutes).
+
 </li>
 -----------
 <li>
-After running the commands specified at Step 2, the experiment will start (specifically, script.sh is called and executed). 
+After running the commands specified at Step 2/3, the experiment will start (specifically, script.sh is called and executed). 
 
 After the experiment has (successfully) finished, the following files are generated:
 
