@@ -35,4 +35,4 @@ RUN cd blockchain-testing/scripts/rippled && chmod +x startRippled.sh
 RUN cd blockchain-testing/scripts/rippled && chmod +x coverageRippled.sh
 
 ENTRYPOINT ["blockchain-testing/scripts/rippled/script.sh"]
-CMD ["1", "60", "r"]
+CMD ["1", "60", "r", "0"]

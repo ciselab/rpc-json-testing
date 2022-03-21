@@ -19,7 +19,7 @@ done
 # Run the tool
 cd /blockchain-testing
 # the first argument is the fitness function used (1-8), the second arg is the time the experiment will run (in mins) and the third arg is the server used (g or r).
-java -jar target/blockchain-testing-1.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3
+java -jar target/blockchain-testing-1.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3 $4
 # Kill the process
 id=$(lsof -t -i:8545 -sTCP:LISTEN)
 echo "killing: $id"
@@ -31,7 +31,7 @@ done
 # Compute test coverage achieved by running the tool
 cd /ganache-cli
 nyc report > final_coverage_total.txt
-echo "These results are based on server: " $3", fitness function:" $1 ", and time:" $2 "minutes." >> final_coverage_total.txt cat final_coverage_total.txt
+echo "These results are based on server: " $3", fitness function:" $1 ", mutation proportion: " $4 " and time:" $2 "minutes." >> final_coverage_total.txt cat final_coverage_total.txt
 
 # Reset coverage before running the tests.
 cd /ganache-cli
@@ -63,6 +63,6 @@ done
 # Compute test coverage achieved by running the generated tests
 cd /ganache-cli
 nyc report > final_coverage_archive.txt
-echo "These archive tests were based on server: " $3", fitness function:" $1 ", and time:" $2 "minutes." >> final_coverage_archive.txt cat final_coverage_archive.txt
+echo "These archive tests were based on server: " $3", fitness function:" $1 ", mutation proportion: " $4 " and time:" $2 "minutes." >> final_coverage_archive.txt cat final_coverage_archive.txt
 
 exit
