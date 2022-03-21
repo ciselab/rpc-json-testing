@@ -7,6 +7,10 @@
 * For *rippled* use the rippled Dockerfile (in the rippled folder).
 * For *ganache* use the ganache Dockerfile (in the ganache folder). 
 **Important: for ganache the *.nycrc* file must be inside the same folder as the Dockerfile as this file is used to build the image.**
+
+The easiest way to start an experiment is to run the `runexperiment.sh $1 $2 $3 $4` script. This requires the `<name_image>` to be `rippled` or `ganache` depending on the server to be tested (as this is hardcoded in the script). The arguments are the same as specified in Step 2. After running this script, the results will be automatically copied onto the host computer.
+
+If you want more insights into what is going on, it is best to run the experiment manually. How to do this is explained below.
 </li>
 -----------
 <li>
@@ -18,7 +22,7 @@ Or to tag the container with a name (makes it easier to access later):
 
 `docker run -it --name <name_container> <name_image> $1 $2 $3 $4`
 * The first argument $1 is the fitness function used (the only option is 1: the grammar-based fuzzer), 
-* The second argument $2 is the time the experiment will run (in mins) .
+* The second argument $2 is the time the experiment will run (in mins).
 * The third argument $3 is the server used (g for ganache or r for rippled).
 * The fourth argument $4 is the proportion of the population that will be mutated (rather than a new individual being generated to replace the individual).
 
