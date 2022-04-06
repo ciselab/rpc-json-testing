@@ -19,13 +19,18 @@ public class CoverageRecorder {
     /**
      * Record the coverage of a certain time.
      * @param milliSecondsSinceStart
-     * @param branchCoverage
-     * @param lineCoverage
+     * @param linesCovered
+     * @param lineTotal
+     * @param branchesCovered
+     * @param branchTotal
      * @throws IOException
      */
-    public void recordCoverage(long milliSecondsSinceStart, double branchCoverage, double lineCoverage) {
+    public void recordCoverage(long milliSecondsSinceStart, int linesCovered, int lineTotal, int branchesCovered, int branchTotal) {
 
         Long minutesSinceStart = (milliSecondsSinceStart - getStartTime()) / (60 * 1000);
+
+        double lineCoverage = linesCovered / lineTotal;
+        double branchCoverage = branchesCovered / branchTotal;
 
         System.out.println("Intermediate coverage results at time: " + minutesSinceStart + " = branch cov: " + branchCoverage + " and line cov: " + lineCoverage);
 
@@ -34,16 +39,7 @@ public class CoverageRecorder {
         // Append coverage to file immediately
         try {
             FileWriter writer = new FileWriter("coverage_over_time.txt", true);
-
-            // For when coverage should be written to file all at once
-//            for (int i = 0; i < coverageOverTime.size(); i++) {
-//                Long t = coverageOverTime.get(i).getKey();
-//                double bc = coverageOverTime.get(i).getValue();
-//                double lc = coverageOverTime.get(i).getValue2();
-//                writer.write("Time in minutes: " + t + ", branch coverage: " + bc +  ", line coverage: " + lc + System.lineSeparator());
-//            }
-
-            writer.write("Time: " + minutesSinceStart + " minutes, branch coverage: " + branchCoverage +  ", line coverage: " + lineCoverage + System.lineSeparator());
+            writer.write("Time: " + minutesSinceStart + " minutes, branch coverage: " + branchCoverage +  " (" + branchesCovered + " branches), line coverage: " + lineCoverage + " (" + linesCovered + " lines)" + System.lineSeparator());
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();

@@ -215,15 +215,12 @@ public class RippledTestDriver extends TestDriver {
 
         String[] results = cov.split(" ");
 
-        double linescovered = Double.parseDouble(results[0].replace("(", ""));
-        double linetotal = Double.parseDouble(results[3].replace(")", ""));
-        double branchescovered = Double.parseDouble(results[4].replace("(", ""));
-        double branchtotal = Double.parseDouble(results[7].replace(")", ""));
+        int linescovered = Integer.parseInt(results[0].replace("(", ""));
+        int linetotal = Integer.parseInt(results[3].replace(")", ""));
+        int branchescovered = Integer.parseInt(results[4].replace("(", ""));
+        int branchtotal = Integer.parseInt(results[7].replace(")", ""));
 
-        double lineCovPer = linescovered / linetotal;
-        double branchCovPer = branchescovered / branchtotal;
-
-        sk.recordCoverage(currentTime, branchCovPer, lineCovPer);
+        sk.recordCoverage(currentTime, linescovered, linetotal, branchescovered, branchtotal);
     }
 
 }
