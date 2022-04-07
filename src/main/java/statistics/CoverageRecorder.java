@@ -25,7 +25,7 @@ public class CoverageRecorder {
      * @param branchTotal
      * @throws IOException
      */
-    public void recordCoverage(long milliSecondsSinceStart, int linesCovered, int lineTotal, int branchesCovered, int branchTotal) {
+    public void recordCoverage(long milliSecondsSinceStart, double linesCovered, int lineTotal, double branchesCovered, int branchTotal) {
 
         Long minutesSinceStart = (milliSecondsSinceStart - getStartTime()) / (60 * 1000);
 

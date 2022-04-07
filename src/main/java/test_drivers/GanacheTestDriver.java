@@ -182,7 +182,7 @@ public class GanacheTestDriver extends TestDriver {
         double branchcoverage = Double.parseDouble(results[2].trim());
         double linecoverage = Double.parseDouble(results[4].trim());
 
-        sk.recordCoverage(currentTime, branchcoverage, linecoverage);
+        sk.recordCoverage(currentTime, linecoverage, 1, branchcoverage, 1);
     }
 
 }
