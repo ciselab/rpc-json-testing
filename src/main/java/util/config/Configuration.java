@@ -5,7 +5,7 @@ public final class Configuration {
     // - General
     public static final int POPULATION_SIZE = 50;
     public static final int TOURNAMENT_SIZE = 4;
-    public static final int REQUESTS_GENERATOR_LIMIT = 4;
+    public static final int REQUESTS_GENERATOR_LIMIT = 1;
 
     public static final Long RECORD_COVERAGE_INTERVAL = (long) 5 * 60 * 1000; // 5 minutes
 
