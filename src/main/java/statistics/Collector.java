@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+/**
+ * Collector class that collects data regarding the process.
+ */
 public class Collector {
 
     private static Collector instance;

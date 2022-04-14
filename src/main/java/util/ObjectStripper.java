@@ -15,6 +15,7 @@ public final class ObjectStripper {
     private static String STANDARD_STRING = "";
     private static Boolean STANDARD_BOOLEAN = true;
     private static Integer STANDARD_NUMBER = 0;
+
     /**
      * Copy the response JSONObject and remove the values.
      * Also remove keys with values which where given in the request.
@@ -31,8 +32,6 @@ public final class ObjectStripper {
         queue.add(new Pair<>(structure, copy));
 
         HashMap<String, Object> requestKeyValuePairs = getKeyValuePairs(request);
-
-        // TODO something clever with arrays
 
         while (!queue.isEmpty()) {
             Pair<JSONObject, JSONObject> pair = queue.poll();
@@ -79,7 +78,7 @@ public final class ObjectStripper {
                             System.out.println(arrayObject);
                             System.exit(0);
                         }
-                        // TODO currently it is assuming no arrays in arrays
+                        // Assumes no arrays in arrays
                     }
                 } else if (!(requestKeyValuePairs.containsKey(key) && requestKeyValuePairs.get(key).equals(smallerObject))) {
                     if (smallerObject instanceof String) {
@@ -139,7 +138,7 @@ public final class ObjectStripper {
                         } else if (arrayObject instanceof Boolean) {
                             array.put(i, arrayObject);
                         }
-                        // TODO currently it is assuming no arrays in arrays
+                        // Assumes no arrays in arrays
                     }
                 }
             }

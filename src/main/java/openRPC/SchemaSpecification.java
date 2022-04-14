@@ -19,7 +19,6 @@ import static openRPC.Specification.extractTypes;
 public class SchemaSpecification {
 
     private String name;
-
     private String type;
 
     // for LongGenes
@@ -40,12 +39,15 @@ public class SchemaSpecification {
 
     private List<SchemaSpecification> arrayItemSchemaSpecification;
 
-    private boolean isMutable;
+    private boolean isMutable; // indicates whether a parameter is allowed to be mutated.
 
+    /**
+     * Reads the OpenRPC specification for a schema.
+     * @param schema
+     */
     public SchemaSpecification(JSONObject schema) {
-        // TODO all schemas must have a name (extra param in OpenRPC for non mutable shit)
-        // TODO this name should then be used to check if it is mutable
-        // TODO this name should also be equal to the constant of the constant string gene
+        // Immutable schemas are given a name that is checked to see if it is immutable (if so, it is a ConstantStringGene).
+        // This is necessary to use various correct parameter values etc. corresponding to the SUT.
         this.name = "";
         this.isMutable = true;
 

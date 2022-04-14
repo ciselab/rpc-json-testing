@@ -11,8 +11,9 @@ public class ResponseObject {
 
     /**
      * ResponseObject constructor. Contains the HTTP status code and the JSONObject returned by the server.
-     * @param responseCode
-     * @param responseObject
+     * @param requestObject the sent request
+     * @param responseCode the HTTP status code of the server response
+     * @param responseObject the server response
      */
     public ResponseObject(String method, JSONObject requestObject, int responseCode, JSONObject responseObject) {
         this.requestObject = requestObject;

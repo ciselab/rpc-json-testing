@@ -12,6 +12,12 @@ public final class IO {
 
     public static final String testDirectory = System.getProperty("user.dir") + "/output";
 
+    /**
+     * Read a file.
+     * @param filepath
+     * @return String representation of file data
+     * @throws IOException
+     */
     public static String readFile(String filepath) throws IOException {
         filepath = URLDecoder.decode(filepath, "UTF-8");
         StringBuilder data = new StringBuilder();

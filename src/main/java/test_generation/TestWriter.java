@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Creates a test file corresponding to an individual.
+ */
 public class TestWriter {
 
     private String url;

@@ -6,6 +6,12 @@ import java.util.HashMap;
 
 public class Archive extends HashMap<String, Individual> {
 
+    /**
+     * Add individual to the archive if it is new OR replace if it contains less requests than an existing individual.
+     * @param key
+     * @param individual
+     * @return boolean value of whether the individual was added to the archive or not
+     */
     public boolean putWithSecondaryObjectives(String key, Individual individual) {
         boolean wasPutInArchive = false;
         if (this.containsKey(key)) {
@@ -16,13 +22,7 @@ public class Archive extends HashMap<String, Individual> {
             this.put(key, individual);
             wasPutInArchive = true;
         }
-//        System.out.println("Archive size: " + this.size());
         return wasPutInArchive;
     }
 
-    public void printArchive() {
-        for (String key : this.keySet()) {
-            System.out.println(key);
-        }
-    }
 }

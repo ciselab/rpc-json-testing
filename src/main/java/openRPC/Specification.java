@@ -36,6 +36,9 @@ public class Specification {
         this.processChildren();
     }
 
+    /***
+     * Resolves references that are embedded in the OpenRPC specification.
+     */
     private void resolveRefs() {
         Queue<Object> pq = new LinkedList<>();
         pq.add(this.object);
@@ -78,8 +81,10 @@ public class Specification {
         }
     }
 
+    /**
+     * Read further down the OpenRPC specification (tree structure).
+     */
     private void processChildren() {
-
         Queue<Pair<String, JSONObject>> pq = new LinkedList<>();
 
         pq.add(new Pair<>("#", this.object));
@@ -93,10 +98,10 @@ public class Specification {
                 String key = (String) it.next();
 
                 if (key.equals("result")) {
-                    // nothing should be done with the result object (for now at least)
+                    // Nothing should be done with the result object (for now at least)
                     continue;
                 } else if (key.equals("schema")) {
-                    // value
+                    // Corresponds to the schema of a parameter
                     this.schemas.put(path + separator + key, extractTypes(object.getJSONObject(key)));
                 } else if (object.get(key) instanceof JSONObject) {
                     pq.add(new Pair<>(path + separator + key, object.getJSONObject(key)));
@@ -120,16 +125,11 @@ public class Specification {
                             pq.add(new Pair<>(newPath + i, (JSONObject) next));
                         }
                     }
-
-                    // TODO
                 } else {
-//                    // does not recognize keys, should continue
+                    // does not recognize keys, should continue
                 }
-
             }
-
         }
-
     }
 
     private List<ParamSpecification> getParamInfo(String path, JSONObject object) {
@@ -186,12 +186,11 @@ public class Specification {
             if (object.has(pathPiece)) {
                 object = object.getJSONObject(pathPiece);
             } else {
-                throw new JSONException("Could not find ref: " + ref);
+                throw new JSONException("Could not find reference: " + ref);
             }
         }
         return object;
     }
-
 
     public JSONObject getObject() {
         return object;
