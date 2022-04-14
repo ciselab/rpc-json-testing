@@ -17,6 +17,7 @@ import java.net.URL;
  * Client that makes connection to a JSON-RPC API.
  */
 public class Client {
+
     private URL serverURI;
 
     public Client(URL serverURI) {
@@ -34,9 +35,9 @@ public class Client {
         return createRequest(method, request, 0);
     }
 
-    // Based on https://www.twilio.com/blog/5-ways-to-make-http-requests-in-java
     /**
      * Send a JSON-RPC request to the server and retrieve the response.
+     * Based on https://www.twilio.com/blog/5-ways-to-make-http-requests-in-java
      * @param method
      * @param request
      * @return ResponseObject consisting of a HTTP status code and a JSON object
@@ -48,20 +49,18 @@ public class Client {
         con.setConnectTimeout(5000); // 5 second timeout
 
         con.setRequestProperty("Content-Type", "application/json; utf-8");
-
         con.setDoOutput(true);
-
         con.setRequestMethod(method);
 
-        // create the request (my output)
+        // Create the request (my output towards the server)
         String jsonInputString = request.toString();
         try {
             OutputStream os = con.getOutputStream();
             byte[] input = jsonInputString.getBytes("utf-8");
             os.write(input, 0, input.length);
         } catch (ConnectException e) {
-//            e.printStackTrace();
-            System.out.println("ConnectException occurred while trying to get output stream! Looking into this.");
+            e.printStackTrace();
+            System.out.println("ConnectException occurred while trying to get output stream!");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -80,7 +79,9 @@ public class Client {
             }
             jsonOutputString = response.toString();
             responseCode = con.getResponseCode();
+
         } catch (SocketTimeoutException e) {
+            e.printStackTrace();
             System.out.println("SocketTimeoutException! Response gets assigned statusCode -3.");
             jsonOutputString = "{}";
             responseCode = -3;
@@ -89,11 +90,11 @@ public class Client {
                 System.out.println("Retrying... " + (retry + 1));
                 return this.createRequest(method, request, retry + 1);
             }
+
         } catch (ConnectException e) {
-//            e.printStackTrace();
+            e.printStackTrace();
             System.out.println("ConnectException! Response gets assigned statusCode -1.");
             System.out.println("Request was: " + jsonInputString);
-            // TODO sometimes there occurs a Connection refused error here but I do not know why
             jsonOutputString = "{}";
             responseCode = -1;
 
@@ -101,8 +102,9 @@ public class Client {
                 System.out.println("Retrying... " + (retry + 1));
                 return this.createRequest(method, request, retry + 1);
             }
+
         } catch (SocketException e) {
-//            e.printStackTrace();
+            e.printStackTrace();
             System.out.println("SocketException! Response gets assigned statusCode -2.");
             System.out.println("Request was: " + jsonInputString);
             jsonOutputString = "{}";
@@ -112,11 +114,11 @@ public class Client {
                 System.out.println("Retrying... " + (retry + 1));
                 return this.createRequest(method, request, retry + 1);
             }
+
         } catch (IOException e) {
-//            e.printStackTrace();
-            //TODO: do something for responses without a response object (perhaps create extra field for statuscode or responsemessage)
-//            System.out.println("IOException occurred! No response body but status code was " + con.getResponseCode());
-//            System.out.println("Request was: " + jsonInputString);
+            e.printStackTrace();
+            System.out.println("IOException occurred! No response body but status code was " + con.getResponseCode());
+            System.out.println("Request was: " + jsonInputString);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("responseMessage", con.getResponseMessage());
             // Add the request to make sure that we get a different response structure if the request is different
@@ -131,15 +133,5 @@ public class Client {
 
         return new ResponseObject(method, request, responseCode, response);
     }
-
-//    public CompletableFuture<JSONObject> sendRequest(int id, JSONObject jsonObject) {
-//        CompletableFuture<JSONObject> future = new CompletableFuture<>();
-//
-//        futures.put(id, future);
-//
-//        this.send(jsonObject.toString());
-//
-//        return future;
-//    }
 
 }

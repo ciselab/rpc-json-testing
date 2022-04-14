@@ -11,11 +11,15 @@ mkdir exp_$3_$1_$2_$4
 docker cp $3_container_$1_$2_$4:/ganache-cli/final_coverage_total.txt ./exp_$3_$1_$2_$4/
 docker cp $3_container_$1_$2_$4:/ganache-cli/final_coverage_archive.txt ./exp_$3_$1_$2_$4/
 
-docker cp $3_container_$1_$2_$4:/blockchain-testing/coverage_over_time.txt ./exp_$3_$1_$2_$4/
-docker cp $3_container_$1_$2_$4:/blockchain-testing/fitness_progress.txt ./exp_$3_$1_$2_$4/
-docker cp $3_container_$1_$2_$4:/blockchain-testing/status_codes_total.txt ./exp_$3_$1_$2_$4/
-docker cp $3_container_$1_$2_$4:/blockchain-testing/status_codes_archive.txt ./exp_$3_$1_$2_$4/
-docker cp $3_container_$1_$2_$4:/blockchain-testing/archive_size.txt ./exp_$3_$1_$2_$4/
-docker cp $3_container_$1_$2_$4:/blockchain-testing/best_fitness_values.txt ./exp_$3_$1_$2_$4/
+docker cp $3_container_$1_$2_$4:/blockchain-testing/output/coverage_over_time.txt ./exp_$3_$1_$2_$4/
+docker cp $3_container_$1_$2_$4:/blockchain-testing/output/fitness_progress.txt ./exp_$3_$1_$2_$4/
+docker cp $3_container_$1_$2_$4:/blockchain-testing/output/archive_size.txt ./exp_$3_$1_$2_$4/
+docker cp $3_container_$1_$2_$4:/blockchain-testing/output/best_fitness_values.txt ./exp_$3_$1_$2_$4/
+docker cp $3_container_$1_$2_$4:/blockchain-testing/output/status_codes_per_gen.txt ./exp_$3_$1_$2_$4/
+docker cp $3_container_$1_$2_$4:/blockchain-testing/output/status_codes_total.txt ./exp_$3_$1_$2_$4/
+docker cp $3_container_$1_$2_$4:/blockchain-testing/output/status_codes_archive.txt ./exp_$3_$1_$2_$4/
+docker cp $3_container_$1_$2_$4:/blockchain-testing/output/methods_per_gen.txt ./exp_$3_$1_$2_$4/
+docker cp $3_container_$1_$2_$4:/blockchain-testing/output/methods_total.txt ./exp_$3_$1_$2_$4/
+docker cp $3_container_$1_$2_$4:/blockchain-testing/output/methods_archive.txt ./exp_$3_$1_$2_$4/
 
 docker cp $3_container_$1_$2_$4:/blockchain-testing/src/test/java/generated/. ./exp_$3_$1_$2_$4/tests/

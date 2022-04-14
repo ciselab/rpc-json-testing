@@ -2,6 +2,11 @@ package util.config;
 
 public final class Configuration {
 
+    // - Arguments given to function
+    public static int HEURISTIC = 1; // Default heuristic = randomFuzzer
+    public static long RUNTIME = 5; // Default = 5 minutes
+    public static String SERVER = ""; // Default = rippled testnet
+
     // - General
     public static final int POPULATION_SIZE = 50;
     public static final int TOURNAMENT_SIZE = 4;

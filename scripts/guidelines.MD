@@ -7,10 +7,6 @@
 * For *rippled* use the rippled Dockerfile (in the rippled folder).
 * For *ganache* use the ganache Dockerfile (in the ganache folder). 
 **Important: for ganache the *.nycrc* file must be inside the same folder as the Dockerfile as this file is used to build the image.**
-
-The easiest way to start an experiment is to run the `runexperiment.sh $1 $2 $3 $4` script. This requires the `<name_image>` to be `rippled` or `ganache` depending on the server to be tested (as this is hardcoded in the script). The arguments are the same as specified in Step 2. After running this script, the results will be automatically copied onto the host computer.
-
-If you want more insights into what is going on, it is best to run the experiment manually. How to do this is explained below.
 </li>
 -----------
 <li>
@@ -26,7 +22,7 @@ Or to tag the container with a name (makes it easier to access later):
 * The first argument $1 is the fitness function used (the only option is 1: the grammar-based fuzzer), 
 * The second argument $2 is the time the experiment will run (in mins, e.g. 30).
 * The third argument $3 is the server used (g for ganache or r for rippled).
-* The fourth argument $4 is the proportion of the population that will be mutated (rather than a new individual being generated to replace the individual) (e.g. 0.5).
+* The fourth argument $4 is the proportion of the population that will be mutated (rather than a new individual being generated to replace the individual) (between 0 and 1, e.g. 0.5).
 
 </li>
 -----------
@@ -49,7 +45,7 @@ An example would be: `./blockchain-testing/scripts/ganache/script.sh 1 30 g 0.5`
 </li>
 -----------
 <li>
-After running the commands specified at Step 2/3, the experiment will start (specifically, script.sh is called and executed). 
+After running the commands specified at Step 2 or 3, the experiment will start (specifically, script.sh is called and executed). 
 
 After the experiment has (successfully) finished, the following files are generated:
 
@@ -79,11 +75,11 @@ Or for ganache:
 <li>
 The files can be viewed from inside the docker container and/or they can be copied to the host machine. 
 
-* To access the running docker container, use the following commands:
+* To access the docker container, use the following commands:
 
-`docker start <container_name>` (to start the container again if the experiment finished already)
+`docker start <container_name>` (to start the container again if the experiment finished already and the container was stopped)
 
-`docker exec -it <container_name> /bin/bash`
+`docker exec -it <container_name> /bin/bash` (to get inside the container)
 
 * Or to copy the files to the host machine directly, use the following command from outside the docker container: 
 
@@ -95,7 +91,6 @@ The `folder_name` can be an identifiable name so it is clear to what experiment 
 
 The `path_to_file_in_container` is for example `/ganache-cli/final_coverage_total.txt` or `/blockchain-testing/coverage-over-time.txt`). The specific paths for the files are specified in Step 3.
 
-All the commands (to copy each file) are also specified in the `runexperiment.sh` file.
 </li>
 
 </ol>
