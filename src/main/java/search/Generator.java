@@ -22,6 +22,9 @@ import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomBool;
 import static util.RandomSingleton.getRandomIndex;
 
+/**
+ * Generates requests or parts of requests based on the OpenRPC specification.
+ */
 public class Generator {
 
     private Specification specification;

@@ -34,6 +34,10 @@ public class RippledTestDriver extends TestDriver {
         atStart = true;
     }
 
+    /**
+     * Execute the script to start up the rippled server.
+     * @throws IOException
+     */
     public void startServer() throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder();
 
@@ -50,7 +54,12 @@ public class RippledTestDriver extends TestDriver {
         }
     }
 
-    private ResponseObject retrieveAccounts() throws IOException {
+    /**
+     * Create and send a request to create an account.
+     * @return the response object from the server containing information on the created account.
+     * @throws IOException
+     */
+    private ResponseObject retrieveAccount() throws IOException {
         JSONObject request = new JSONObject();
         request.put("method", "wallet_propose");
         JSONArray params = new JSONArray();
@@ -61,6 +70,11 @@ public class RippledTestDriver extends TestDriver {
         return getClient().createRequest("POST", request);
     }
 
+    /**
+     * Create and send a request to transfer currency to the previously created accounts.
+     * @param accounts
+     * @throws IOException
+     */
     private void transferCurrencyToAccounts(JSONObject accounts) throws IOException {
         JSONObject request = new JSONObject();
         request.put("method", "submit");
@@ -84,19 +98,23 @@ public class RippledTestDriver extends TestDriver {
         getClient().createRequest("POST", request);
     }
 
+//    /**
+//     * There is no consensus process in stand-alone mode so the ledger index must be manually advanced.
+//     * @throws IOException
+//     */
+//    private void manuallyAdvanceLedger() throws IOException {
+//        JSONObject request = new JSONObject();
+//        request.put("method", "ledger_accept");
+//
+//        ResponseObject responseObject = getClient().createRequest("POST", request);
+//        // TODO this value could also be used in requests
+//        int ledgerIndex = Integer.parseInt(responseObject.getResponseObject().getJSONObject("result").getString("ledger_current_index"));
+//    }
+
     /**
-     * There is no consensus process in stand-alone mode so the ledger index must be manually advanced.
-     * @throws IOException
+     * This method is executed before each test to make sure the server is in the same state for each test.
+     * @throws Exception
      */
-    private void manuallyAdvanceLedger() throws IOException {
-        JSONObject request = new JSONObject();
-        request.put("method", "ledger_accept");
-
-        ResponseObject responseObject = getClient().createRequest("POST", request);
-        // TODO this value could also be used in requests
-        int ledgerIndex = Integer.parseInt(responseObject.getResponseObject().getJSONObject("result").getString("ledger_current_index"));
-    }
-
     public void prepTest() throws Exception {
         if (this.shouldCheckCoverage()) {
             checkCoverage(); // check whether coverage should be stored
@@ -108,9 +126,12 @@ public class RippledTestDriver extends TestDriver {
             atStart = false;
             prepareServer();
         }
-
     }
 
+    /**
+     * Prepare the server by creating accounts and making sure they have an amount of currencies.
+     * @throws IOException
+     */
     public void prepareServer() throws IOException {
         startServer();
 
@@ -118,7 +139,7 @@ public class RippledTestDriver extends TestDriver {
 
         System.out.println("Test is being prepared.");
         for (int i = 0; i < Configuration.NUMBER_OF_ACCOUNTS; i++) {
-            ResponseObject accounts = retrieveAccounts();
+            ResponseObject accounts = retrieveAccount();
             if (!accounts.getResponseObject().has("result")) {
                 continue;
             }
@@ -128,8 +149,15 @@ public class RippledTestDriver extends TestDriver {
         System.out.println("Test was successfully prepared.");
     }
 
+    /**
+     * Run the test by sending the individual's request to the server.
+     * Before this is done, the placeholder Strings are replaced by values specific to the server state.
+     * @param method
+     * @param request
+     * @return ResponseObject the server's response
+     * @throws Exception
+     */
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
-
         System.out.println("Test will now run.");
 
         if (accounts == null) {
@@ -171,8 +199,11 @@ public class RippledTestDriver extends TestDriver {
         return responseObject;
     }
 
+    /**
+     * Check whether coverage should be measured (when a certain time has passed).
+     * @throws IOException
+     */
     public void checkCoverage() throws IOException {
-        // Check whether coverage should be measured
         Long currentTime = System.currentTimeMillis();
 
         if (currentTime - previousTimeStored >= Configuration.RECORD_COVERAGE_INTERVAL) {
@@ -181,6 +212,11 @@ public class RippledTestDriver extends TestDriver {
         }
     }
 
+    /**
+     * Run the script to compute the coverage and read and store the results.
+     * @param currentTime
+     * @throws IOException
+     */
     public void recordCoverage(Long currentTime) throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
@@ -212,9 +248,7 @@ public class RippledTestDriver extends TestDriver {
         }
 
         String cov = coverage.toString().trim();
-
         String[] results = cov.split(" ");
-
         int linescovered = Integer.parseInt(results[0].replace("(", ""));
         int linetotal = Integer.parseInt(results[3].replace(")", ""));
         int branchescovered = Integer.parseInt(results[4].replace("(", ""));

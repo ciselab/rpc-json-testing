@@ -23,13 +23,25 @@ public class RippledTestDriverTestNet extends RippledTestDriver {
 
     }
 
+    /**
+     * Run the test by sending the individual's request to the server. The placeholder Strings are replaced by values specific to the server state.
+     * For the TestNet this means these values need to be adjusted by generating new account information on the rippled website
+     * (due to the fact that the TestNet is reset every once in a while).
+     * @param method
+     * @param request
+     * @return ResponseObject the server's response to the request
+     * @throws Exception
+     */
     @Override
     public ResponseObject runTest(String method, JSONObject request) throws Exception {
+        // IMPORTANT: NUMBER_OF_ACCOUNTS in Configuration must be set according to the number of accounts specified in this method.
         List<String> accounts = new ArrayList<>();
-        accounts.add("r3v7D5Sk5Vc5FEyUDQesg3aP2RLHFuEHG6");
+        accounts.add("r32SJaT9rdBgX5rSP4R4McaJyqyNPmQUFV");
+        accounts.add("rGfnfgGvPKeB4Ug3EurSee6m1VGMeQkvJ1");
         request = replaceKnownStrings(request, "__ACCOUNT__", accounts);
         List<String> keys = new ArrayList<>();
-        keys.add("ssKtprBCgVHc5KWCUawQxqhduPB17");
+        keys.add("shHv7ngSvWX3zhrb2NShERjwYfrAT");
+        keys.add("shYEDpCF1nNBqerUTZj9CUSJpHpDN");
         request = replaceKnownStrings(request, "__MASTER_KEY__", keys);
 
         return getClient().createRequest(method, request);

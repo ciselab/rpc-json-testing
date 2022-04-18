@@ -38,6 +38,10 @@ public class GanacheTestDriver extends TestDriver {
         atStart = true;
     }
 
+    /**
+     * Execute the script to start up the ganache server.
+     * @throws IOException
+     */
     public void startServer() throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
@@ -54,6 +58,10 @@ public class GanacheTestDriver extends TestDriver {
         }
     }
 
+    /**
+     * Read the account information that it outputted upon starting the server.
+     * @throws IOException
+     */
     private void retrieveAccounts() throws IOException {
         accounts = new ArrayList<>();
         keys = new ArrayList<>();
@@ -100,6 +108,10 @@ public class GanacheTestDriver extends TestDriver {
         }
     }
 
+    /**
+     * This method is executed before each test to make sure the server is in the same state for each test.
+     * @throws Exception
+     */
     public void prepTest() throws Exception {
         if (shouldCheckCoverage()) {
             checkCoverage();    // Check whether coverage needs to be documented.
@@ -114,6 +126,10 @@ public class GanacheTestDriver extends TestDriver {
         }
     }
 
+    /**
+     * Prepare the server by reading and storing the provided account information.
+     * @throws IOException
+     */
     public void prepareServer() throws Exception {
         startServer();
         retrieveAccounts();
@@ -139,8 +155,11 @@ public class GanacheTestDriver extends TestDriver {
         return getClient().createRequest(method, request);
     }
 
+    /**
+     * Check whether coverage should be measured (when a certain time has passed).
+     * @throws IOException
+     */
     public void checkCoverage() throws IOException {
-        // Check whether coverage should be measured
         Long currentTime = System.currentTimeMillis();
         if (currentTime - previousTimeStored >= Configuration.RECORD_COVERAGE_INTERVAL) {
             previousTimeStored = currentTime;
@@ -148,6 +167,11 @@ public class GanacheTestDriver extends TestDriver {
         }
     }
 
+    /**
+     * Run the script to compute the coverage and read and store the results.
+     * @param currentTime
+     * @throws IOException
+     */
     public void recordCoverage(Long currentTime) throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 

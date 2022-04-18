@@ -1,0 +1,847 @@
+{
+  "openrpc": "1.0.0-rc1",
+  "info": {
+    "version": "1.0.0",
+    "title": "XRP JSON-RPC",
+    "description": "This API lets you interact with a rippled server via JSON-RPC"
+  },
+  "servers": [
+    {
+      "name": "Ripple testnet",
+      "url": "https://s.devnet.rippletest.net"
+    }
+  ],
+  "methods": [
+    {
+      "name": "account_channels",
+      "description": "The account_channels method returns information about an account's Payment Channels. This includes only channels where the specified account is the channel's source, not the destination. (A channel's 'source' and 'owner' are the same.) All information retrieved is relative to a particular version of the ledger.",
+      "params": [
+        {
+          "$ref": "#/components/contentDescriptors/Account"
+        },
+        {
+          "name": "destination_account",
+          "description": "The unique identifier of an account, typically the account's Address. If provided, filter results to payment channels whose destination is this account.",
+          "schema": {
+            "$ref": "#/components/schemas/Address"
+          }
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerHash"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/LedgerIndex"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Limit"
+        },
+        {
+          "$ref": "#/components/contentDescriptors/Marker"
+        }
+      ],
+      "result": {
+        "name": "result",
+        "description": "A list of payment channels where the account is the source of the channel.",
+        "schema": {
+          "type": "object"
+        }
+      }
+    },
+    {
+      "name": "ledger_closed",
+      "description": "Get the latest closed ledger version.",
+      "params": [
+      ],
+      "result": {
+        "name": "result",
+        "description": "The unique identifiers of the most recently closed ledger.",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "ledger_hash": {
+              "$ref": "#/components/schemas/Hex64String"
+            },
+            "ledger_index": {
+              "$ref": "#/components/schemas/LedgerIndex"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "ledger_current",
+      "description": "Get the current working ledger version.",
+      "params": [
+      ],
+      "result": {
+        "name": "result",
+        "description": "The unique identifiers of the current in-progress ledger.",
+        "schema": {
+          "$ref": "#/components/contentDescriptors/LedgerIndex"
+        }
+      }
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Address": {
+        "type": "string",
+        "pattern": "^__ACCOUNT__$"
+      },
+      "AccountPublicKeyHex": {
+        "type": "string",
+        "pattern": "^__PUBLIC_KEY_HEX__$"
+      },
+      "AccountPublicKey": {
+        "type": "string",
+        "pattern": "^__PUBLIC_KEY__$"
+      },
+      "ValidationPublicKey": {
+        "type": "string",
+        "pattern": "^n[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyzZ]{33,53}$"
+      },
+      "ObjectID": {
+        "type": "string",
+        "pattern": "^[0-9A-F]{64}$"
+      },
+      "UnsignedInteger": {
+        "type": "string",
+        "pattern": "^[0-9]*$"
+      },
+      "UnsignedInteger8bit": {
+        "type": "string",
+        "pattern": "^[0-9]*$"
+      },
+      "UnsignedInteger16bit": {
+        "type": "string",
+        "pattern": "^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$"
+      },
+      "UnsignedInteger32bit": {
+        "type": "string",
+        "pattern": "^[0-9]*$"
+      },
+      "HexString": {
+        "type": "string",
+        "pattern": "^(0x|0X)?[a-fA-F0-9]+$"
+      },
+      "Hex64String": {
+        "type": "string",
+        "pattern": "^[A-Fa-f0-9]{64}$"
+      },
+      "HexStringHash128": {
+        "type": "string",
+        "pattern": "^$|^[A-Fa-f0-9]{32}$"
+      },
+      "LedgerIndex": {
+        "oneOf": [
+          { "type": "integer", "minimum": 0, "maximum": 4294967296 },
+          { "type": "string", "enum": ["validated", "closed", "current"] }
+        ]
+      },
+      "Blob": {
+        "type": "string"
+      },
+      "URL": {
+        "type": "string",
+        "pattern": "(http(s)?:\\\/\\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}(\\.[a-z]{2,6})?\\b([-a-zA-Z0-9@:%_\\+.~#?&\\\/\\\/=]*)"
+      },
+      "Transaction": {
+        "type": "object",
+        "required": ["Account", "TransactionType", "Fee", "Sequence"],
+        "properties": {
+          "Account": {
+            "description": "The unique address of the account that initiated the transaction.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "TransactionType": {
+            "description": "The type of transaction.",
+            "type": "string",
+            "enum": ["Payment", "OfferCreate", "OfferCancel", "TrustSet", "AccountSet", "AccountDelete", "SetRegularKey", "SignerListSet", "EscrowCreate", "EscrowFinish", "EscrowCancel", "PaymentChannelCreate", "PaymentChannelFund", "PaymentChannelClaim", "DepositPreauth"]
+          },
+          "Fee": {
+            "description": "Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.",
+            "$ref": "#/components/schemas/UnsignedInteger"
+          },
+          "Sequence": {
+            "description": "The sequence number of the account sending the transaction. A transaction is only valid if the Sequence number is exactly 1 greater than the previous transaction from the same account. The special case 0 means the transaction is using a Ticket instead",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "AccountTxnID": {
+            "description": "Hash value identifying another transaction. If provided, this transaction is only valid if the sending account's previously-sent transaction matches the provided hash.",
+            "$ref": "#/components/schemas/Hex64String"
+          },
+          "Flags": {
+            "description": "Set of bit-flags for this transaction.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "LastLedgerSequence": {
+            "description": "Highest ledger index this transaction can appear in. Specifying this field places a strict upper limit on how long the transaction can wait to be validated or rejected.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "Memos": {
+            "description": "Additional arbitrary information used to identify this transaction.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["Memo"],
+              "properties": {
+                "Memo": {
+                  "description": "Each object has only one field, Memo, which in turn contains another object Memo.",
+                  "$ref": "#/components/schemas/Memo"
+                }
+              }
+            }
+          },
+          "Signers": {
+            "description": "Array of objects that represent a multi-signature which authorizes this transaction.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["Signer"],
+              "properties": {
+                "Signer": {
+                  "description": "The Signers list is an array of objects, each with one field, Signer.",
+                  "$ref": "#/components/schemas/Signer"
+                }
+              }
+            }
+          },
+          "SourceTag": {
+            "description": "Arbitrary integer used to identify the reason for this payment, or a sender on whose behalf this transaction is made. Conventionally, a refund should specify the initial payment's SourceTag as the refund payment's DestinationTag.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "SigningPubKey": {
+            "description": "(Automatically added when signing) Hex representation of the public key that corresponds to the private key used to sign this transaction. If an empty string, indicates a multi-signature is present in the Signers field instead.",
+            "$ref": "#/components/schemas/HexString"
+          },
+          "TicketSequence": {
+            "description": "The sequence number of the ticket to use in place of a Sequence number. If this is provided, Sequence must be 0. Cannot be used with AccountTxnID.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "TxnSignature": {
+            "description": "(Automatically added when signing) The signature that verifies this transaction as originating from the account it says it is from.",
+            "type": "string"
+          },
+          "ClearFlag": {
+            "description": "AccountSet Fields - Unique identifier of a flag to disable for this account.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "Domain": {
+            "description": "AccountSet Fields - The domain that owns this account, as a string of hex representing the ASCII for the domain in lowercase. Cannot be more than 256 bytes in length.",
+            "$ref": "#/components/schemas/HexString"
+          },
+          "EmailHash": {
+            "description": "AccountSet Fields - Hash of an email address to be used for generating an avatar image. ",
+            "$ref": "#/components/schemas/HexStringHash128"
+          },
+          "MessageKey": {
+            "description": "AccountSet Fields - Public key for sending encrypted messages to this account.",
+            "$ref": "#/components/schemas/Blob"
+          },
+          "SetFlag": {
+            "description": "AccountSet Fields - Integer flag to enable for this account.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "TransferRate": {
+            "description": "AccountSet Fields - The fee to charge when users transfer this account's issued currencies, represented as billionths of a unit. Cannot be more than 2000000000 or less than 1000000000, except for the special case 0 meaning no fee.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "TickSize": {
+            "description": "AccountSet Fields - Tick size to use for offers involving a currency issued by this address. The exchange rates of those offers is rounded to this many significant digits. Valid values are 3 to 15 inclusive, or 0 to disable.",
+            "$ref": "#/components/schemas/UnsignedInteger8bit"
+          },
+          "Destination": {
+            "description": "AccountDelete Fields - The address of an account to receive any leftover XRP after deleting the sending account. Must be a funded account in the ledger, and must not be the sending account.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "DestinationTag": {
+            "description": "AccountDelete Fields - Arbitrary destination tag that identifies a hosted recipient or other information for the recipient of the deleted account's leftover XRP.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "CheckID": {
+            "description": "CheckCancel Fields - The ID of the Check ledger object to cancel, as a 64-character hexadecimal string.",
+            "$ref": "#/components/schemas/Hex64String"
+          },
+          "Amount": {
+            "description": "CheckCash Fields - Redeem the Check for exactly this amount, if possible.",
+            "$ref": "#/components/schemas/CurrencyAmount"
+          },
+          "DeliverMin": {
+            "description": "CheckCash Fields - Redeem the Check for at least this amount and for as much as possible.",
+            "$ref": "#/components/schemas/CurrencyAmount"
+          },
+          "SendMax": {
+            "description": "CheckCreate Fields - Maximum amount of source currency the Check is allowed to debit the sender, including transfer fees on non-XRP currencies.",
+            "$ref": "#/components/schemas/CurrencyAmount"
+          },
+          "Expiration": {
+            "description": "CheckCreate Fields - Time after which the Check is no longer valid, in seconds since the Ripple Epoch.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "InvoiceID": {
+            "description": "CheckCreate Fields - Arbitrary 256-bit hash representing a specific reason or identifier for this Check.",
+            "$ref": "#/components/schemas/Hex64String"
+          },
+          "Authorize": {
+            "description": "DepositPreauth Fields - AThe XRP Ledger address of the sender to preauthorize.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "Unauthorize": {
+            "description": "DepositPreauth Fields - The XRP Ledger address of a sender whose preauthorization should be revoked.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "Owner": {
+            "description": "EscrowCancel Fields - Address of the source account that funded the escrow payment.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "OfferSequence": {
+            "description": "EscrowCancel Fields - Transaction sequence (or Ticket number) of EscrowCreate transaction that created the escrow to cancel.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "CancelAfter": {
+            "description": "EscrowCreate Fields - The time, in seconds since the Ripple Epoch, when this escrow expires.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "FinishAfter": {
+            "description": "EscrowCreate Fields - The time, in seconds since the Ripple Epoch, when the escrowed XRP can be released to the recipient.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "Condition": {
+            "description": "EscrowCreate Fields - Hex value representing a PREIMAGE-SHA-256 crypto-condition. The funds can only be delivered to the recipient if this condition is fulfilled.",
+            "$ref": "#/components/schemas/HexString"
+          },
+          "Fulfillment": {
+            "description": "EscrowFinish Fields - Hex value of the PREIMAGE-SHA-256 crypto-condition fulfillment matching the held payment's Condition.",
+            "$ref": "#/components/schemas/HexString"
+          },
+          "TakerGets": {
+            "description": "OfferCreate Fields - The amount and type of currency being provided by the offer creator.",
+            "$ref": "#/components/schemas/CurrencyAmount"
+          },
+          "TakerPays": {
+            "description": "OfferCreate Fields - The amount and type of currency being requested by the offer creator.",
+            "$ref": "#/components/schemas/CurrencyAmount"
+          },
+          "Balance": {
+            "description": "PaymentChannelClaim Fields - Total amount of XRP, in drops, delivered by this channel after processing this claim.",
+            "$ref": "#/components/schemas/XRPdrops"
+          },
+          "Channel": {
+            "description": "PaymentChannelClaim Fields - The unique ID of the channel, as a 64-character hexadecimal string.",
+            "$ref": "#/components/schemas/Hex64String"
+          },
+          "Signature": {
+            "description": "PaymentChannelClaim Fields - The signature of this claim, as hexadecimal. The signed message contains the channel ID and the amount of the claim. ",
+            "$ref": "#/components/schemas/Hex64String"
+          },
+          "PublicKey": {
+            "description": "PaymentChannelCreate Fields - The public key of the key pair the source will use to sign claims against this channel, in hexadecimal. This can be any secp256k1 or Ed25519 public key.",
+            "$ref": "#/components/schemas/AccountPublicKeyHex"
+          },
+          "SettleDelay": {
+            "description": "PaymentChannelCreate Fields - Amount of time the source address must wait before closing the channel if it has unclaimed XRP.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "RegularKey": {
+            "description": "SetRegularKey Fields - A base-58-encoded Address that indicates the regular key pair to be assigned to the account. If omitted, removes any existing regular key pair from the account. Must not match the master key pair for the address.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "SignerQuorum": {
+            "description": "SignerListSet Fields - A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is greater than or equal to this value. To delete a signer list, use the value 0.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "SignerEntries": {
+            "description": "SignerListSet Fields - Array of SignerEntry objects, indicating the addresses and weights of signers in this list. This signer list must have at least 1 member and no more than 8 members. No address may appear more than once in the list, nor may the Account submitting the transaction appear in the list.",
+            "type": "array",
+            "minlength": 1,
+            "maxlength": 8,
+            "items": {
+              "$ref": "#/components/schemas/SignerEntry"
+            }
+          },
+          "TicketCount": {
+            "description": "TicketCreate Fields - How many Tickets to create. This must be a positive number and cannot cause the account to own more than 250 Tickets after executing this transaction.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "LimitAmount": {
+            "description": "TrustSet Fields - Object defining the trust line to create or modify, in the format of a Currency Amount.",
+            "$ref": "#/components/schemas/CurrencyObject"
+          },
+          "QualityIn": {
+            "description": "TrustSet Fields - Value incoming balances on this trust line at the ratio of this number per 1,000,000,000 units. A value of 0 is shorthand for treating balances at face value.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          },
+          "QualityOut": {
+            "description": "TrustSet Fields - Value outgoing balances on this trust line at the ratio of this number per 1,000,000,000 units. A value of 0 is shorthand for treating balances at face value.",
+            "$ref": "#/components/schemas/UnsignedInteger32bit"
+          }
+        }
+      },
+      "DepositPreauth": {
+        "description": "A DepositPreauth object.",
+        "type": "object",
+        "required": ["owner", "authorized"],
+        "properties": {
+          "owner": {
+            "description": "The account that provided the preauthorization.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "authorized": {
+            "description": "The account that received the preauthorization.",
+            "$ref": "#/components/schemas/Address"
+          }
+        }
+      },
+      "DirectoryNode": {
+        "description": "Provides a list of links to other objects in the ledger's state tree. Requires either dir_root or owner as a sub-field, plus optionally a sub_index sub-field.",
+        "type": "object",
+        "properties": {
+          "owner": {
+            "description": "The address of the account that owns the objects in this directory.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "sub_index": {
+            "description": "If provided, jumps to a later 'page' of the DirectoryNode.",
+            "$ref": "#/components/schemas/UnsignedInteger"
+          },
+          "dir_root": {
+            "description": "Unique index identifying the directory to retrieve, as a hex string.",
+            "$ref": "#/components/schemas/HexString"
+          }
+        }
+      },
+      "Escrow": {
+        "description": "An Escrow object.",
+        "type": "object",
+        "required": ["owner", "seq"],
+        "properties": {
+          "owner": {
+            "description": "The owner (sender) of the Escrow object.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "sec": {
+            "description": "The sequence number of the transaction that created the Escrow object.",
+            "$ref": "#/components/schemas/UnsignedInteger"
+          }
+        }
+      },
+      "Ticket": {
+        "description": "A Ticket object. Represents a sequence number set aside for future use.",
+        "type": "object",
+        "required": ["owner", "ticket_sequence"],
+        "properties": {
+          "owner": {
+            "description": "The owner of the Ticket object.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "ticket_sequence": {
+            "description": "The Ticket Sequence number of the Ticket entry to retrieve.",
+            "$ref": "#/components/schemas/UnsignedInteger"
+          }
+        }
+      },
+      "Offer": {
+        "description": "An Offer object.",
+        "type": "object",
+        "required": ["account", "seq"],
+        "properties": {
+          "account": {
+            "description": "The account that placed the offer.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "seq": {
+            "description": "The sequence number of the transaction that created the Offer object.",
+            "$ref": "#/components/schemas/UnsignedInteger"
+          }
+        }
+      },
+      "RippleState": {
+        "description": "Object specifying the RippleState (trust line) object to retrieve. The accounts and currency sub-fields are required to uniquely specify the RippleState entry to retrieve.",
+        "type": "object",
+        "required": ["accounts", "currency"],
+        "properties": {
+          "accounts": {
+            "description": "2-length array of account Addresses, defining the two accounts linked by this RippleState object.",
+            "type": "array",
+            "length": 2,
+            "items": {
+              "$ref": "#/components/schemas/Address"
+            }
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          }
+        }
+      },
+      "Memo": {
+        "description": "Additional arbitrary information used to identify this transaction.",
+        "type": "object",
+        "properties": {
+          "MemoData": {
+            "description": "Arbitrary hex value, conventionally containing the content of the memo.",
+            "$ref": "#/components/schemas/HexString"
+          },
+          "MemoFormat": {
+            "description": "Hex value representing characters allowed in URLs.",
+            "$ref": "#/components/schemas/HexString"
+          },
+          "MemoType": {
+            "description": "Hex value representing characters allowed in URLs.",
+            "$ref": "#/components/schemas/HexString"
+          }
+        }
+      },
+      "Signer": {
+        "description": "The Signer field has nested fields.",
+        "type": "object",
+        "required": ["Account", "TxnSignature", "SigningPubKey"],
+        "properties": {
+          "Account": {
+            "description": "The address associated with this signature, as it appears in the signer list.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "TxnSignature": {
+            "description": "A signature for this transaction, verifiable using the SigningPubKey.",
+            "$ref": "#/components/schemas/Blob"
+          },
+          "SigningPubKey": {
+            "description": "The public key used to create this signature.",
+            "$ref": "#/components/schemas/Blob"
+          }
+        }
+      },
+      "SignerEntry": {
+        "description": "Each member of the SignerEntries field is an object that describes that signer in the list.",
+        "type": "object",
+        "required": ["Account", "SignerWeight"],
+        "properties": {
+          "Account": {
+            "description": "An XRP Ledger address whose signature contributes to the multi-signature. It does not need to be a funded address in the ledger.",
+            "$ref": "#/components/schemas/Address"
+          },
+          "SignerWeight": {
+            "description": "The weight of a signature from this signer. A multi-signature is only valid if the sum weight of the signatures provided meets or exceeds the signer list's SignerQuorum value.",
+            "$ref": "#/components/schemas/UnsignedInteger16bit"
+          }
+        }
+      },
+      "Currency": {
+        "description": "Specification of which currency the account taking the Offer would receive, as a currency object with no amount.",
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9?!@#$%^&*<>(){}[\\]|]{3}$"
+          },
+          {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{40}$"
+          }
+        ]
+      },
+      "CurrencyObject": {
+        "type": "object",
+        "description": "A currency specification object (for issued currencies).",
+        "required": ["currency"],
+        "properties": {
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "value": {
+            "description": "Amounts of currency for both XRP and issued currencies.",
+            "type": "string",
+            "pattern": "(^\\-?(\\d(\\.\\d+)?[Ee][+-]?\\d+)$)|(^\\-?[0-9]+(\\.[0-9]{1,2})?$)"
+          },
+          "issuer": {
+            "description": "Unique account address of the entity issuing the currency. In other words, the person or business where the currency can be redeemed.",
+            "$ref": "#/components/schemas/Address"
+          }
+        }
+      },
+      "CurrencyAmount": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/XRPdrops"
+          },
+          {
+            "$ref": "#/components/schemas/CurrencyObject"
+          }
+        ]
+      },
+      "XRPdrops": {
+        "type": "string",
+        "description": "XRP drops",
+        "pattern": "^(?:-1|[0-9]|[1-9][0-9]{1,14}|1000000000000000|10000000000000000)$"
+      },
+      "Taker": {
+        "description": "Unique account address to use as a perspective for viewing offers, in the XRP Ledger's base58 format.",
+        "$ref": "#/components/schemas/Address"
+      },
+      "TakerGets": {
+        "description": "Specification of which currency the account taking the Offer would receive, as a currency object with no amount.",
+        "$ref": "#/components/schemas/CurrencyObject"
+      },
+      "TakerPays": {
+        "description": "Specification of which currency the account taking the Offer would pay, as a currency object with no amount.",
+        "$ref": "#/components/schemas/CurrencyObject"
+      },
+      "Book": {
+        "type": "object",
+        "description": "An order book",
+        "required": ["taker_gets", "taker_pays", "taker"],
+        "properties": {
+          "taker_gets": {
+            "$ref": "#/components/schemas/TakerGets"
+          },
+          "taker_pays": {
+            "$ref": "#/components/schemas/TakerPays"
+          },
+          "taker": {
+            "$ref": "#/components/schemas/Taker"
+          },
+          "snapshot": {
+            "description": "If true, return the current state of the order book once when you subscribe before sending updates. The default is false.",
+            "type": "boolean"
+          },
+          "both": {
+            "description": "If true, return both sides of the order book. The default is false.",
+            "type": "boolean"
+          }
+        }
+      },
+      "BookUnsubscribe": {
+        "type": "object",
+        "description": "An order book",
+        "required": ["taker_gets", "taker_pays"],
+        "properties": {
+          "taker_gets": {
+            "description": "Specification of which currency the account taking the Offer would receive, as a currency object with no amount.",
+            "$ref": "#/components/schemas/CurrencyObject"
+          },
+          "taker_pays": {
+            "description": "Specification of which currency the account taking the Offer would pay, as a currency object with no amount.",
+            "$ref": "#/components/schemas/CurrencyObject"
+          },
+          "both": {
+            "description": "If true, return both sides of the order book. The default is false.",
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "contentDescriptors": {
+      "Account": {
+        "name": "account",
+        "description": "The unique identifier of an account, typically the account's Address.",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Address"
+        }
+      },
+      "LedgerHash": {
+        "name": "ledger_hash",
+        "description": "A 20-byte hex string for the ledger version to use.",
+        "schema": {
+          "$ref": "#/components/schemas/Hex64String"
+        }
+      },
+      "LedgerIndex": {
+        "name": "ledger_index",
+        "description": "The ledger index of the ledger to use, or a shortcut string ('current', 'closed', or 'validated') to choose a ledger automatically.",
+        "schema": {
+          "oneOf": [
+            { "type": "integer", "minimum": 0, "maximum": 4294967296 },
+            { "type": "string", "enum": ["validated", "closed", "current"] }
+          ]
+        }
+      },
+      "Strict": {
+        "name": "strict",
+        "description": "If true, then the account field only accepts a public key or XRP Ledger address. Otherwise, account can be a secret or passphrase (not recommended). The default is false.",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "Limit": {
+        "name": "limit",
+        "description": "Limit the number of transactions to retrieve. Cannot be less than 10 or more than 400. The default is 200.",
+        "schema": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 400
+        }
+      },
+      "Marker": {
+        "name": "marker",
+        "description": "Value from a previous paginated response. Resume retrieving data where that response left off.",
+        "schema": {
+          "type": "object"
+        }
+      },
+      "TxJson": {
+        "name": "tx_json",
+        "description": "The Transaction to sign.",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Transaction"
+        }
+      },
+      "FailHard": {
+        "name": "fail_hard",
+        "description": "If true, and the transaction fails locally, do not retry or relay the transaction to other servers",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "Secret": {
+        "name": "secret",
+        "description": "The secret key to use to sign the claim. This must be the same key pair as the public key specified in the channel. Cannot be used with seed, seed_hex, or passphrase.",
+        "schema": {
+          "type": "string",
+          "pattern": "^__MASTER_KEY__$"
+        }
+      },
+      "Seed": {
+        "name": "seed",
+        "description": "The secret seed to use to sign the claim. This must be the same key pair as the public key specified in the channel. Must be in the XRP Ledger's base58 format. If provided, you must also specify the key_type. Cannot be used with secret, seed_hex, or passphrase. ",
+        "schema": {
+          "type": "string",
+          "pattern": "^__MASTER_SEED__$"
+        }
+      },
+      "SeedHex": {
+        "name": "seed_hex",
+        "description": "The secret seed to use to sign the claim. This must be the same key pair as the public key specified in the channel. Must be in hexadecimal format. If provided, you must also specify the key_type. Cannot be used with secret, seed, or passphrase.",
+        "schema": {
+          "type": "string",
+          "pattern": "^__MASTER_SEED_HEX__$"
+        }
+      },
+      "Passphrase": {
+        "name": "passphrase",
+        "description": "A string passphrase to use to sign the claim. This must be the same key pair as the public key specified in the channel. The key derived from this passphrase must match the public key specified in the channel. If provided, you must also specify the key_type. Cannot be used with secret, seed, or seed_hex.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "KeyType": {
+        "name": "key_type",
+        "description": "The signing algorithm of the cryptographic key pair provided. Valid types are secp256k1 or ed25519. The default is secp256k1.",
+        "schema": {
+          "type": "string",
+          "enum": ["secp256k1", "ed25519"]
+        }
+      },
+      "Transactions": {
+        "name": "transactions",
+        "description": "If true, return information on transactions in the specified ledger version. Defaults to false. Ignored if you did not specify a ledger version.",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "Binary": {
+        "name": "binary",
+        "description": "Return transaction information in binary format (hexadecimal string) instead of JSON format.",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "Queue": {
+        "name": "queue",
+        "description": "If true, and the command is requesting the current ledger, includes an array of queued transactions in the results.",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "Amount": {
+        "name": "amount",
+        "required": true,
+        "description": "The amount of XRP, in drops, the provided signature authorizes.",
+        "schema": {
+          "$ref": "#/components/schemas/UnsignedInteger"
+        }
+      },
+      "Streams": {
+        "name": "streams",
+        "description": "Array of string names of generic streams to subscribe to.",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["server", "ledger", "transactions", "transactions_proposed", "validations", "conensus", "peer_status"]
+          }
+        }
+      },
+      "Accounts": {
+        "name": "accounts",
+        "description": "Array with the unique addresses of accounts to monitor for validated transactions.",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Address"
+          }
+        }
+      },
+      "AccountsProposed": {
+        "name": "accounts_proposed",
+        "description": "Array with the unique addresses of accounts to monitor for validated transactions, include transactions that are not yet finalized.",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Address"
+          }
+        }
+      },
+      "SourceAccount": {
+        "name": "source_account",
+        "description": "Unique address of the account that would send funds in a transaction.",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Address"
+        }
+      },
+      "DestinationAccount": {
+        "name": "destination_account",
+        "description": "Unique address of the account that would receive funds in a transaction.",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Address"
+        }
+      },
+      "DestinationAmount": {
+        "name": "destination_amount",
+        "description": "Currency Amount that the destination account would receive in a transaction.",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/CurrencyAmount"
+        }
+      },
+      "SendMax": {
+        "name": "send_max",
+        "description": "Currency Amount that would be spent in the transaction. Cannot be used with source_currencies.",
+        "schema": {
+          "$ref": "#/components/schemas/CurrencyAmount"
+        }
+      },
+      "Books": {
+        "name": "books",
+        "description": "Array of objects defining order books to monitor for updates.",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Book"
+          }
+        }
+      },
+      "BooksUnsubscribe": {
+        "name": "books_unsubscribe",
+        "description": "The objects in the books array are defined almost like the ones from subscribe, except that they don't have all the fields.",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/BookUnsubscribe"
+          }
+        }
+      }
+    }
+  }
+}

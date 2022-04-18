@@ -13,7 +13,11 @@ import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomBool;
 import static util.config.Configuration.*;
 
+/**
+ * An individual represents a test case (a sequence of one or more HTTP requests).
+ */
 public class Individual {
+
     private List<Chromosome> dna;
     private ResponseObject responseObject = null;
     private double fitness;
@@ -61,6 +65,12 @@ public class Individual {
         return new Individual(newDna);
     }
 
+    /**
+     * CURRENTLY NOT USED.
+     * Crossover between two individuals.
+     * @param other
+     * @return Individual a new individual
+     */
     public Individual crossover(Individual other) {
         // TODO always starts with the short individual (bad, should be random)
         List<Chromosome> mixedDna = new ArrayList<>();
