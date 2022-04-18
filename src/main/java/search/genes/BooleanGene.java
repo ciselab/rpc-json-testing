@@ -16,7 +16,14 @@ public class BooleanGene extends ValueGene<Boolean> {
             return new BooleanGene(this.getSchema(), !this.getValue());
         } else {
             // Change gene into an entirely new value by generating new value
-            return getNewGene(generator);
+            Gene gene = getNewGene(generator);
+
+            // Enforce a change (i.e. not the exact same boolean)
+            if (gene.toJSON().equals(this.toJSON())) {
+                return new BooleanGene(this.getSchema(), !this.getValue());
+            }
+
+            return gene;
         }
     }
 

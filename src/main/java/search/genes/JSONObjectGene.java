@@ -71,13 +71,9 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
             if (keys.size() > 0) {
                 int index = util.RandomSingleton.getRandomIndex(keys);
 
-//            for (int i = 0; i < keys.size(); i++) {
-//                if (util.RandomSingleton.getRandomBool(1 / keys.size())) {
                 StringGene key = keys.get(index);
                 Gene child = clone.children.get(key);
                 clone.addChild(key, child.mutate(generator));
-//                }
-//            }
             }
 
 
@@ -93,8 +89,7 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
 
         if (keys.size() > 0) {
             int index = util.RandomSingleton.getRandomIndex(keys);
-//        for (int i = 0; i < keys.size(); i++) {
-//            if (util.RandomSingleton.getRandomBool(1 / keys.size())) {
+
             double choice = getRandom().nextDouble();
 
             if ((choice <= Configuration.ADD_NONREQUIRED_CHILD_PROB) && clone.addChild(generator)) {
@@ -115,8 +110,6 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
 //                    // should not happen that there is no mutation at all
 //                    throw new IllegalStateException("Should not happen");
             }
-//            }
-//        }
         } else {
             clone.addChild(generator);
         }

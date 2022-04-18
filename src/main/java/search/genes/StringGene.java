@@ -52,15 +52,7 @@ public class StringGene extends ValueGene<String> {
                 return new StringGene(this.getSchema(), options.get(newValueIndex));
             }
 
-            // Option 3: mutate Regex pattern and generate a new value
-//            if (getSchema().getPattern() != null && probability < 0.3) {
-//                // Note that the pattern in the schema is NOT changed
-//                String regex = getSchema().getPattern();
-//                String mutatedRegex = mutateRegex(regex);
-//                return new StringGene(this.getSchema(), Generator.generateRandomValue(mutatedRegex));
-//            }
-
-            // Option 4: Mutate the chars
+            // Option 3: Mutate the chars
             String mutatedValue = mutateCharacters(this.getValue());
 
             return new StringGene(this.getSchema(), mutatedValue);
@@ -75,7 +67,6 @@ public class StringGene extends ValueGene<String> {
         // number of characters to change
         int toChange = (int) Math.ceil(Configuration.FRACTION_STRING_TO_MUTATE * value.length());
 
-        // TODO length must always be higher than 0
         // select the position from which to start to change/add/delete a character
         int position = 0;
         if (value.length() > 1) {
@@ -122,41 +113,6 @@ public class StringGene extends ValueGene<String> {
             }
         }
         return mutatedValue;
-    }
-
-    // DOES NOT WORK PROPERLY YET!
-    public String mutateRegex(String regex) {
-        // number of characters to change
-        int toChange = (int) Math.ceil(Configuration.FRACTION_STRING_TO_MUTATE * regex.length());
-
-        // select the position from which to start to change/add/delete a character
-        int position = getRandom().nextInt(regex.length() - toChange);
-
-        // convert the string to a character array
-        char[] chars = regex.toCharArray();
-
-        // TODO when the position is unfortunately chosen, the Regex expression is not mutated.
-        String mutatedRegex = regex;
-        for (int i = 0; i < toChange; i++) {
-            // TODO replace NUMBER chars, but this can cause exceeding min/max bounds...
-//            if (NUMBERS.contains("" + chars[i+position])) {
-//                // generate a character
-//                char newChar = NUMBERS.charAt(getRandom().nextInt(NUMBERS.length()));
-//                // replace character at the specified position in char array
-//                chars[i+position] = newChar;
-//                // convert the character array back into string
-//                mutatedRegex = String.valueOf(chars);
-//            } else
-            if (LETTERS.contains("" + chars[i+position])) {
-                // generate a character
-                char newChar = LETTERS.charAt(getRandom().nextInt(LETTERS.length()));
-                // replace character at the specified position in char array
-                chars[i+position] = newChar;
-                // convert the character array back into string
-                mutatedRegex = String.valueOf(chars);
-            }
-        }
-        return mutatedRegex;
     }
 
     @Override

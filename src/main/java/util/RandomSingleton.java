@@ -1,8 +1,6 @@
 package util;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public final class RandomSingleton {
 
@@ -23,6 +21,42 @@ public final class RandomSingleton {
      */
     public static int getRandomIndex(Collection list) {
         return getRandom().nextInt(list.size());
+    }
+
+    /**
+     * Retrieve n unique random indices
+     * @param list the list to take indices for
+     * @param n the number of indices
+     * @return index
+     */
+    public static Set<Integer> getRandomUniqueIndices(Collection list, int n) {
+        Set<Integer> options = new HashSet<>();
+
+        if (list.size() == 0) {
+            return options;
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            options.add(i);
+        }
+
+        if (list.size() <= n) {
+            return options;
+        }
+
+        Set<Integer> indices = new HashSet<>();
+
+        for (int i = 0; i < n; i++) {
+            int index = util.RandomSingleton.getRandom().nextInt(options.size());
+
+            Integer choice = (Integer) options.toArray()[index];
+
+            options.remove(choice);
+
+            indices.add(choice);
+        }
+
+        return indices;
     }
 
     /**

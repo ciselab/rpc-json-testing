@@ -3,11 +3,14 @@ package search;
 import connection.ResponseObject;
 import org.json.JSONObject;
 import search.genes.ArrayGene;
+import util.RandomSingleton;
 import util.config.Configuration;
 import util.config.CrossoverType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomBool;
@@ -40,10 +43,12 @@ public class Individual {
      * @return mutated individual
      */
     public Individual mutate(Generator generator) {
+        Set<Integer> indices = RandomSingleton.getRandomUniqueIndices(dna, MUTATIONS_PER_INDIVIDUAL);
+
         List<Chromosome> newDna = new ArrayList<>();
 
         for (int i = 0; i < dna.size(); i++) {
-            if (util.RandomSingleton.getRandomBool(((double) MUTATIONS_PER_INDIVIDUAL)/((double) dna.size()))) {
+            if (indices.contains(i)) {
                 if (dna.size() <= REQUESTS_GENERATOR_LIMIT && getRandomBool(ADD_CHROMOSOME_PROP)) {
                     // add
                     String methodName = generator.getRandomMethod();

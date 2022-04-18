@@ -3,6 +3,7 @@ package search.genes;
 import org.json.JSONArray;
 import search.Generator;
 import openRPC.SchemaSpecification;
+import util.RandomSingleton;
 import util.config.Configuration;
 
 import java.util.ArrayList;
@@ -53,18 +54,16 @@ public class ArrayGene extends NestedGene<JSONArray> {
 
         // If there is no schema it means this is the main parameters array
         if (getSchema() == null) {
-            for (int i = 0; i < clone.children.size(); i++) {
-                if (util.RandomSingleton.getRandomBool(1 / clone.children.size())) {
-                    Gene child = clone.children.get(i);
-                    child = child.mutate(generator);
+            int index = RandomSingleton.getRandomIndex(clone.children);
 
-                    // Make sure child is not another array (stripValues does not support arrays in arrays)
-                    while (child instanceof ArrayGene) {
-                        child = child.mutate(generator);
-                    }
-                    clone.children.set(i, child);
-                }
+            Gene child = clone.children.get(index);
+            child = child.mutate(generator);
+
+            // Make sure child is not another array (stripValues does not support arrays in arrays)
+            while (child instanceof ArrayGene) {
+                child = child.mutate(generator);
             }
+            clone.children.set(index, child);
             return clone;
         }
 
@@ -78,34 +77,31 @@ public class ArrayGene extends NestedGene<JSONArray> {
         List<SchemaSpecification> children = getSchema().getArrayItemSchemaSpecification();
 
         // Mutate elements of the array
-        for (int i = 0; i < clone.children.size(); i++) {
-            if (util.RandomSingleton.getRandomBool(1 / clone.children.size())) {
-                double choice = getRandom().nextDouble();
+        int index = RandomSingleton.getRandomIndex(clone.children);
 
-                if (clone.children.size() < this.getSchema().getLength() && (clone.children.size() == 0 || choice <= Configuration.ADD_ELEMENT_PROB)) {
-                    // Add a child (change gene into a different type or generate new value)
-                    Gene child = generator.generateValueGene(children.get(i));
-                    while (child instanceof ArrayGene) {
-                        child = generator.generateValueGene(children.get(i));
-                    }
-                    clone.children.add(i, child);
-//                    i += 1;
-                } else if (clone.children.size() > 1 && choice <= (Configuration.REMOVE_ELEMENT_PROB + Configuration.ADD_ELEMENT_PROB)) {
-                    // Remove a child
-                    clone.children.remove(i);
-                    i -= 1;
-                } else {
-                    // Mutate a child (or more)
-                    Gene child = clone.children.get(i);
-                    child = child.mutate(generator);
-                    // Make sure child is not another array (stripValues does not support arrays in arrays)
-                    while (child instanceof ArrayGene) {
-                        child = child.mutate(generator);
-                    }
-                    clone.children.set(i, child);
-                }
+        double choice = getRandom().nextDouble();
+
+        if (clone.children.size() < this.getSchema().getLength() && (clone.children.size() == 0 || choice <= Configuration.ADD_ELEMENT_PROB)) {
+            // Add a child (change gene into a different type or generate new value)
+            Gene child = generator.generateValueGene(children.get(index));
+            while (child instanceof ArrayGene) {
+                child = generator.generateValueGene(children.get(index));
             }
+            clone.children.add(index, child);
+        } else if (clone.children.size() > 1 && choice <= (Configuration.REMOVE_ELEMENT_PROB + Configuration.ADD_ELEMENT_PROB)) {
+            // Remove a child
+            clone.children.remove(index);
+        } else {
+            // Mutate a child (or more)
+            Gene child = clone.children.get(index);
+            child = child.mutate(generator);
+            // Make sure child is not another array (stripValues does not support arrays in arrays)
+            while (child instanceof ArrayGene) {
+                child = child.mutate(generator);
+            }
+            clone.children.set(index, child);
         }
+
         return clone;
     }
 
