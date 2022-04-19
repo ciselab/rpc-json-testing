@@ -3,7 +3,6 @@ package test_drivers;
 import connection.Client;
 import connection.ResponseObject;
 import org.json.JSONObject;
-import sun.plugin.dom.exception.InvalidStateException;
 import util.config.BudgetType;
 import util.config.Configuration;
 import util.config.CoverageIntervalType;
@@ -90,7 +89,7 @@ public abstract class TestDriver {
                 return false;
             }
         } else {
-            throw new InvalidStateException("Unknown budget type");
+            throw new IllegalStateException("Unknown budget type");
         }
 
         return true;
