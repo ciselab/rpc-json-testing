@@ -31,6 +31,7 @@ public class TestWriter {
                 "import org.json.JSONObject;\n" +
                 "import org.junit.jupiter.api.BeforeAll;\n" +
                 "import org.junit.jupiter.api.Test;\n" +
+                "import statistics.CoverageRecorder;\n" +
                 "\n" +
                 "import java.io.IOException;\n" +
                 "import java.net.MalformedURLException;\n" +
@@ -44,7 +45,7 @@ public class TestWriter {
                 "    public static void prep () {\n" +
                 "        try {\n" +
                 "            Client client = new Client(new URL(url_server));\n" +
-                "            testDriver = new " + testDriver + "(client, false);\n" +
+                "            testDriver = new " + testDriver + "(client, new CoverageRecorder());\n" +
                 "        } catch (MalformedURLException e) {\n" +
                 "            e.printStackTrace();\n" +
                 "        } catch (IOException e) {\n" +
@@ -55,7 +56,7 @@ public class TestWriter {
                 "    @Test\n" +
                 "    public void test () {\n" +
                 "        try {\n" +
-                "            testDriver.prepTest();\n" +
+                "            testDriver.prepareTest();\n" +
                 "            String method;\n" +
                 "            JSONObject request;\n\n");
 

@@ -5,7 +5,6 @@ import connection.ResponseObject;
 
 import statistics.CoverageRecorder;
 import org.json.JSONObject;
-import util.config.Configuration;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,22 +19,11 @@ public class GanacheTestDriver extends TestDriver {
 
     private List<String> accounts;
     private List<String> keys;
-    private CoverageRecorder sk;
-    private Long previousTimeStored;
-    private boolean atStart;
+    private CoverageRecorder coverageRecorder;
 
-    public GanacheTestDriver(Client client, Long runTime, boolean checkCoverage) {
-        super(client, runTime, checkCoverage);
-        sk = new CoverageRecorder();
-        previousTimeStored = System.currentTimeMillis();
-        atStart = true;
-    }
-
-    public GanacheTestDriver(Client client, boolean checkCoverage) {
-        super(client, checkCoverage);
-        sk = new CoverageRecorder();
-        previousTimeStored = System.currentTimeMillis();
-        atStart = true;
+    public GanacheTestDriver(Client client, CoverageRecorder coverageRecorder) {
+        super(client);
+        this.coverageRecorder = coverageRecorder;
     }
 
     /**
@@ -109,24 +97,6 @@ public class GanacheTestDriver extends TestDriver {
     }
 
     /**
-     * This method is executed before each test to make sure the server is in the same state for each test.
-     * @throws Exception
-     */
-    public void prepTest() throws Exception {
-        if (shouldCheckCoverage()) {
-            checkCoverage();    // Check whether coverage needs to be documented.
-        }
-
-        prepareServer();
-
-        if (atStart) {
-            recordCoverage(System.currentTimeMillis());
-            atStart = false;
-            prepareServer();
-        }
-    }
-
-    /**
      * Prepare the server by reading and storing the provided account information.
      * @throws IOException
      */
@@ -152,27 +122,20 @@ public class GanacheTestDriver extends TestDriver {
         request = replaceKnownStrings(request, "__MASTER_KEY__",  keys);
 
         // TODO something with private keys as well
-        return getClient().createRequest(method, request);
-    }
+        ResponseObject object = getClient().createRequest(method, request);
 
-    /**
-     * Check whether coverage should be measured (when a certain time has passed).
-     * @throws IOException
-     */
-    public void checkCoverage() throws IOException {
-        Long currentTime = System.currentTimeMillis();
-        if (currentTime - previousTimeStored >= Configuration.RECORD_COVERAGE_INTERVAL) {
-            previousTimeStored = currentTime;
-            recordCoverage(currentTime);
-        }
+        checkCoverage();
+        this.nextEvaluation();
+
+        return object;
     }
 
     /**
      * Run the script to compute the coverage and read and store the results.
-     * @param currentTime
+     * @param timePassed
      * @throws IOException
      */
-    public void recordCoverage(Long currentTime) throws IOException {
+    public void recordCoverage(Long timePassed, Long generation, Long evaluation) throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
         pb.command("/blockchain-testing/scripts/ganache/coverageGanache.sh");
@@ -206,7 +169,7 @@ public class GanacheTestDriver extends TestDriver {
         double branchcoverage = Double.parseDouble(results[2].trim());
         double linecoverage = Double.parseDouble(results[4].trim());
 
-        sk.recordCoverage(currentTime, linecoverage, 1, branchcoverage, 1);
+        coverageRecorder.recordCoverage(timePassed, generation, evaluation, linecoverage, 1, branchcoverage, 1);
     }
 
 }

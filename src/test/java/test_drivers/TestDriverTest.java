@@ -3,6 +3,7 @@ package test_drivers;
 import connection.Client;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import statistics.CoverageRecorder;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,7 +20,7 @@ class TestDriverTest {
         URL url = new URL(url_server);
         Client client = new Client(url);
         Long runTime = new Long(1 * 60 * 1000);
-        TestDriver testDriver = new RippledTestDriver(client, runTime, true);
+        TestDriver testDriver = new RippledTestDriver(client, new CoverageRecorder());
 
         String constant = "__ACCOUNT__";
         JSONObject request = new JSONObject();

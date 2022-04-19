@@ -8,6 +8,7 @@ import search.metaheuristics.RandomFuzzer;
 import openRPC.Specification;
 
 import statistics.Archive;
+import statistics.CoverageRecorder;
 import statistics.MethodCoverage;
 
 import test_drivers.GanacheTestDriver;
@@ -43,14 +44,13 @@ public class Main {
         TestDriver testDriver = setTestDriver(); // Specify the testDriver to run tests suitable for the selected server
         Heuristic heuristic = setHeuristic(generator, testDriver); // Create the heuristic to be used
 
-        System.out.println("Experiment will run for " + RUNTIME + " minute(s) = " + ((double) RUNTIME / 60) + " hour(s)");
+//        System.out.println("Experiment will run for " + RUNTIME + " minute(s) = " + ((double) RUNTIME / 60) + " hour(s)");
         System.out.println("Mutation percentage: " + PROPORTION_MUTATED);
 
         try {
             List<Individual> population = heuristic.generatePopulation(POPULATION_SIZE); // the first generation
             heuristic.gatherResponses(population); // process requests and responses of first generation
 
-            // Stopping criterium = time
             while (testDriver.shouldContinue()) {
                 population = nextGeneration(testDriver, heuristic, population); // move onto the next generation
             }
@@ -73,7 +73,7 @@ public class Main {
     public static void readArguments(String args[]) {
         try {
             HEURISTIC = Integer.parseInt(args[0]);
-            RUNTIME = Integer.parseInt(args[1]); // Time in minutes
+            BUDGET = Integer.parseInt(args[1]); // Time in minutes, number of evals or generations
             SERVER = args[2]; // r or g
             PROPORTION_MUTATED = Double.parseDouble(args[3]);
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -98,7 +98,7 @@ public class Main {
             filepath = directory + System.getProperty("file.separator") + "ripple-openrpc.json";
             url_server = "http://127.0.0.1:5005";
         } else {
-            filepath = directory + System.getProperty("file.separator") + "ripple-openrpc.json";
+            filepath = directory + System.getProperty("file.separator") + "ripple-openrpc-small.json";
             url_server = "https://s.altnet.rippletest.net:51234"; // The url for the Ripple JSON-RPC API ledger (testnet)
         }
 
@@ -126,19 +126,19 @@ public class Main {
         try {
             URL url = new URL(url_server);
             Client client = new Client(url);
+            CoverageRecorder coverageRecorder = new CoverageRecorder();
 
-            Long runTime = new Long(RUNTIME * 60 * 1000);
             if (SERVER.equals("g")) {
                 System.out.println("Using g: Ganache server");
-                testDriver = new GanacheTestDriver(client, runTime, true);
+                testDriver = new GanacheTestDriver(client, coverageRecorder);
                 testDriverString = "GanacheTestDriver";
             } else if (SERVER.equals("r")) {
                 System.out.println("Using r: Rippled server");
-                testDriver = new RippledTestDriver(client, runTime, true);
+                testDriver = new RippledTestDriver(client, coverageRecorder);
                 testDriverString = "RippledTestDriver";
             } else {
                 System.out.println("No or invalid argument specified for server. Using default server: Rippled TestNet");
-                testDriver = new RippledTestDriverTestNet(client, runTime, true);
+                testDriver = new RippledTestDriverTestNet(client, coverageRecorder);
                 testDriverString = "RippledTestDriverTestNet";
             }
 
@@ -177,11 +177,10 @@ public class Main {
      * @return the newly created generation.
      */
     public static List<Individual> nextGeneration(TestDriver testDriver, Heuristic heuristic, List<Individual> population) {
-        System.out.println("Starting generation: " + getCollector().getGeneration() + ", "
-                + (testDriver.getTimeLeft() / 1000) + " seconds = " + (testDriver.getTimeLeft() / (60*1000)) + " minutes left.");
-
         getCollector().nextGeneration();
         population = heuristic.nextGeneration(population);
+
+        System.out.println("Generation: " + (getCollector().getGeneration()-1) + " was processed!");
 
         // Store some statistics for analysis purposes.
         System.out.println("Storing statistics for the previous generation.");
@@ -199,6 +198,8 @@ public class Main {
             }
             bestFitness.add(maxFitness);
         }
+
+        testDriver.nextGeneration();
         return population;
     }
 

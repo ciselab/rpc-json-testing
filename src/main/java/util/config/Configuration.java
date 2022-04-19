@@ -4,15 +4,26 @@ public final class Configuration {
 
     // - Arguments given to function
     public static int HEURISTIC = 1; // Default heuristic = randomFuzzer
-    public static long RUNTIME = 5; // Default = 5 minutes
     public static String SERVER = ""; // Default = rippled testnet
+
+    public static BudgetType BUDGET_TYPE = BudgetType.GENERATION;
+    public static long BUDGET = 1;
+    // for time = 5 minutes
+    // for evaluations = 5 evaluations
+    // for generations = 5 generations
+
+    public static CoverageIntervalType COVERAGE_INTERVAL_TYPE = CoverageIntervalType.GENERATION;
+    public static int INTERVAL = 1;
+    // for time = 1 minute
+    // for evaluations = 1 evaluation
+    // for generations = 1 generation
+
+    public static boolean COVERAGE_CHECK = true;
 
     // - General
     public static final int POPULATION_SIZE = 50;
     public static final int TOURNAMENT_SIZE = 4;
     public static final int REQUESTS_GENERATOR_LIMIT = 1;
-
-    public static final Long RECORD_COVERAGE_INTERVAL = (long) 5 * 60 * 1000; // 5 minutes
 
     // - Generator (generate chromosome)
     public static final double HTTP_METHOD_GET_PROB = 0.1;

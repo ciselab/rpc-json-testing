@@ -59,35 +59,35 @@ public abstract class Heuristic {
                 continue;
             }
 
-            if (testDriver.shouldContinue()) {
+            if (!testDriver.shouldContinue()) {
+                System.out.println("Requests of part of the individuals of this generation are successfully processed.");
+                return;
+            }
 
-                try {
-                    System.out.println("Preparing tests");
-                    testDriver.prepTest();
-                    System.out.println("Tests prepared");
+            try {
+                System.out.println("Preparing tests");
+                testDriver.prepareTest();
+                System.out.println("Tests prepared");
 
-                    ResponseObject responseObject = null;
+                ResponseObject responseObject = null;
 
-                    for (int j = 0; j < individual.getDna().size(); j++) {
-                        Chromosome chromosome = individual.getDna().get(j);
-                        responseObject = testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest());
-                    }
-                    System.out.println("Requests of individual are successfully handled.");
+                for (int j = 0; j < individual.getDna().size(); j++) {
+                    Chromosome chromosome = individual.getDna().get(j);
+                    responseObject = testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest());
+                }
+                System.out.println("Requests of individual are successfully handled.");
 
-                    if (responseObject == null) {
-                        ResponseObject ro = new ResponseObject("", new JSONObject(),-999, new JSONObject());
-                        individual.setResponseObject(ro);
-                        System.out.println("ResponseObject is null. This should never be the case!");
-                        throw new Exception("Individual with zero chromosomes!!!");
-                    }
-
-                    individual.setResponseObject(responseObject);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (responseObject == null) {
+                    ResponseObject ro = new ResponseObject("", new JSONObject(),-999, new JSONObject());
+                    individual.setResponseObject(ro);
+                    System.out.println("ResponseObject is null. This should never be the case!");
+                    throw new Exception("Individual with zero chromosomes!!!");
                 }
 
-                testDriver.checkWhetherToStop();
+                individual.setResponseObject(responseObject);
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         System.out.println("Requests of all individuals of this generation are successfully processed.");

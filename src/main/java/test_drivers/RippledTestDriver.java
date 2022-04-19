@@ -16,22 +16,11 @@ import java.util.List;
 public class RippledTestDriver extends TestDriver {
 
     private List<JSONObject> accounts;
-    private CoverageRecorder sk;
-    private Long previousTimeStored;
-    private boolean atStart;
+    private CoverageRecorder coverageRecorder;
 
-    public RippledTestDriver(Client client, Long runTime, boolean checkCoverage) {
-        super(client, runTime, checkCoverage);
-        sk = new CoverageRecorder();
-        previousTimeStored = System.currentTimeMillis();
-        atStart = true;
-    }
-
-    public RippledTestDriver(Client client, boolean checkCoverage) {
-        super(client, checkCoverage);
-        sk = new CoverageRecorder();
-        previousTimeStored = System.currentTimeMillis();
-        atStart = true;
+    public RippledTestDriver(Client client, CoverageRecorder coverageRecorder) {
+        super(client);
+        this.coverageRecorder = coverageRecorder;
     }
 
     /**
@@ -98,36 +87,6 @@ public class RippledTestDriver extends TestDriver {
         getClient().createRequest("POST", request);
     }
 
-//    /**
-//     * There is no consensus process in stand-alone mode so the ledger index must be manually advanced.
-//     * @throws IOException
-//     */
-//    private void manuallyAdvanceLedger() throws IOException {
-//        JSONObject request = new JSONObject();
-//        request.put("method", "ledger_accept");
-//
-//        ResponseObject responseObject = getClient().createRequest("POST", request);
-//        // TODO this value could also be used in requests
-//        int ledgerIndex = Integer.parseInt(responseObject.getResponseObject().getJSONObject("result").getString("ledger_current_index"));
-//    }
-
-    /**
-     * This method is executed before each test to make sure the server is in the same state for each test.
-     * @throws Exception
-     */
-    public void prepTest() throws Exception {
-        if (this.shouldCheckCoverage()) {
-            checkCoverage(); // check whether coverage should be stored
-        }
-        prepareServer();
-
-        if (atStart) {
-            recordCoverage(System.currentTimeMillis());
-            atStart = false;
-            prepareServer();
-        }
-    }
-
     /**
      * Prepare the server by creating accounts and making sure they have an amount of currencies.
      * @throws IOException
@@ -192,32 +151,23 @@ public class RippledTestDriver extends TestDriver {
         request = replaceKnownStrings(request, "__PUBLIC_KEY_HEX__", publicKeyHexStrings);
 
         ResponseObject responseObject = getClient().createRequest(method, request);
-//        manuallyAdvanceLedger();
 
         System.out.println("Test was successfully run.");
+
+        checkCoverage();
+        this.nextEvaluation();
 
         return responseObject;
     }
 
-    /**
-     * Check whether coverage should be measured (when a certain time has passed).
-     * @throws IOException
-     */
-    public void checkCoverage() throws IOException {
-        Long currentTime = System.currentTimeMillis();
 
-        if (currentTime - previousTimeStored >= Configuration.RECORD_COVERAGE_INTERVAL) {
-            previousTimeStored = currentTime;
-            recordCoverage(currentTime);
-        }
-    }
 
     /**
      * Run the script to compute the coverage and read and store the results.
-     * @param currentTime
+     * @param timePassed
      * @throws IOException
      */
-    public void recordCoverage(Long currentTime) throws IOException {
+    public void recordCoverage(Long timePassed, Long generation, Long evaluation) throws IOException {
         ProcessBuilder pb = new ProcessBuilder();
 
         pb.command("/blockchain-testing/scripts/rippled/coverageRippled.sh");
@@ -254,7 +204,7 @@ public class RippledTestDriver extends TestDriver {
         int branchescovered = Integer.parseInt(results[4].replace("(", ""));
         int branchtotal = Integer.parseInt(results[7].replace(")", ""));
 
-        sk.recordCoverage(currentTime, linescovered, linetotal, branchescovered, branchtotal);
+        coverageRecorder.recordCoverage(timePassed, generation, evaluation, linescovered, linetotal, branchescovered, branchtotal);
     }
 
 }

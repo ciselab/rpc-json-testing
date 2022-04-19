@@ -3,23 +3,23 @@ package test_drivers;
 import connection.Client;
 import connection.ResponseObject;
 import org.json.JSONObject;
+import statistics.CoverageRecorder;
+import util.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RippledTestDriverTestNet extends RippledTestDriver {
 
-    public RippledTestDriverTestNet(Client client, Long runTime, boolean checkCoverage) {
-        super(client, runTime, checkCoverage);
-    }
-
-    public RippledTestDriverTestNet(Client client, boolean checkCoverage) {
-        super(client, checkCoverage);
+    public RippledTestDriverTestNet(Client client, CoverageRecorder coverageRecorder) {
+        super(client, coverageRecorder);
+        // cannot get coverage with this mode
+        Configuration.COVERAGE_CHECK = false;
     }
 
 
     @Override
-    public void prepTest() {
+    public void prepareServer() {
 
     }
 
@@ -27,6 +27,7 @@ public class RippledTestDriverTestNet extends RippledTestDriver {
      * Run the test by sending the individual's request to the server. The placeholder Strings are replaced by values specific to the server state.
      * For the TestNet this means these values need to be adjusted by generating new account information on the rippled website
      * (due to the fact that the TestNet is reset every once in a while).
+     *
      * @param method
      * @param request
      * @return ResponseObject the server's response to the request
@@ -44,7 +45,14 @@ public class RippledTestDriverTestNet extends RippledTestDriver {
         keys.add("shYEDpCF1nNBqerUTZj9CUSJpHpDN");
         request = replaceKnownStrings(request, "__MASTER_KEY__", keys);
 
-        return getClient().createRequest(method, request);
+        System.out.println(request.toString());
+
+        ResponseObject object = getClient().createRequest(method, request);
+
+        checkCoverage();
+        this.nextEvaluation();
+
+        return object;
     }
 
 }

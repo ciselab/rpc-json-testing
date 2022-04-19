@@ -1,10 +1,6 @@
 package util;
 
-import openRPC.SchemaSpecification;
 import org.junit.jupiter.api.Test;
-import search.Chromosome;
-import search.genes.ArrayGene;
-import search.genes.BooleanGene;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -16,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 class RandomSingletonTest {
-
 
     @Test
     public void getRandomUniqueIndicesTest() {
