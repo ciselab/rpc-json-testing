@@ -1,7 +1,8 @@
-package search.genes;
+package search.genes.primitive;
 
 import search.Generator;
 import openRPC.SchemaSpecification;
+import search.genes.Gene;
 import util.config.Configuration;
 
 import java.util.ArrayList;
@@ -18,8 +19,8 @@ public class StringGene extends ValueGene<String> {
     final private String NUMBERS = "0123456789";
     final private String LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    public StringGene(SchemaSpecification schema, String value) {
-        super(schema, value);
+    public StringGene(SchemaSpecification chosenSchema, String value) {
+        super(chosenSchema, value);
     }
 
     @Override

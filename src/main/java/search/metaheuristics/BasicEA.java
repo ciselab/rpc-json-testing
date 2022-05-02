@@ -52,8 +52,9 @@ public class BasicEA extends Heuristic{
             String parent1String = parent1.toTotalJSONObject().toString();
 
             Individual mutant;
-            if (Configuration.CROSSOVER_ENABLED) {
-                 mutant = parent0.crossover(parent1);
+            if (Configuration.CROSSOVER_ENABLED) { // TODO crossover is not working currently
+                mutant = parent0;
+//                 mutant = parent0.crossover(parent1);
             } else {
                 mutant = parent0;
             }

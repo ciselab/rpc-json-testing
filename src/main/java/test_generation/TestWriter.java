@@ -1,6 +1,5 @@
 package test_generation;
 
-import search.Chromosome;
 import search.Individual;
 
 import java.io.File;
@@ -60,9 +59,10 @@ public class TestWriter {
                 "            String method;\n" +
                 "            JSONObject request;\n\n");
 
-        for (Chromosome chromosome : individual.getDna()) {
-            test.append("            method = \"").append(chromosome.getHTTPMethod()).append("\";\n").append("            request = new JSONObject(\"").append(chromosome.toRequest().toString().replace("\\", "\\\\").replace("\"", "\\\"")).append("\");\n").append("            testDriver.runTest(method, request);\n\n");
-        }
+        // TODO
+//        for (Chromosome chromosome : individual.getRoot()) {
+//            test.append("            method = \"").append(chromosome.getHTTPMethod()).append("\";\n").append("            request = new JSONObject(\"").append(chromosome.toRequest().toString().replace("\\", "\\\\").replace("\"", "\\\"")).append("\");\n").append("            testDriver.runTest(method, request);\n\n");
+//        }
 
         test.append("        } catch (Exception e) {\n" + "            e.printStackTrace();\n" + "        }\n" + "    }\n" + "}");
         try (FileWriter fw = new FileWriter(new File(testDirectory + "/" + name + ".java"))) {

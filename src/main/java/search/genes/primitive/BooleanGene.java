@@ -1,13 +1,14 @@
-package search.genes;
+package search.genes.primitive;
 
 import search.Generator;
 import openRPC.SchemaSpecification;
+import search.genes.Gene;
 import util.config.Configuration;
 
 public class BooleanGene extends ValueGene<Boolean> {
 
-    public BooleanGene(SchemaSpecification schema, Boolean value) {
-        super(schema, value);
+    public BooleanGene(SchemaSpecification chosenSchema, Boolean value) {
+        super(chosenSchema, value);
     }
 
     @Override
@@ -18,10 +19,10 @@ public class BooleanGene extends ValueGene<Boolean> {
             // Change gene into an entirely new value by generating new value
             Gene gene = getNewGene(generator);
 
-            // Enforce a change (i.e. not the exact same boolean)
-            if (gene.toJSON().equals(this.toJSON())) {
-                return new BooleanGene(this.getSchema(), !this.getValue());
-            }
+//            // Enforce a change (i.e. not the exact same boolean)
+//            if (gene.toJSON().toString().equals(this.toJSON().toString())) {
+//                return new BooleanGene(this.getSchema(), !this.getValue());
+//            }
 
             return gene;
         }

@@ -22,6 +22,8 @@ public class Specification {
     private static String separator = "/";
 
     private Map<String, List<ParamSpecification>> methods;
+    private Map<String, ResultSpecification> methodResults;
+
     private Map<String, List<SchemaSpecification>> schemas;
     private JSONObject object;
 
@@ -29,6 +31,7 @@ public class Specification {
         this.object = object;
 
         this.methods = new HashMap<>();
+        this.methodResults = new HashMap<>();
         this.schemas = new HashMap<>();
 
         this.resolveRefs();
@@ -97,10 +100,8 @@ public class Specification {
             for (Iterator it = object.keys(); it.hasNext(); ) {
                 String key = (String) it.next();
 
-                if (key.equals("result")) {
-                    // Nothing should be done with the result object (for now at least)
-                    continue;
-                } else if (key.equals("schema")) {
+                if (key.equals("schema")) {
+                    // TODO maybe we should separate result and param schemas
                     // Corresponds to the schema of a parameter
                     this.schemas.put(path + separator + key, extractTypes(object.getJSONObject(key)));
                 } else if (object.get(key) instanceof JSONObject) {
@@ -115,6 +116,8 @@ public class Specification {
                             List<ParamSpecification> paramSpecifications = getParamInfo(newPath + i, method);
 
                             methods.put(method.getString("name"), paramSpecifications);
+
+                            methodResults.put(method.getString("name"), getResultInfo(newPath + i, method));
                         }
                     }
 
@@ -149,6 +152,15 @@ public class Specification {
         }
 
         return paramSpecifications;
+    }
+
+    private ResultSpecification getResultInfo(String path, JSONObject object) {
+        JSONObject result = object.getJSONObject("result");
+
+        path += separator + "result";
+        String name = result.getString("name");
+
+        return new ResultSpecification(name, path + separator + "schema");
     }
 
     public static List<SchemaSpecification> extractTypes(JSONObject schema) {
@@ -192,6 +204,30 @@ public class Specification {
         return object;
     }
 
+
+    public List<String> findMatchingMethods(SchemaSpecification schema) {
+        List<String> matches = new ArrayList<>();
+
+        List<String> keys = new ArrayList<>(this.methodResults.keySet());
+        for (String key : keys) {
+            ResultSpecification resultSpecification = this.methodResults.get(key);
+            List<SchemaSpecification> schemas = getSchemas().get(resultSpecification.getPath());
+
+            if (schemas == null) {
+                throw new IllegalStateException("The result schema is not defined!");
+            }
+
+            for (SchemaSpecification compareSchema : schemas) {
+                if (schema.equals(compareSchema)) {
+                    matches.add(key);
+                }
+            }
+        }
+
+        return matches;
+    }
+
+
     public JSONObject getObject() {
         return object;
     }
@@ -202,5 +238,9 @@ public class Specification {
 
     public Map<String, List<SchemaSpecification>> getSchemas() {
         return schemas;
+    }
+
+    public Map<String, ResultSpecification> getMethodResults() {
+        return methodResults;
     }
 }

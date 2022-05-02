@@ -1,6 +1,7 @@
 package search.genes;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import search.Generator;
 import openRPC.SchemaSpecification;
 import util.RandomSingleton;
@@ -8,13 +9,14 @@ import util.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static util.RandomSingleton.getRandom;
 
 /**
  * ArrayGene represents the genes in an individual (the parameters of a method).
  */
-public class ArrayGene extends NestedGene<JSONArray> {
+public class ArrayGene extends Gene<JSONArray> {
 
     private List<Gene> children;
 
@@ -38,11 +40,16 @@ public class ArrayGene extends NestedGene<JSONArray> {
     }
 
     @Override
-    public JSONArray toJSON() {
+    public JSONArray toJSON(Map<MethodGene, JSONObject> previousResponse) {
         JSONArray jsonArray = new JSONArray();
 
         for (Gene child : this.getChildren()) {
-            jsonArray.put(child.toJSON());
+            if (previousResponse.containsKey(child)) {
+                System.out.println("MATCH");
+                System.out.println(child);
+                System.out.println(previousResponse.get(child));
+            }
+            jsonArray.put(child.toJSON(previousResponse));
         }
 
         return jsonArray;

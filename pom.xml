@@ -174,7 +174,7 @@
             <!--<resource>-->
                 <!--<directory>src/resources</directory>-->
                 <!--<includes>-->
-                    <!--<include>ripple-openrpc.json</include>-->
+                    <!--<include>ripple-openrpc-small.json</include>-->
                 <!--</includes>-->
             <!--</resource>-->
         <!--</resources>-->

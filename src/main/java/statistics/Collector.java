@@ -69,7 +69,7 @@ public class Collector {
             statusCodesArchive.put(ind.getResponseObject().getResponseCode(), statusCodesArchive.get(ind.getResponseObject().getResponseCode()) + 1);
 
             // Update API method occurrences statistics
-            String currentMethod = ind.getDna().get(ind.getDna().size() - 1).getApiMethod();
+            String currentMethod = ind.getRoot().getApiMethod();
             if (!methodCountArchive.containsKey(currentMethod)) {
                 methodCountArchive.put(currentMethod, 0);
             }
@@ -129,7 +129,7 @@ public class Collector {
         }
 
         // Count methods per generation
-        String currentMethod = ind.getDna().get(ind.getDna().size()-1).getApiMethod();
+        String currentMethod = ind.getRoot().getApiMethod();
         if (!methodCountPerGen.get(generation-1).containsKey(currentMethod)) {
             methodCountPerGen.get(generation-1).put(currentMethod, 0);
         }
@@ -149,7 +149,7 @@ public class Collector {
         }
 
         // Count methods per generation
-        String currentMethod = ind.getDna().get(ind.getDna().size()-1).getApiMethod();
+        String currentMethod = ind.getRoot().getApiMethod();
         if (!methodInArchiveCount.get(generation-1).containsKey(currentMethod)) {
             methodInArchiveCount.get(generation-1).put(currentMethod, 0);
         }

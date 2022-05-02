@@ -3,13 +3,7 @@ package openRPC;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static openRPC.Specification.extractTypes;
 
@@ -119,6 +113,32 @@ public class SchemaSpecification {
                 arrayItemSchemaSpecification = extractTypes(schema.getJSONObject("items"));
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SchemaSpecification that = (SchemaSpecification) o;
+        return isMutable == that.isMutable &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(min, that.min) &&
+                Objects.equals(max, that.max) &&
+                Objects.equals(pattern, that.pattern) &&
+                Arrays.equals(enums, that.enums) &&
+                Objects.equals(length, that.length) &&
+                Objects.equals(requiredKeys, that.requiredKeys) &&
+                Objects.equals(childSchemaSpecification, that.childSchemaSpecification) &&
+                Objects.equals(arrayItemSchemaSpecification, that.arrayItemSchemaSpecification);
+    }
+
+    @Override
+    public int hashCode() {
+
+        int result = Objects.hash(name, type, min, max, pattern, length, requiredKeys, childSchemaSpecification, arrayItemSchemaSpecification, isMutable);
+        result = 31 * result + Arrays.hashCode(enums);
+        return result;
     }
 
     public String getType() {

@@ -1,8 +1,10 @@
 package statistics;
 
 import search.Individual;
+import search.genes.MethodGene;
 
 import java.util.HashMap;
+import java.util.Stack;
 
 public class Archive extends HashMap<String, Individual> {
 
@@ -15,7 +17,8 @@ public class Archive extends HashMap<String, Individual> {
     public boolean putWithSecondaryObjectives(String key, Individual individual) {
         boolean wasPutInArchive = false;
         if (this.containsKey(key)) {
-            if (individual.getDna().size() < this.get(key).getDna().size()) {
+            Stack<MethodGene> requests = individual.getRequest();
+            if (requests.size() < this.get(key).getRequest().size()) {
                 this.put(key, individual);
             }
         } else {

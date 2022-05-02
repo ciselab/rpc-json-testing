@@ -36,12 +36,10 @@ public class CoverageRecorder {
      */
     public void recordCoverage(long timePassed, long generation, long evaluation, double linesCovered, int lineTotal, double branchesCovered, int branchTotal) {
 
-        Long minutesSinceStart = (timePassed) / (60 * 1000);
-
         double lineCoverage = linesCovered / lineTotal;
         double branchCoverage = branchesCovered / branchTotal;
-
-        System.out.println("Intermediate coverage results at time: " + minutesSinceStart + " = branch cov: " + branchCoverage + " and line cov: " + lineCoverage);
+        Long minutesSinceStart = (timePassed) / (60 * 1000);
+        System.out.println("Intermediate coverage results at time: " + minutesSinceStart + " mins = branch cov: " + branchCoverage + " and line cov: " + lineCoverage);
 
         // Append coverage to file immediately
         try {
@@ -57,7 +55,6 @@ public class CoverageRecorder {
                     + "," + lineCoverage
                     + System.lineSeparator()
             );
-//            writer.write("Time: " + minutesSinceStart + " minutes, branch coverage: " + branchCoverage +  " (" + branchesCovered + " branches), line coverage: " + lineCoverage + " (" + linesCovered + " lines)" + System.lineSeparator());
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();

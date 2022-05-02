@@ -3,6 +3,7 @@ package search.genes;
 import org.json.JSONObject;
 import search.Generator;
 import openRPC.SchemaSpecification;
+import search.genes.primitive.StringGene;
 import util.config.Configuration;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import static util.RandomSingleton.getRandomIndex;
 /**
  * JSONObjectGene represents the parameters (keys and corresponding values) of a method.
  */
-public class JSONObjectGene extends NestedGene<JSONObject> {
+public class JSONObjectGene extends Gene<JSONObject> {
 
     private Map<StringGene, Gene> children;
 
@@ -46,10 +47,15 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON(Map<MethodGene, JSONObject> previousResponse) {
         JSONObject object = new JSONObject();
         for (StringGene key : children.keySet()) {
-            object.put(key.toJSON(), children.get(key).toJSON());
+            if (previousResponse.containsKey(children.get(key))) {
+                System.out.println("MATCH OBJECT");
+                System.out.println(key);
+                System.out.println(previousResponse.get(children.get(key)));
+            }
+            object.put(key.toJSON(previousResponse), children.get(key).toJSON(previousResponse));
         }
         return object;
     }

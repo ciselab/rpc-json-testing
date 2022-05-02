@@ -7,7 +7,7 @@ public final class Configuration {
     public static String SERVER = ""; // Default = rippled testnet
 
     public static BudgetType BUDGET_TYPE = BudgetType.GENERATION;
-    public static long BUDGET = 1;
+    public static long BUDGET = 5;
     // for time = 5 minutes
     // for evaluations = 5 evaluations
     // for generations = 5 generations
@@ -21,7 +21,7 @@ public final class Configuration {
     public static boolean COVERAGE_CHECK = true;
 
     // - General
-    public static final int POPULATION_SIZE = 50;
+    public static final int POPULATION_SIZE = 12;
     public static final int TOURNAMENT_SIZE = 4;
     public static final int REQUESTS_GENERATOR_LIMIT = 1;
 
@@ -36,7 +36,7 @@ public final class Configuration {
     // All fitness excl random
     public static final double ARCHIVE_THRESHOLD = 0.8;
     // Random fuzzer
-    public static double PROPORTION_MUTATED = 0.0;
+    public static double PROPORTION_MUTATED = 0.9;
 
     // - Similarity
     public static final double THRESHOLD_DIFFERENT_FEATURES = 0.5;
@@ -71,11 +71,11 @@ public final class Configuration {
 
 
     // - Crossover settings
-    public static final boolean CROSSOVER_ENABLED = true;
+    public static final boolean CROSSOVER_ENABLED = true; // TODO crossover is not working currently
     public static final CrossoverType CROSSOVER_TYPE = CrossoverType.ONE_POINT; // RANDOM, ONE_POINT, OR TWO_POINT
 
     // - Test settings
-    public static final int NUMBER_OF_ACCOUNTS = 3;
+    public static final int NUMBER_OF_ACCOUNTS = 2;
 
     // - Attempts allowed to run failed request
     public static final int MAX_ATTEMPTS = 2;
@@ -83,6 +83,9 @@ public final class Configuration {
     public static final double SAMPLE_FROM_ARCHIVE = 0.0;
 
     public static final SelectionType SELECTION_TYPE = SelectionType.TOURNAMENT;
+
+
+    public static final boolean SAMPLE_METHOD_RESULTS_AS_PARAMS = true;
 }
 
 

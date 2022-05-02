@@ -1,7 +1,11 @@
 package search.genes;
 
+import org.json.JSONObject;
 import search.Generator;
 import openRPC.SchemaSpecification;
+
+import java.util.List;
+import java.util.Map;
 
 public abstract class Gene<T> {
 
@@ -11,13 +15,17 @@ public abstract class Gene<T> {
         this.schema = schema;
     }
 
-    abstract T toJSON();
+    public abstract T toJSON(Map<MethodGene, JSONObject> previousResponse);
 
-    abstract Gene mutate(Generator generator);
+    public abstract Gene mutate(Generator generator);
 
-    abstract Gene<T> copy();
+    public abstract Gene<T> copy();
 
     public SchemaSpecification getSchema() {
         return schema;
     }
+
+    public abstract boolean hasChildren();
+
+    public abstract List<Gene> getChildren();
 }

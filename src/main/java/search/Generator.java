@@ -1,16 +1,15 @@
 package search;
 
 import com.github.curiousoddman.rgxgen.RgxGen;
-import search.genes.ArrayGene;
-import search.genes.BooleanGene;
-import search.genes.ConstantStringGene;
-import search.genes.Gene;
-import search.genes.JSONObjectGene;
-import search.genes.LongGene;
-import search.genes.StringGene;
+import openRPC.ResultSpecification;
+import search.genes.*;
+import search.genes.primitive.BooleanGene;
+import search.genes.primitive.LongGene;
+import search.genes.primitive.StringGene;
 import openRPC.ParamSpecification;
 import openRPC.SchemaSpecification;
 import openRPC.Specification;
+import util.RandomSingleton;
 import util.config.Configuration;
 
 import java.util.ArrayList;
@@ -90,6 +89,7 @@ public class Generator {
         return specification.getSchemas().get(path);
     }
 
+
     /**
      * Retrieve the Gene from the given specification that corresponds to the type(s) of a param.
      * @param schema
@@ -114,6 +114,24 @@ public class Generator {
                 } else if (typeToBe == 2) {
                     type = "integer";
                 }
+            }
+        }
+
+        if (Configuration.SAMPLE_METHOD_RESULTS_AS_PARAMS) {
+            List<String> methods = specification.findMatchingMethods(schema);
+            System.out.println(methods);
+
+            if (!methods.isEmpty()) { // TODO should be certain chance (not always)
+                int index = RandomSingleton.getRandomIndex(methods);
+
+                String method = methods.get(index);
+
+                ArrayGene body = generateMethod(method);
+                ResultSpecification resultSpecification = this.getSpecification().getMethodResults().get(method);
+
+                MethodGene methodGene = new MethodGene(this.generateHTTPMethod(), method, body, resultSpecification);
+
+                return methodGene;
             }
         }
 
@@ -215,4 +233,7 @@ public class Generator {
         return method;
     }
 
+    public Specification getSpecification() {
+        return specification;
+    }
 }

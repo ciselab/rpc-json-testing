@@ -1,17 +1,15 @@
 package search.metaheuristics;
 
 import connection.ResponseObject;
+import openRPC.ResultSpecification;
 import org.json.JSONObject;
-import search.Chromosome;
 import search.Generator;
 import search.Individual;
 import search.genes.ArrayGene;
+import search.genes.MethodGene;
 import test_drivers.TestDriver;
-import util.config.Configuration;
-import util.RandomSingleton;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public abstract class Heuristic {
 
@@ -32,18 +30,13 @@ public abstract class Heuristic {
     }
 
     public Individual generateRandomIndividual() {
-        int nRequests = RandomSingleton.getRandom().nextInt(Configuration.REQUESTS_GENERATOR_LIMIT) + 1;
+        String methodName = generator.getRandomMethod();
+        ArrayGene method = generator.generateMethod(methodName);
+        ResultSpecification resultSpecification = generator.getSpecification().getMethodResults().get(methodName);
 
-        List<Chromosome> dna = new ArrayList<>();
+        MethodGene root = new MethodGene(generator.generateHTTPMethod(), methodName, method, resultSpecification);
 
-        for (int i = 0; i < nRequests; i++) {
-            String methodName = generator.getRandomMethod();
-            ArrayGene method = generator.generateMethod(methodName);
-            Chromosome chromosome = new Chromosome(generator.generateHTTPMethod(), methodName, method);
-            dna.add(chromosome);
-        }
-
-        return new Individual(dna);
+        return new Individual(root);
     }
 
 
@@ -64,6 +57,8 @@ public abstract class Heuristic {
                 return;
             }
 
+            Stack<MethodGene> requests = individual.getRequest();
+
             try {
                 System.out.println("Preparing tests");
                 testDriver.prepareTest();
@@ -71,9 +66,14 @@ public abstract class Heuristic {
 
                 ResponseObject responseObject = null;
 
-                for (int j = 0; j < individual.getDna().size(); j++) {
-                    Chromosome chromosome = individual.getDna().get(j);
-                    responseObject = testDriver.runTest(chromosome.getHTTPMethod(), chromosome.toRequest());
+                Map<MethodGene, JSONObject> responses = new HashMap<>();
+
+                while (!requests.isEmpty()) {
+                    MethodGene request = requests.pop();
+
+                    responseObject = testDriver.runTest(request.getHttpMethod(), request.toJSON(responses));
+
+                    responses.put(request, responseObject.getResponseObject());
                 }
                 System.out.println("Requests of individual are successfully handled.");
 

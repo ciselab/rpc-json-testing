@@ -1,7 +1,8 @@
-package search.genes;
+package search.genes.primitive;
 
 import search.Generator;
 import openRPC.SchemaSpecification;
+import search.genes.Gene;
 import util.config.Configuration;
 
 import static util.RandomSingleton.getRandom;
