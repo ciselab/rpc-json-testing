@@ -77,6 +77,10 @@ public class ArrayGene extends NestedGene<JSONArray> {
         List<SchemaSpecification> children = getSchema().getArrayItemSchemaSpecification();
 
         // Mutate elements of the array
+
+        if (clone.children.size() == 0 && clone.children.size() < this.getSchema().getLength()) {
+            return clone;
+        }
         int index = RandomSingleton.getRandomIndex(clone.children);
 
         double choice = getRandom().nextDouble();
