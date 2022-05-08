@@ -2,6 +2,7 @@ package search.genes;
 
 import search.Generator;
 import openRPC.SchemaSpecification;
+import util.config.Configuration;
 
 public abstract class Gene<T> {
 
@@ -19,5 +20,9 @@ public abstract class Gene<T> {
 
     public SchemaSpecification getSchema() {
         return schema;
+    }
+
+    public Gene getNewGene(Generator generator) {
+        return generator.generateValueGene(getSchema(), Configuration.TYPE_CHANGES);
     }
 }

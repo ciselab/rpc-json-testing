@@ -1,6 +1,5 @@
 package search.genes;
 
-import search.Generator;
 import openRPC.SchemaSpecification;
 
 /**
@@ -25,9 +24,6 @@ public abstract class ValueGene<T> extends Gene<T> {
         return value;
     }
 
-    public Gene getNewGene(Generator generator) {
-        return generator.generateValueGene(getSchema());
-    }
 
     @Override
     public String toString() {

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static util.RandomSingleton.getRandom;
+import static util.RandomSingleton.getRandomBool;
 
 /**
  * ArrayGene represents the genes in an individual (the parameters of a method).
@@ -49,7 +50,7 @@ public class ArrayGene extends NestedGene<JSONArray> {
     }
 
     @Override
-    public ArrayGene mutate(Generator generator) {
+    public Gene mutate(Generator generator) {
         ArrayGene clone = this.copy();
 
         // If there is no schema it means this is the main parameters array
@@ -67,7 +68,12 @@ public class ArrayGene extends NestedGene<JSONArray> {
             return clone;
         }
 
-        // If the array is always empty according to specification, it stays empty.
+        if (!getRandomBool(Configuration.MUTATION_INSTEAD_OF_GENERATION)) {
+            return this.getNewGene(generator);
+        }
+
+
+            // If the array is always empty according to specification, it stays empty.
         // TODO or maybe it should be filled with something?
 //        if (getSchema().getArrayItemSchemaSpecification().isEmpty()) {
 //            return clone;

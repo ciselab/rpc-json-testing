@@ -96,10 +96,19 @@ public class Generator {
      * @return Gene
      */
     public Gene generateValueGene(SchemaSpecification schema) {
+        return this.generateValueGene(schema, false);
+    }
+
+    /**
+     * Retrieve the Gene from the given specification that corresponds to the type(s) of a param.
+     * @param schema
+     * @return Gene
+     */
+    public Gene generateValueGene(SchemaSpecification schema, boolean changeGeneTypePossible) {
         String type = schema.getType();
 
         // With some probably alter the type of the gene
-        if (getRandomBool(Configuration.CHANGE_TYPE_PROB)) {
+        if (changeGeneTypePossible && getRandomBool(Configuration.CHANGE_TYPE_PROB)) {
             if (Configuration.ADVANCED_TYPE_CHANGES) {
                 int randomSchema = getRandomIndex(specification.getSchemas().values());
                 List<SchemaSpecification> options = (new ArrayList<>(specification.getSchemas().values())).get(randomSchema);

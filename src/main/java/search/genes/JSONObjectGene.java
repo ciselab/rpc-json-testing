@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static util.RandomSingleton.getRandom;
+import static util.RandomSingleton.getRandomBool;
 import static util.RandomSingleton.getRandomIndex;
 
 /**
@@ -80,12 +81,14 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
             return clone;
         }
 
+        if (!getRandomBool(Configuration.MUTATION_INSTEAD_OF_GENERATION)) {
+            return this.getNewGene(generator);
+        }
+
         // If the JSONObjectGene has no children, it will stay empty.
         if (getSchema().getChildSchemaSpecification().keySet().isEmpty()) {
             return clone;
         }
-
-        Map<String, List<SchemaSpecification>> children = getSchema().getChildSchemaSpecification();
 
         if (keys.size() > 0) {
             int index = util.RandomSingleton.getRandomIndex(keys);
@@ -96,11 +99,6 @@ public class JSONObjectGene extends NestedGene<JSONObject> {
                 // Add missing child/parameter to the object
             } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB) && clone.removeChild(keys.get(index).getValue())) {
                 // Remove child/parameter from the object
-            } else if (choice <= (Configuration.ADD_NONREQUIRED_CHILD_PROB + Configuration.REMOVE_CHILD_PROB + (1 - Configuration.MUTATION_INSTEAD_OF_GENERATION))) {
-                // Replace value of child/parameter with a newly generated one
-                StringGene key = keys.get(index);
-                List<SchemaSpecification> options = children.get(key.getValue());
-                clone.addChild(key, generator.generateValueGene(options.get(getRandomIndex(options))));
             } else {
                 // Mutate child/parameter
                 StringGene key = keys.get(index);

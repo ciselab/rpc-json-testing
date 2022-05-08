@@ -43,7 +43,8 @@ public class Chromosome {
             return new Chromosome(generator.generateHTTPMethod(), methodName, method);
         } else {
             // mutate parameters of api apiMethod
-            ArrayGene newGenes = genes.mutate(generator);
+            // this must always be an arraygene since the main parameters array is not mutated
+            ArrayGene newGenes = (ArrayGene) genes.mutate(generator);
             return new Chromosome(httpMethod, apiMethod, newGenes);
         }
     }
