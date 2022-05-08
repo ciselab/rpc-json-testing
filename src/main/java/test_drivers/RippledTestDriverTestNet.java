@@ -45,9 +45,11 @@ public class RippledTestDriverTestNet extends RippledTestDriver {
         keys.add("shYEDpCF1nNBqerUTZj9CUSJpHpDN");
         request = replaceKnownStrings(request, "__MASTER_KEY__", keys);
 
-        System.out.println(request.toString());
+        System.out.println("Request: " + request.toString());
 
         ResponseObject object = getClient().createRequest(method, request);
+
+        System.out.println("Response: " + object.getResponseObject().toString());
 
         checkCoverage();
         this.nextEvaluation();

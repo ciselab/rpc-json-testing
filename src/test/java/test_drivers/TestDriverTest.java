@@ -19,7 +19,6 @@ class TestDriverTest {
         String url_server = "https://s.altnet.rippletest.net:51234"; // The url for the Ripple JSON-RPC API ledger (testnet)
         URL url = new URL(url_server);
         Client client = new Client(url);
-        Long runTime = new Long(1 * 60 * 1000);
         TestDriver testDriver = new RippledTestDriver(client, new CoverageRecorder());
 
         String constant = "__ACCOUNT__";
