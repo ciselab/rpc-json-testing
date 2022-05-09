@@ -11,12 +11,16 @@ import util.config.Configuration;
 import util.RandomSingleton;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract class Heuristic {
 
     private Generator generator;
     private TestDriver testDriver;
+    private Set<String> requestHistory = new HashSet<>();
+
 
     public Heuristic(Generator generator, TestDriver testDriver) {
         this.generator = generator;
@@ -34,16 +38,27 @@ public abstract class Heuristic {
     public Individual generateRandomIndividual() {
         int nRequests = RandomSingleton.getRandom().nextInt(Configuration.REQUESTS_GENERATOR_LIMIT) + 1;
 
-        List<Chromosome> dna = new ArrayList<>();
+        Individual individual;
 
-        for (int i = 0; i < nRequests; i++) {
-            String methodName = generator.getRandomMethod();
-            ArrayGene method = generator.generateMethod(methodName);
-            Chromosome chromosome = new Chromosome(generator.generateHTTPMethod(), methodName, method);
-            dna.add(chromosome);
-        }
+        int count = 0;
 
-        return new Individual(dna);
+        do {
+            List<Chromosome> dna = new ArrayList<>();
+
+            for (int i = 0; i < nRequests; i++) {
+                String methodName = generator.getRandomMethod();
+                ArrayGene method = generator.generateMethod(methodName);
+                Chromosome chromosome = new Chromosome(generator.generateHTTPMethod(), methodName, method);
+                dna.add(chromosome);
+            }
+
+            individual = new Individual(dna);
+            count++;
+        } while (requestHistory.contains(individual.toString()) && count < 10);
+
+        requestHistory.add(individual.toString());
+
+        return individual;
     }
 
 

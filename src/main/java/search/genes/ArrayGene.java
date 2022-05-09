@@ -87,7 +87,7 @@ public class ArrayGene extends NestedGene<JSONArray> {
 //        if (clone.children.size() == 0 && clone.children.size() < this.getSchema().getLength()) {
 //            return clone;
 //        }
-        int index = RandomSingleton.getRandomIndex(clone.children);
+        int index = clone.children.size() == 0 ? -1 : RandomSingleton.getRandomIndex(clone.children);
 
         double choice = getRandom().nextDouble();
 
@@ -100,7 +100,11 @@ public class ArrayGene extends NestedGene<JSONArray> {
             while (child instanceof ArrayGene) {
                 child = generator.generateValueGene(schema);
             }
-            clone.children.add(index, child);
+            if (index == -1) {
+                clone.children.add(child);
+            } else {
+                clone.children.add(index, child);
+            }
         } else if (clone.children.size() > 1 && choice <= (Configuration.REMOVE_ELEMENT_PROB + Configuration.ADD_ELEMENT_PROB)) {
             // Remove a child
             clone.children.remove(index);

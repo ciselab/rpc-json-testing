@@ -22,7 +22,7 @@ public class ConstantStringGene extends ValueGene<String> {
             int value = Integer.parseInt(getValue());
 
             Integer mutatedValue = value + (getRandom().nextBoolean() ? 1 : -1);
-            mutatedValue = Math.min(mutatedValue, Configuration.NUMBER_OF_ACCOUNTS);
+            mutatedValue = Math.min(mutatedValue, Configuration.NUMBER_OF_ACCOUNTS - 1);
             mutatedValue = Math.max(mutatedValue, 0);
 
             return new ConstantStringGene(this.getSchema(), this.constant, mutatedValue);

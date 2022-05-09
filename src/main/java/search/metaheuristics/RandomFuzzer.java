@@ -16,12 +16,12 @@ import static util.RandomSingleton.getRandomBool;
 
 public class RandomFuzzer extends Heuristic {
 
+
     public RandomFuzzer(Generator generator, TestDriver testDriver) {
         super(generator, testDriver);
     }
 
     public List<Individual> nextGeneration(List<Individual> population) {
-
         List<Individual> nextPopulation = new ArrayList<>();
 
         // Part of the next generation consists of the existing individuals mutated, the other part is newly generated.
@@ -29,13 +29,7 @@ public class RandomFuzzer extends Heuristic {
             Individual mutant;
             if (getRandomBool(PROPORTION_MUTATED)) {
                 mutant = original.mutate(getGenerator());
-//                int count = 2;
-//                while (mutant.toString().equals(original.toString())) {
-//                    System.out.println("Mutation: " + count);
-//
-//                    mutant = original.mutate(getGenerator());
-//                    count ++;
-//                }
+
                 if (mutant.toString().equals(original.toString())) {
                     mutant = generateRandomIndividual();
                 }
