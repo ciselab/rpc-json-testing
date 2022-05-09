@@ -64,7 +64,7 @@ public final class Configuration {
     public static final double ADD_NEW_RANDOM_INDIVIDUAL = 0.01;
 
     // - Mutation operators
-    public static final int MUTATIONS_PER_INDIVIDUAL = 1;
+    public static final int MUTATIONS_PER_INDIVIDUAL = 2;
     public static final double MUTATE_HTTP_METHOD_PROB = 0.05;
     public static final double MUTATE_API_METHOD_PROB = 0.005;
     public static final double ADD_CHROMOSOME_PROP = 0.05;

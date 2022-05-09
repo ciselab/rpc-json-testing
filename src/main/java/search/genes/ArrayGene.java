@@ -73,29 +73,32 @@ public class ArrayGene extends NestedGene<JSONArray> {
         }
 
 
-            // If the array is always empty according to specification, it stays empty.
-        // TODO or maybe it should be filled with something?
-//        if (getSchema().getArrayItemSchemaSpecification().isEmpty()) {
-//            return clone;
-//        }
+        // If the array is always empty according to specification, it stays empty.
+        // TODO or maybe it should be filled with something random
+        if (getSchema().getArrayItemSchemaSpecification().isEmpty()) {
+            return clone;
+        }
 
         // TODO we only take the first specification for now but this could be an anyof/oneof so we should take into account that we have to change the type of all child genes
         List<SchemaSpecification> children = getSchema().getArrayItemSchemaSpecification();
 
         // Mutate elements of the array
 
-        if (clone.children.size() == 0 && clone.children.size() < this.getSchema().getLength()) {
-            return clone;
-        }
+//        if (clone.children.size() == 0 && clone.children.size() < this.getSchema().getLength()) {
+//            return clone;
+//        }
         int index = RandomSingleton.getRandomIndex(clone.children);
 
         double choice = getRandom().nextDouble();
 
-        if (clone.children.size() < this.getSchema().getLength() && (clone.children.size() == 0 || choice <= Configuration.ADD_ELEMENT_PROB)) {
+        if (clone.children.size() == 0 || choice <= Configuration.ADD_ELEMENT_PROB) {
+            int schemaIndex = RandomSingleton.getRandomIndex(children);
+            SchemaSpecification schema = children.get(schemaIndex);
+
             // Add a child (change gene into a different type or generate new value)
-            Gene child = generator.generateValueGene(children.get(index));
+            Gene child = generator.generateValueGene(schema);
             while (child instanceof ArrayGene) {
-                child = generator.generateValueGene(children.get(index));
+                child = generator.generateValueGene(schema);
             }
             clone.children.add(index, child);
         } else if (clone.children.size() > 1 && choice <= (Configuration.REMOVE_ELEMENT_PROB + Configuration.ADD_ELEMENT_PROB)) {
