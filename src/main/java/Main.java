@@ -135,7 +135,7 @@ public class Main {
                 System.out.println("Using g: Ganache server");
                 testDriver = new GanacheTestDriver(client, coverageRecorder);
                 testDriverString = "GanacheTestDriver";
-            } else if (SERVER.equals("r")) {
+            } else if (SERVER.equals("r") || SERVER.equals("r2")) {
                 System.out.println("Using r: Rippled server");
                 testDriver = new RippledTestDriver(client, coverageRecorder);
                 testDriverString = "RippledTestDriver";
