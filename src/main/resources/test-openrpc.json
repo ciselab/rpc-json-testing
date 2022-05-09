@@ -46,40 +46,6 @@
           "type": "object"
         }
       }
-    },
-    {
-      "name": "ledger_closed",
-      "description": "Get the latest closed ledger version.",
-      "params": [
-      ],
-      "result": {
-        "name": "result",
-        "description": "The unique identifiers of the most recently closed ledger.",
-        "schema": {
-          "type": "object",
-          "properties": {
-            "ledger_hash": {
-              "$ref": "#/components/schemas/Hex64String"
-            },
-            "ledger_index": {
-              "$ref": "#/components/schemas/LedgerIndex"
-            }
-          }
-        }
-      }
-    },
-    {
-      "name": "ledger_current",
-      "description": "Get the current working ledger version.",
-      "params": [
-      ],
-      "result": {
-        "name": "result",
-        "description": "The unique identifiers of the current in-progress ledger.",
-        "schema": {
-          "$ref": "#/components/contentDescriptors/LedgerIndex"
-        }
-      }
     }
   ],
   "components": {
