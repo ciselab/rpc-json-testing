@@ -27,7 +27,7 @@ RUN mkdir -p /root/.config/ripple && \
 RUN git clone https://lisv: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@github.com/SERG-Delft/blockchain-testing.git && cd blockchain-testing && \
 	git pull && \
 	mvn clean install -DskipTests && \
-	cp src/main/resources/ripple-openrpc.json target/
+	cp src/main/resources/ripple-openrpc.json target/ && \
 	cp src/main/resources/ripple-openrpc-small.json target/
 	
 # Give permission to run scripts.
