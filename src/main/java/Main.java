@@ -97,8 +97,11 @@ public class Main {
         } else if (SERVER.equals("r")) {
             filepath = directory + System.getProperty("file.separator") + "ripple-openrpc.json";
             url_server = "http://127.0.0.1:5005";
+        } else if (SERVER.equals("r2")) {
+            filepath = directory + System.getProperty("file.separator") + "ripple-openrpc-small.json";
+            url_server = "http://127.0.0.1:5005";
         } else {
-            filepath = directory + System.getProperty("file.separator") + "ripple-openrpc.json";
+            filepath = directory + System.getProperty("file.separator") + "ripple-openrpc-small.json";
             url_server = "https://s.altnet.rippletest.net:51234"; // The url for the Ripple JSON-RPC API ledger (testnet)
         }
 
