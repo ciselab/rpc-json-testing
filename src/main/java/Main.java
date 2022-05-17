@@ -1,7 +1,9 @@
 import connection.Client;
 
+import objective.*;
 import search.Generator;
 import search.Individual;
+import search.metaheuristics.BasicEA;
 import search.metaheuristics.Heuristic;
 import search.metaheuristics.RandomFuzzer;
 
@@ -159,10 +161,47 @@ public class Main {
      */
     public static Heuristic setHeuristic(Generator generator, TestDriver testDriver) {
         Heuristic heuristic;
+        Fitness fitness;
+
         switch (HEURISTIC) {
             case 1:
                 System.out.println("Using 1: RandomFuzzer");
                 heuristic = new RandomFuzzer(generator, testDriver);
+                break;
+            case 2:
+                System.out.println("Using 2: StatusCodeFitness");
+                fitness = new StatusCodeFitness();
+                heuristic = new BasicEA(generator, testDriver, fitness);
+                break;
+            case 3:
+                System.out.println("Using 3: ResponseFitnessPredefinedTypes");
+                fitness = new ResponseFitnessPredefinedTypes();
+                heuristic = new BasicEA(generator, testDriver, fitness);
+                break;
+            case 4:
+                System.out.println("Using 4: ResponseFitnessClustering");
+                fitness = new ResponseFitnessClustering();
+                heuristic = new BasicEA(generator, testDriver, fitness);
+                break;
+            case 5:
+                System.out.println("Using 5: ResponseFitnessClustering2");
+                fitness = new ResponseFitnessClustering2();
+                heuristic = new BasicEA(generator, testDriver, fitness);
+                break;
+            case 6:
+                System.out.println("Using 6: ResponseStructureFitness");
+                fitness = new ResponseStructureFitness();
+                heuristic = new BasicEA(generator, testDriver, fitness);
+                break;
+            case 7:
+                System.out.println("Using 7: ResponseStructureFitness2");
+                fitness = new ResponseStructureFitness2();
+                heuristic = new BasicEA(generator, testDriver, fitness);
+                break;
+            case 8:
+                System.out.println("Using 8: DiversityBasedFitness");
+                fitness = new DiversityBasedFitness();
+                heuristic = new BasicEA(generator, testDriver, fitness);
                 break;
             default:
                 System.out.println("No or invalid argument specified for fitness. Using default heuristic: RandomFuzzer");
