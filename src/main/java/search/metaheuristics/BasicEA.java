@@ -14,8 +14,9 @@ import java.util.List;
 import static util.RandomSingleton.getRandom;
 import static util.RandomSingleton.getRandomBool;
 import static util.RandomSingleton.getRandomIndex;
+import static util.config.Configuration.PROPORTION_MUTATED;
 
-public class BasicEA extends Heuristic{
+public class BasicEA extends Heuristic {
 
     private Fitness fitness;
 
@@ -34,37 +35,42 @@ public class BasicEA extends Heuristic{
                 return population;
             }
 
-            if (getRandomBool(Configuration.ADD_NEW_RANDOM_INDIVIDUAL)) {
-
-                if (getRandomBool(Configuration.SAMPLE_FROM_ARCHIVE)) {
-                    String key = (new ArrayList<>(Collector.getCollector().getArchive().keySet())).get(getRandomIndex(Collector.getCollector().getArchive().keySet()));
-                    offspring.add(Collector.getCollector().getArchive().get(key));
-                } else {
-                    offspring.add(generateRandomIndividual());
-                }
-                continue;
-            }
-
-            Individual parent0 = population.get(i);
-            Individual parent1 = population.get(getRandomIndex(population));
-
-            String parent0String = parent0.toTotalJSONObject().toString();
-            String parent1String = parent1.toTotalJSONObject().toString();
-
             Individual mutant;
-            if (Configuration.CROSSOVER_ENABLED) {
-                 mutant = parent0.crossover(parent1);
+
+            if (getRandomBool(PROPORTION_MUTATED)) {
+
+                if (getRandomBool(Configuration.ADD_NEW_RANDOM_INDIVIDUAL)) {
+                    if (getRandomBool(Configuration.SAMPLE_FROM_ARCHIVE)) {
+                        String key = (new ArrayList<>(Collector.getCollector().getArchive().keySet())).get(getRandomIndex(Collector.getCollector().getArchive().keySet()));
+                        offspring.add(Collector.getCollector().getArchive().get(key));
+                    } else {
+                        offspring.add(generateRandomIndividual());
+                    }
+                    continue;
+                }
+
+                Individual parent0 = population.get(i);
+                Individual parent1 = population.get(getRandomIndex(population));
+
+                String parent0String = parent0.toTotalJSONObject().toString();
+                String parent1String = parent1.toTotalJSONObject().toString();
+
+                if (Configuration.CROSSOVER_ENABLED) {
+                    mutant = parent0.crossover(parent1);
+                } else {
+                    mutant = parent0;
+                }
+
+                for (int j = 0; j < Configuration.MUTATIONS_PER_INDIVIDUAL; j++) {
+                    mutant = mutant.mutate(getGenerator());
+                }
+
+                String mutantString = mutant.toTotalJSONObject().toString();
+
+                if (parent0String.equals(mutantString) || parent1String.equals(mutantString)) {
+                    mutant = generateRandomIndividual();
+                }
             } else {
-                mutant = parent0;
-            }
-
-            for (int j = 0; j < Configuration.MUTATIONS_PER_INDIVIDUAL; j++) {
-                mutant = mutant.mutate(getGenerator());
-            }
-
-            String mutantString = mutant.toTotalJSONObject().toString();
-
-            if (parent0String.equals(mutantString) || parent1String.equals(mutantString)) {
                 mutant = generateRandomIndividual();
             }
 
@@ -84,11 +90,6 @@ public class BasicEA extends Heuristic{
         fitness.evaluate(getGenerator(), offspring);
 
 
-//        for (int i = 0; i < offspring.size(); i++) {
-//            System.out.println("" + offspring.get(i).getFitness() + " " + offspring.get(i).toString());
-//        }
-
-
         if (Configuration.SELECTION_TYPE == SelectionType.TOURNAMENT) {
             return tournamentSelection(offspring, Configuration.TOURNAMENT_SIZE);
         } else if (Configuration.SELECTION_TYPE == SelectionType.ELITIST) {
@@ -99,6 +100,7 @@ public class BasicEA extends Heuristic{
 
     /**
      * Selection based on Tournament Selection.
+     *
      * @param population
      * @param tournamentSize
      * @return the next population of individuals
@@ -118,7 +120,7 @@ public class BasicEA extends Heuristic{
                 }
 
                 tournament.add(population.remove(getRandom().nextInt(population.size())));
-                
+
                 System.out.println("Population size = " + population.size());
             }
 
@@ -138,6 +140,7 @@ public class BasicEA extends Heuristic{
 
     /**
      * Selection based on Elitist Selection.
+     *
      * @param population
      * @return the next population of individuals
      */

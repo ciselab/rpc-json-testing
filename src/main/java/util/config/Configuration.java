@@ -72,7 +72,7 @@ public final class Configuration {
 
 
     // - Crossover settings
-    public static final boolean CROSSOVER_ENABLED = true;
+    public static final boolean CROSSOVER_ENABLED = false;
     public static final CrossoverType CROSSOVER_TYPE = CrossoverType.ONE_POINT; // RANDOM, ONE_POINT, OR TWO_POINT
 
     // - Test settings
