@@ -91,14 +91,6 @@ public class DiversityBasedFitness extends Fitness {
             // Fitness is between 0 and 1.
             double fitness = 1.0 / (1 + cost);
 
-            // TODO not use this hack for worst output
-            if (individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("random") ||
-                individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("tx") ||
-                individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("server_info") ||
-                individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("server_state")) {
-                fitness = 0;
-            }
-
             individual.setFitness(fitness);
             getCollector().collect(method, responseObject.getResponseCode(), strippedString, String.valueOf(featureAndWeightVector.getKey()));
 
