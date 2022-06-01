@@ -22,7 +22,6 @@ public final class Configuration {
 
     // - General
     public static final int POPULATION_SIZE = 50;
-    public static final int TOURNAMENT_SIZE = 4;
     public static final int REQUESTS_GENERATOR_LIMIT = 1;
 
     // - Generator (generate chromosome)
@@ -57,16 +56,16 @@ public final class Configuration {
     public static final double OTHER_ENUM_PROB = 0.2;
 
     // Type mutation probabilities
-    public static final boolean TYPE_CHANGES = true;
-    public static final double CHANGE_TYPE_PROB = 0.25;
+    public static final boolean TYPE_CHANGES = false;
+    public static final double CHANGE_TYPE_PROB = 0.25; // 0, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0
     public static final boolean ADVANCED_TYPE_CHANGES = true; // use schema to generate new values (of different types)
 
     public static final double ADD_NEW_RANDOM_INDIVIDUAL = 0.01;
 
     // - Mutation operators
-    public static final int MUTATIONS_PER_INDIVIDUAL = 2;
-    public static final double MUTATE_HTTP_METHOD_PROB = 0.05;
-    public static final double MUTATE_API_METHOD_PROB = 0.005;
+    public static final int MUTATIONS_PER_INDIVIDUAL = 2; // 1 2 4 8 16 32
+    public static final double MUTATE_HTTP_METHOD_PROB = 0.05; // 0.01, 0.05, 0.1
+    public static final double MUTATE_API_METHOD_PROB = 0.005; // 0.001, 0.005, 0.01
     public static final double ADD_CHROMOSOME_PROP = 0.05;
     public static final double DELETE_CHROMOSOME_PROP = 0.05;
 
@@ -84,6 +83,8 @@ public final class Configuration {
     public static final double SAMPLE_FROM_ARCHIVE = 0.0;
 
     public static final SelectionType SELECTION_TYPE = SelectionType.TOURNAMENT;
+    public static final int TOURNAMENT_SIZE = 4; // 2 4 8 16 (only when using tournament)
+
 }
 
 
