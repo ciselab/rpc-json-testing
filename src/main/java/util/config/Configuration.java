@@ -78,7 +78,7 @@ public final class Configuration {
     public static final int NUMBER_OF_ACCOUNTS = 3;
 
     // - Attempts allowed to run failed request
-    public static final int MAX_ATTEMPTS = 2;
+    public static final int MAX_ATTEMPTS = 0;
 
     public static final double SAMPLE_FROM_ARCHIVE = 0.0;
 
