@@ -56,8 +56,8 @@ public final class Configuration {
     public static final double OTHER_ENUM_PROB = 0.2;
 
     // Type mutation probabilities
-    public static final boolean TYPE_CHANGES = false;
-    public static final double CHANGE_TYPE_PROB = 0.25; // 0, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0
+    public static final boolean TYPE_CHANGES = true;
+    public static final double CHANGE_TYPE_PROB = 0.5; // 0, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0
     public static final boolean ADVANCED_TYPE_CHANGES = true; // use schema to generate new values (of different types)
 
     public static final double ADD_NEW_RANDOM_INDIVIDUAL = 0.01;
