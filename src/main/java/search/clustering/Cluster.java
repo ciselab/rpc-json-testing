@@ -44,7 +44,7 @@ public class Cluster {
 
         for (int i = 0; i < members.size(); i++) {
             double mean = 0;
-            double minSimilarity = 1;
+            double minSimilarity = Double.MAX_VALUE;
             for (int j = 0; j < members.size(); j++) {
                 if (i == j) {
                     continue;
@@ -57,7 +57,7 @@ public class Cluster {
 
             mean /= members.size();
 
-            if (mean > bestMean) {
+            if (mean >= bestMean) {
                 bestMean = mean;
                 best = i;
                 bestMinSimilarity = minSimilarity;
