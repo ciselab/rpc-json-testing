@@ -217,7 +217,7 @@ public class AgglomerativeClustering3 {
         // When feature vector did not belong to a cluster, save it to cluster later
         nonBelongers.add(value);
 
-        return 0;
+        return 1000;
     }
 
     public List<Cluster> getClusters() {
