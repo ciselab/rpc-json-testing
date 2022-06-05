@@ -14,6 +14,6 @@ done
 
 echo "computing coverage"
 cd /ganache-cli
-nyc report --reporter=lcov --reporter=text
+nyc report --reporter=lcov --reporter=text-summary
 
 exit 0

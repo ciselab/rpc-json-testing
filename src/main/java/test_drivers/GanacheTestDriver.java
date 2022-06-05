@@ -144,15 +144,20 @@ public class GanacheTestDriver extends TestDriver {
 
         Process p = pb.start();
 
-        String coverage = "";
+        String branchcov = "";
+        String linecov = "";
         try (BufferedReader reader = new BufferedReader(
             new InputStreamReader(p.getInputStream()))) {
 
             String line;
 
             while ((line = reader.readLine()) != null) {
-                if (line.contains("All files")) {
-                    coverage = line;
+                if (line.contains("Branches")) {
+                    branchcov = line;
+
+                }
+                if (line.contains("Lines")) {
+                    linecov = line;
                     break;
                 }
             }
@@ -164,12 +169,21 @@ public class GanacheTestDriver extends TestDriver {
             p.destroy();
         }
 
-        String[] results = coverage.split("\\|");
+        String branches = branchcov
+                .split("\\(")[1]
+                .split("\\)")[0];
 
-        double branchcoverage = Double.parseDouble(results[2].trim());
-        double linecoverage = Double.parseDouble(results[4].trim());
+        double branchesCovered = Double.parseDouble(branches.split("\\\\")[0]);
+        int branchTotal = Integer.parseInt(branches.split("\\\\")[1]);
 
-        coverageRecorder.recordCoverage(timePassed, generation, evaluation, linecoverage, 1, branchcoverage, 1);
+        String lines = linecov
+                .split("\\(")[1]
+                .split("\\)")[0];
+
+        double linesCovered = Double.parseDouble(lines.split("\\\\")[0]);
+        int linesTotal = Integer.parseInt(lines.split("\\\\")[1]);
+
+        coverageRecorder.recordCoverage(timePassed, generation, evaluation, linesCovered, linesTotal, branchesCovered, branchTotal);
     }
 
 }
