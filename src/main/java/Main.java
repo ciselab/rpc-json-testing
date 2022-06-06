@@ -46,8 +46,9 @@ public class Main {
         TestDriver testDriver = setTestDriver(); // Specify the testDriver to run tests suitable for the selected server
         Heuristic heuristic = setHeuristic(generator, testDriver); // Create the heuristic to be used
 
-//        System.out.println("Experiment will run for " + RUNTIME + " minute(s) = " + ((double) RUNTIME / 60) + " hour(s)");
-        System.out.println("Mutation percentage: " + PROPORTION_MUTATED);
+        System.out.println("BUDGET: " + BUDGET_TYPE + " amount = " + BUDGET
+                        + " | PROPORTION_MUTATED: " + PROPORTION_MUTATED
+                        + " | CHANGE_TYPE_PROB: " + CHANGE_TYPE_PROB);
 
         try {
             List<Individual> population = heuristic.generatePopulation(POPULATION_SIZE); // the first generation
@@ -74,10 +75,19 @@ public class Main {
      */
     public static void readArguments(String args[]) {
         try {
-            HEURISTIC = Integer.parseInt(args[0]);
+            HEURISTIC = Integer.parseInt(args[0]); // 1-8
             BUDGET = Integer.parseInt(args[1]); // Time in minutes, number of evals or generations
-            SERVER = args[2]; // r or g
-            PROPORTION_MUTATED = Double.parseDouble(args[3]);
+            String budgetType = args[2]; // Time, evals or generations
+            if (budgetType.equals("mins") || budgetType.equals("m") || budgetType.equals("time") || budgetType.equals("t")) {
+                BUDGET_TYPE = BUDGET_TYPE.TIME;
+            } else if (budgetType.equals("evals") || budgetType.equals("e")) {
+                BUDGET_TYPE = BUDGET_TYPE.EVALUATIONS;
+            } else {
+                BUDGET_TYPE = BUDGET_TYPE.GENERATION;
+            }
+            SERVER = args[3]; // r or g
+            PROPORTION_MUTATED = Double.parseDouble(args[4]);
+            CHANGE_TYPE_PROB = Double.parseDouble(args[5]);
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Argument(s) not specified. Default value(s) used.");
         } catch (NumberFormatException e) {
@@ -134,11 +144,11 @@ public class Main {
             CoverageRecorder coverageRecorder = new CoverageRecorder();
 
             if (SERVER.equals("g")) {
-                System.out.println("Using g: Ganache server");
+                System.out.println("SERVER: Ganache server");
                 testDriver = new GanacheTestDriver(client, coverageRecorder);
                 testDriverString = "GanacheTestDriver";
             } else if (SERVER.equals("r") || SERVER.equals("r2")) {
-                System.out.println("Using r: Rippled server");
+                System.out.println("SERVER: Rippled server");
                 testDriver = new RippledTestDriver(client, coverageRecorder);
                 testDriverString = "RippledTestDriver";
             } else {
@@ -271,7 +281,12 @@ public class Main {
 
         // Information on the amount of tests in the archive
         Archive archive = getCollector().getArchive();
-        String testInArchive = "Amount of tests in the archive: " + archive.size() + ", stopped at generation: " + getCollector().getGeneration();
+        String testInArchive = "Amount of tests in the archive: " + archive.size()
+                + ", stopped at generation: " + getCollector().getGeneration()
+                + " | SERVER: " + SERVER
+                + " | BUDGET: " + BUDGET + " " + BUDGET_TYPE
+                + " | PROPORTION_MUTATED: " + PROPORTION_MUTATED
+                + " | CHANGE_TYPE_PROB: " + CHANGE_TYPE_PROB;
         writeFile(testInArchive, "archive_size.txt");
     }
 
