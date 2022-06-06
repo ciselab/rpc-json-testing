@@ -16,7 +16,7 @@ RUN wget https://lisv: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@github.com/ripple
 	mv 1.6.0.zip rippled-1.6.0.zip && \
 	unzip rippled-1.6.0.zip
 RUN cd rippled-1.6.0 && \
-	python3 ./Builds/Test.py -v --dir coverage -- -j 4
+	python3 ./Builds/Test.py -v --dir coverage -- -j 8
 
 RUN mkdir -p /root/.config/ripple && \
 	cp ./rippled-1.6.0/cfg/rippled-example.cfg /root/.config/ripple/rippled.cfg && \
@@ -36,4 +36,4 @@ RUN cd blockchain-testing/scripts/rippled && chmod +x startRippled.sh
 RUN cd blockchain-testing/scripts/rippled && chmod +x coverageRippled.sh
 
 ENTRYPOINT ["blockchain-testing/scripts/rippled/script.sh"]
-CMD ["1", "60", "r", "0"]
+CMD ["1", "100", "gens", "r", "0", "0.25"]

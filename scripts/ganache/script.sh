@@ -18,8 +18,13 @@ done
 
 # Run the tool
 cd /blockchain-testing
-# The first argument is the fitness function used (1), the second arg is the time the experiment will run (in mins) and the third arg is the server used (g or r). The fourth argument is the proportion of individuals to be mutated.
-java -jar target/blockchain-testing-1.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3 $4
+# The first argument is the fitness function used (1-8),
+# The second arg is the budget of the experiment (mins/evals/generations depending on budget type)
+# The third arg is the budget type used (time, evals, or gens)
+# The fourth arg is the server used (g or r).
+# The fifth argument is the proportion of individuals to be mutated.
+# The sixth argument is the probability that a param will change type when mutated.
+java -jar target/blockchain-testing-1.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3 $4 $5 $6
 
 # Kill the ganache server
 id=$(lsof -t -i:8545 -sTCP:LISTEN)
@@ -33,7 +38,7 @@ done
 # Compute test coverage achieved by running the tool
 cd /ganache-cli
 nyc report > final_coverage_total.txt
-echo "These results are based on server: " $3", fitness function:" $1 ", mutation proportion: " $4 " and time:" $2 "minutes." >> final_coverage_total.txt cat final_coverage_total.txt
+echo "Server: " $4", heuristic:" $1 ", mutation proportion: " $5 ", type change probability: " $6 " and budget:" $2 " " $3 >> final_coverage_total.txt cat final_coverage_total.txt
 
 # Reset coverage before running the tests
 cd /ganache-cli
@@ -67,6 +72,6 @@ done
 # Compute test coverage achieved by running the generated tests
 cd /ganache-cli
 nyc report > final_coverage_archive.txt
-echo "These archive tests were based on server: " $3", fitness function:" $1 ", mutation proportion: " $4 " and time:" $2 "minutes." >> final_coverage_archive.txt cat final_coverage_archive.txt
+echo "Server: " $4", heuristic:" $1 ", mutation proportion: " $5 ", type change probability: " $6 " and budget:" $2 " " $3 >> final_coverage_archive.txt cat final_coverage_archive.txt
 
 exit
