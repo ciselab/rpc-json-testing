@@ -60,7 +60,7 @@ public final class Configuration {
     public static double CHANGE_TYPE_PROB = 0.25; // 0, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0
     public static final boolean ADVANCED_TYPE_CHANGES = true; // use schema to generate new values (of different types)
 
-    public static final double ADD_NEW_RANDOM_INDIVIDUAL = 0.01;
+    public static final double ADD_NEW_RANDOM_INDIVIDUAL = 0;
 
     // - Mutation operators
     public static final int MUTATIONS_PER_INDIVIDUAL = 2; // 1 2 4 8 16 32
@@ -78,7 +78,7 @@ public final class Configuration {
     public static final int NUMBER_OF_ACCOUNTS = 3;
 
     // - Attempts allowed to run failed request
-    public static final int MAX_ATTEMPTS = 0;
+    public static final int MAX_ATTEMPTS = 2;
 
     public static final double SAMPLE_FROM_ARCHIVE = 0.0;
 
