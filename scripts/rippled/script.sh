@@ -31,24 +31,24 @@ gcovr -s -r ./ -f 'src/ripple' -o final_lcoverage_total.txt
 echo "Server: " $4", heuristic:" $1 ", mutation proportion: " $5 ", type change probability: " $6 " and budget:" $2 " " $3 >> final_lcoverage_total.txt cat final_lcoverage_total.txt
 
 # Reset coverage and run the generated tests
-find . -type f -name "*.gcda" -delete 
-cd /blockchain-testing
-mvn clean test -Dtest=generated.ind*
+#find . -type f -name "*.gcda" -delete
+#cd /blockchain-testing
+#mvn clean test -Dtest=generated.ind*
 
 # Kill current rippled server at port 5005
-id=$(lsof -t -i:5005 -sTCP:LISTEN)
-echo "killing: $id"
-kill "$id"
-while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" != "" ]; do
- echo "waiting at kill...  -$(lsof -t -i:5005 -sTCP:LISTEN)-"
- sleep 0.1
-done
+#id=$(lsof -t -i:5005 -sTCP:LISTEN)
+#echo "killing: $id"
+#kill "$id"
+#while [ "$(lsof -t -i:5005 -sTCP:LISTEN)" != "" ]; do
+# echo "waiting at kill...  -$(lsof -t -i:5005 -sTCP:LISTEN)-"
+# sleep 0.1
+#done
 
 # Compute test coverage achieved by running the generated tests
-cd /rippled-1.6.0
-gcovr -s -b -r ./ -f 'src/ripple' -o final_bcoverage_archive.txt
-echo "Server: " $4", heuristic:" $1 ", mutation proportion: " $5 ", type change probability: " $6 " and budget:" $2 " " $3 >> final_bcoverage_archive.txt cat final_bcoverage_archive.txt
-gcovr -s -r ./ -f 'src/ripple' -o final_lcoverage_archive.txt
-echo "Server: " $4", heuristic:" $1 ", mutation proportion: " $5 ", type change probability: " $6 " and budget:" $2 " " $3 >> final_lcoverage_archive.txt cat final_lcoverage_archive.txt
+#cd /rippled-1.6.0
+#gcovr -s -b -r ./ -f 'src/ripple' -o final_bcoverage_archive.txt
+#echo "Server: " $4", heuristic:" $1 ", mutation proportion: " $5 ", type change probability: " $6 " and budget:" $2 " " $3 >> final_bcoverage_archive.txt cat final_bcoverage_archive.txt
+#gcovr -s -r ./ -f 'src/ripple' -o final_lcoverage_archive.txt
+#echo "Server: " $4", heuristic:" $1 ", mutation proportion: " $5 ", type change probability: " $6 " and budget:" $2 " " $3 >> final_lcoverage_archive.txt cat final_lcoverage_archive.txt
 
 exit
