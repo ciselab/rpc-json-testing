@@ -3,6 +3,7 @@ package search.clustering;
 import util.datastructures.Pair;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ public class Cluster {
     private List<List<Object>> members;
 
     private List<Object> representative;
-    private Double radius;
+    private Double similarityThreshold;
 
     public Cluster(SimilarityMetric metric, List<Integer> weightVector, List<List<Object>> members) {
         this.metric = metric;
@@ -32,17 +33,17 @@ public class Cluster {
     public Pair<Boolean, Double> isWithin(List<Object> value) {
         double similarity = metric.calculateSimilaritySingle(this.representative, value, weightVector);
 
-        return new Pair<>(similarity < radius, similarity);
+        return new Pair<>(similarity >= similarityThreshold, similarity);
     }
 
     public void findRepresentativeAndRadius() {
         int best = -1;
-        double bestMean = Double.MAX_VALUE;
-        double bestMax = -1;
+        double bestMean = 0;
+        double bestMinSimilarity = -1;
 
         for (int i = 0; i < members.size(); i++) {
             double mean = 0;
-            double max = 0;
+            double minSimilarity = Double.MAX_VALUE;
             for (int j = 0; j < members.size(); j++) {
                 if (i == j) {
                     continue;
@@ -50,28 +51,24 @@ public class Cluster {
                 double similarity = metric.calculateSimilaritySingle(members.get(i), members.get(j), weightVector);
                 mean += similarity;
 
-                max = Math.max(max, similarity);
+                minSimilarity = Math.min(minSimilarity, similarity);
             }
 
             mean /= members.size();
 
-            if (mean < bestMean) {
+            if (mean >= bestMean) {
                 bestMean = mean;
                 best = i;
-                bestMax = max;
+                bestMinSimilarity = minSimilarity;
             }
         }
 
         this.representative = members.get(best);
-        this.radius = bestMax;
+        this.similarityThreshold = bestMinSimilarity;
     }
 
     public List<Object> getRepresentative() {
         return representative;
-    }
-
-    public Double getRadius() {
-        return radius;
     }
 
     public List<List<Object>> getMembers() {

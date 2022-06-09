@@ -270,14 +270,14 @@ public class Main {
         (new File(testDirectory)).mkdir();
 
         // Information on API methods that occurred
-        writeFile(getCollector().getMethodCountTotal().toString(), "methods_total.txt");
-        writeFile(getCollector().getMethodCountArchive().toString(), "methods_archive.txt");
-        writeFile(getCollector().getMethodCountPerGen().toString(), "methods_per_gen.txt");
+        writeFile(getCollector().getMethodCountTotal().toString(), "methods_total.txt", false);
+        writeFile(getCollector().getMethodCountArchive().toString(), "methods_archive.txt", false);
+        writeFile(getCollector().getMethodCountPerGen().toString(), "methods_per_gen.txt", false);
 
         // Information on status codes that occurred
-        writeFile(getCollector().getStatusCodesTotal().toString(), "status_codes_total.txt");
-        writeFile(getCollector().getStatusCodesArchive().toString(), "status_codes_archive.txt");
-        writeFile(getCollector().getStatusCodesPerGen().toString(), "status_codes_per_gen.txt");
+        writeFile(getCollector().getStatusCodesTotal().toString(), "status_codes_total.txt", false);
+        writeFile(getCollector().getStatusCodesArchive().toString(), "status_codes_archive.txt", false);
+        writeFile(getCollector().getStatusCodesPerGen().toString(), "status_codes_per_gen.txt", false);
 
         // Information on the amount of tests in the archive
         Archive archive = getCollector().getArchive();
@@ -287,7 +287,7 @@ public class Main {
                 + " | BUDGET: " + BUDGET + " " + BUDGET_TYPE
                 + " | PROPORTION_MUTATED: " + PROPORTION_MUTATED
                 + " | CHANGE_TYPE_PROB: " + CHANGE_TYPE_PROB;
-        writeFile(testInArchive, "archive_size.txt");
+        writeFile(testInArchive, "archive_size.txt", false);
     }
 
     /**
