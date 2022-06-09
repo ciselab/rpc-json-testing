@@ -96,7 +96,7 @@ public class RippledTestDriver extends TestDriver {
 
         this.accounts = new ArrayList<>();
 
-        System.out.println("Test is being prepared.");
+//        System.out.println("Test is being prepared.");
         for (int i = 0; i < Configuration.NUMBER_OF_ACCOUNTS; i++) {
             ResponseObject accounts = retrieveAccount();
             if (!accounts.getResponseObject().has("result")) {
@@ -105,7 +105,7 @@ public class RippledTestDriver extends TestDriver {
             transferCurrencyToAccounts(accounts.getResponseObject());
             this.accounts.add(accounts.getResponseObject());
         }
-        System.out.println("Test was successfully prepared.");
+//        System.out.println("Test was successfully prepared.");
     }
 
     /**
@@ -152,7 +152,7 @@ public class RippledTestDriver extends TestDriver {
 
         ResponseObject responseObject = getClient().createRequest(method, request);
 
-        System.out.println("Test was successfully run.");
+//        System.out.println("Test was successfully run.");
 
         checkCoverage();
         this.nextEvaluation();
