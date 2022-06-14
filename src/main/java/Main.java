@@ -47,8 +47,10 @@ public class Main {
         Heuristic heuristic = setHeuristic(generator, testDriver); // Create the heuristic to be used
 
         System.out.println("BUDGET: " + BUDGET_TYPE + " amount = " + BUDGET
-                        + " | PROPORTION_MUTATED: " + PROPORTION_MUTATED
-                        + " | CHANGE_TYPE_PROB: " + CHANGE_TYPE_PROB);
+                + " | POPULATION_SIZE: " + POPULATION_SIZE
+                + " | PROPORTION_MUTATED: " + PROPORTION_MUTATED
+                + " | CHANGE_TYPE_PROB: " + CHANGE_TYPE_PROB
+                + " | NEW_CLUSTERS_AFTER_GEN: " + NEW_CLUSTERS_AFTER_GEN);
 
         try {
             List<Individual> population = heuristic.generatePopulation(POPULATION_SIZE); // the first generation
@@ -86,8 +88,10 @@ public class Main {
                 BUDGET_TYPE = BUDGET_TYPE.GENERATION;
             }
             SERVER = args[3]; // r or g
-            PROPORTION_MUTATED = Double.parseDouble(args[4]);
-            CHANGE_TYPE_PROB = Double.parseDouble(args[5]);
+            POPULATION_SIZE = Integer.parseInt(args[4]);
+            PROPORTION_MUTATED = Double.parseDouble(args[5]);
+            CHANGE_TYPE_PROB = Double.parseDouble(args[6]);
+            NEW_CLUSTERS_AFTER_GEN = Integer.parseInt(args[7]);
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Argument(s) not specified. Default value(s) used.");
         } catch (NumberFormatException e) {
@@ -285,7 +289,9 @@ public class Main {
                 + ", stopped at generation: " + getCollector().getGeneration()
                 + " | SERVER: " + SERVER
                 + " | BUDGET: " + BUDGET + " " + BUDGET_TYPE
+                + " | POPULATION: " + POPULATION_SIZE
                 + " | PROPORTION_MUTATED: " + PROPORTION_MUTATED
+                + " | NEW_CLUSTERS_AFTER_GEN: " + NEW_CLUSTERS_AFTER_GEN
                 + " | CHANGE_TYPE_PROB: " + CHANGE_TYPE_PROB;
         writeFile(testInArchive, "archive_size.txt", false);
     }

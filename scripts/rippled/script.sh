@@ -26,9 +26,9 @@ done
 # Compute test coverage achieved by running the tool
 cd /rippled-1.6.0
 gcovr -s -b -r ./ -f 'src/ripple' -o final_bcoverage_total.txt
-echo "Server: " $4", heuristic:" $1 ", mutation proportion: " $5 ", type change probability: " $6 " and budget:" $2 " " $3 >> final_bcoverage_total.txt cat final_bcoverage_total.txt
+echo "Server: " $4", heuristic:" $1 ", population: " $5 ", mutation proportion: " $6 ", type change probability: " $7 " and budget:" $2 " " $3 ", clustering after gens: " $8 >> final_bcoverage_total.txt cat final_bcoverage_total.txt
 gcovr -s -r ./ -f 'src/ripple' -o final_lcoverage_total.txt
-echo "Server: " $4", heuristic:" $1 ", mutation proportion: " $5 ", type change probability: " $6 " and budget:" $2 " " $3 >> final_lcoverage_total.txt cat final_lcoverage_total.txt
+echo "Server: " $4", heuristic:" $1 ", population: " $5 ", mutation proportion: " $6 ", type change probability: " $7 " and budget:" $2 " " $3 ", clustering after gens: " $8 >> final_lcoverage_total.txt cat final_lcoverage_total.txt
 
 # Reset coverage and run the generated tests
 #find . -type f -name "*.gcda" -delete
@@ -47,8 +47,8 @@ echo "Server: " $4", heuristic:" $1 ", mutation proportion: " $5 ", type change 
 # Compute test coverage achieved by running the generated tests
 #cd /rippled-1.6.0
 #gcovr -s -b -r ./ -f 'src/ripple' -o final_bcoverage_archive.txt
-#echo "Server: " $4", heuristic:" $1 ", mutation proportion: " $5 ", type change probability: " $6 " and budget:" $2 " " $3 >> final_bcoverage_archive.txt cat final_bcoverage_archive.txt
+#echo "Server: " $4", heuristic:" $1 ", population: " $5 ", mutation proportion: " $6 ", type change probability: " $7 " and budget:" $2 " " $3 ", clustering after gens: " $8 >> final_bcoverage_archive.txt cat final_bcoverage_archive.txt
 #gcovr -s -r ./ -f 'src/ripple' -o final_lcoverage_archive.txt
-#echo "Server: " $4", heuristic:" $1 ", mutation proportion: " $5 ", type change probability: " $6 " and budget:" $2 " " $3 >> final_lcoverage_archive.txt cat final_lcoverage_archive.txt
+#echo "Server: " $4", heuristic:" $1 ", population: " $5 ", mutation proportion: " $6 ", type change probability: " $7 " and budget:" $2 " " $3 ", clustering after gens: " $8 >> final_lcoverage_archive.txt cat final_lcoverage_archive.txt
 
 exit

@@ -21,7 +21,7 @@ public final class Configuration {
     public static boolean COVERAGE_CHECK = true;
 
     // - General
-    public static final int POPULATION_SIZE = 50;
+    public static int POPULATION_SIZE = 50;
     public static final int REQUESTS_GENERATOR_LIMIT = 1;
 
     // - Generator (generate chromosome)
@@ -31,7 +31,7 @@ public final class Configuration {
 
     // - Fitness functions
     // Fitness with clustering
-    public static final int NEW_CLUSTERS_AFTER_GEN = 3;
+    public static int NEW_CLUSTERS_AFTER_GEN = 3;
     // All fitness excl random
     public static final double ARCHIVE_THRESHOLD = 0.8;
     // Random fuzzer
