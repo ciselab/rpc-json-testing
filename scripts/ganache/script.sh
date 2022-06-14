@@ -24,7 +24,7 @@ cd /blockchain-testing
 # The fourth arg is the server used (g or r).
 # The fifth argument is the proportion of individuals to be mutated.
 # The sixth argument is the probability that a param will change type when mutated.
-java -jar target/blockchain-testing-1.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3 $4 $5 $6
+java -jar target/blockchain-testing-1.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3 $4 $5 $6 $7 $8
 
 # Kill the ganache server
 id=$(lsof -t -i:8545 -sTCP:LISTEN)

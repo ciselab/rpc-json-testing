@@ -14,15 +14,19 @@ To create a docker container based on the image manually, use the following comm
 
 **Note that this requires the docker image to have an entry point. If not, go to Step 3.**
 
-`docker run -it <name_image> $1 $2 $3 $4`
+`docker run -it <name_image> $1 $2 $3 $4 $5 $6 $7 $8`
 
 Or to tag the container with a name (makes it easier to access later):
 
-`docker run -it --name <name_container> <name_image> $1 $2 $3 $4`
-* The first argument $1 is the fitness function used (the only option is 1: the grammar-based fuzzer), 
-* The second argument $2 is the time the experiment will run (in mins, e.g. 30).
-* The third argument $3 is the server used (g for ganache or r for rippled).
-* The fourth argument $4 is the proportion of the population that will be mutated (rather than a new individual being generated to replace the individual) (between 0 and 1, e.g. 0.5).
+`docker run -it --name <name_container> <name_image> $1 $2 $3 $4 $5 $6 $7 $8`
+* The first argument $1 is the fitness function used (1-8).
+* $2 is the budget of the experiment (mins/evals/generations depending on budget type) (in mins, e.g. 30)
+* $3 is the budget type used (time, evals, or gens).
+* $4 is the server used (g for ganache or r for rippled).
+* $5 is the population size.
+* $6 is the proportion of the population that will be mutated (rather than a new individual being generated to replace the individual) (between 0 and 1, e.g. 0.5).
+* $7 is the probability that a param will change type when mutated.
+* $8 is the amount of generations to be processed before clustering again (only for diversity based fitness).
 
 </li>
 -----------
@@ -34,13 +38,14 @@ The commands at Step 3 assume that the Docker image was built with an entry poin
 
 And then for an experiment on the rippled server:
 
-`./blockchain-testing/scripts/rippled/script.sh $1 $2 $3 $4`
+`./blockchain-testing/scripts/rippled/script.sh $1 $2 $3 $4 $5 $6 $7 $8`
 
 Or for an experiment on the ganache server:
 
-`./blockchain-testing/scripts/ganache/script.sh $1 $2 $3 $4`
+`./blockchain-testing/scripts/ganache/script.sh $1 $2 $3 $4 $5 $6 $7 $8`
 
-An example would be: `./blockchain-testing/scripts/ganache/script.sh 1 30 g 0.5` (for an experiment on the ganache server with the grammar-based fuzzer and 50% mutation proportion for 30 minutes).
+An example would be: `./blockchain-testing/scripts/ganache/script.sh 8 30 t g 100 0.5 0.25 3`. 
+This would lead to an experiment on the ganache server with the evolutionary fuzzer for 30 minutes, with a population size of 100, 50% mutation proportion, 25% probability of type change and clustering after 3 generations).
 
 </li>
 -----------

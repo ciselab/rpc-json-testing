@@ -43,4 +43,4 @@ RUN cd blockchain-testing/scripts/ganache && chmod +x startGanache.sh
 RUN cd blockchain-testing/scripts/ganache && chmod +x coverageGanache.sh
 
 ENTRYPOINT ["blockchain-testing/scripts/ganache/script.sh"]
-CMD ["1", "100", "gens", "g", "0", "0.25"]
+CMD ["1", "100", "gens", "g", "50", "0", "0.25", "3"]

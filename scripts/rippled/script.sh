@@ -10,9 +10,11 @@ cd /blockchain-testing
 # The second arg is the budget of the experiment (mins/evals/generations depending on budget type)
 # The third arg is the budget type used (time, evals, or gens)
 # The fourth arg is the server used (g or r).
-# The fifth argument is the proportion of individuals to be mutated.
-# The sixth argument is the probability that a param will change type when mutated.
-java -jar target/blockchain-testing-1.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3 $4 $5 $6
+# The fifth arg is the population size.
+# The sixth argument is the proportion of individuals to be mutated.
+# The seventh argument is the probability that a param will change type when mutated.
+# The eight argument is the amount of generations to be processed before clustering again (only for diversity based fitness).
+java -jar target/blockchain-testing-1.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3 $4 $5 $6 $7 $8
 
 # Kill current rippled server at port 5005
 id=$(lsof -t -i:5005 -sTCP:LISTEN)
