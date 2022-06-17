@@ -174,14 +174,14 @@ public class GanacheTestDriver extends TestDriver {
                 .split("\\)")[0];
 
         double branchesCovered = Double.parseDouble(branches.split("/")[0]);
-        int branchTotal = Integer.parseInt(branches.split("/")[1]);
+        int branchTotal = Integer.parseInt(branches.split("/")[1].trim());
 
         String lines = linecov
                 .split("\\(")[1]
                 .split("\\)")[0];
 
         double linesCovered = Double.parseDouble(lines.split("/")[0]);
-        int linesTotal = Integer.parseInt(lines.split("/")[1]);
+        int linesTotal = Integer.parseInt(lines.split("/")[1].trim());
 
         coverageRecorder.recordCoverage(timePassed, generation, evaluation, linesCovered, linesTotal, branchesCovered, branchTotal);
     }
