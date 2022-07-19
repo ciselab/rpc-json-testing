@@ -55,7 +55,7 @@ public final class Configuration {
     public static final double FRACTION_STRING_TO_MUTATE = 0.2;
     public static final double OTHER_ENUM_PROB = 0.2;
 
-    // Type mutation probabilities
+    // Type mutation probabilities (in generation process)
     public static final boolean TYPE_CHANGES = true;
     public static double CHANGE_TYPE_PROB = 0.25; // 0, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0
     public static final boolean ADVANCED_TYPE_CHANGES = true; // use schema to generate new values (of different types)

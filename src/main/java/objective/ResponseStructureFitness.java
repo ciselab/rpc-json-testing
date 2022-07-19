@@ -2,14 +2,15 @@ package objective;
 
 import search.Generator;
 import search.Individual;
-import util.config.Configuration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static statistics.Collector.getCollector;
+import static util.IO.writeFile;
 import static util.ObjectStripper.stripValues;
 
 /**
@@ -21,10 +22,14 @@ public class ResponseStructureFitness extends Fitness {
     private static Integer STANDARD_NUMBER = 0;
 
     private Map<String, Integer> structureFrequencyTable;
+    // Count the number of generations
+    private int generationCount;
 
     public ResponseStructureFitness() {
         super();
         this.structureFrequencyTable = new HashMap<>();
+        this.generationCount = 0;
+
     }
 
     @Override
@@ -44,14 +49,20 @@ public class ResponseStructureFitness extends Fitness {
             double fitness = (double) 1 / structureFrequencyTable.get(stripValues(individual.toTotalJSONObject(), individual.getResponseObject().getResponseObject()).toString());
             individual.setFitness(fitness);
 
-//            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.
             // decide whether to add individual to the archive
-            if (individual.getResponseObject().getResponseCode() > 499) {
-                getCollector().addToArchive(individual.getResponseObject().getResponseObject().toString(), individual);
-            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD) {
-                getCollector().addToArchive(individual.getResponseObject().getResponseObject().toString(), individual);
-            }
+            getCollector().addToArchive(individual.getResponseObject().getResponseObject().toString(), individual);
         }
+
+        try {
+            String info = "Generation: " + generationCount
+                    + System.lineSeparator()
+                    + storeInformation().toString();
+
+            writeFile(info, "clustering.txt", true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        generationCount += 1;
 
     }
 
@@ -59,6 +70,7 @@ public class ResponseStructureFitness extends Fitness {
     public ArrayList<String>  storeInformation() {
         ArrayList<String> info = new ArrayList<>();
         info.add("Map: " + structureFrequencyTable.keySet().size());
+        info.add(structureFrequencyTable.toString());
         return info;
     }
 
