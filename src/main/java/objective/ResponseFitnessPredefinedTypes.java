@@ -5,12 +5,13 @@ import search.Individual;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import util.config.Configuration;
 import util.datastructures.Pair;
 
+import java.io.IOException;
 import java.util.*;
 
 import static statistics.Collector.getCollector;
+import static util.IO.writeFile;
 
 public class ResponseFitnessPredefinedTypes extends Fitness {
 
@@ -18,10 +19,13 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
 
     // MAP<METHOD, MAP<PATH-TO-PARAM, MAP<CATEGORY, COUNT>>>
     private Map<String, Map<String, Map<Type, Integer>>> valuePerKeyCount;
+    // Count the number of generations
+    private int generationCount;
 
     public ResponseFitnessPredefinedTypes() {
         super();
         this.valuePerKeyCount = new HashMap<>();
+        this.generationCount = 0;
     }
 
     @Override
@@ -38,6 +42,17 @@ public class ResponseFitnessPredefinedTypes extends Fitness {
             // decide whether to add individual to the archive
             getCollector().addToArchive(individual.getResponseObject().getResponseObject().toString(), individual);
         }
+
+        try {
+            String info = "Generation: " + generationCount
+                    + System.lineSeparator()
+                    + storeInformation().toString();
+
+            writeFile(info, "clustering.txt", true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        generationCount += 1;
     }
 
     @Override

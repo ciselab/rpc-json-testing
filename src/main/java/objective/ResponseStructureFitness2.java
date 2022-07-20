@@ -5,7 +5,6 @@ import org.json.JSONObject;
 
 import search.Generator;
 import search.Individual;
-import util.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,14 +35,14 @@ public class ResponseStructureFitness2 extends Fitness {
     @Override
     public void evaluate(Generator generator, List<Individual> population) {
         for (Individual individual : population) {
+
             String structureString = stripValues(individual.toTotalJSONObject(), individual.getResponseObject().getResponseObject()).toString();
+
             if (!structureFrequencyTable.containsKey(structureString)) {
                 structureFrequencyTable.put(structureString, 0);
             }
             structureFrequencyTable.put(structureString, structureFrequencyTable.get(structureString) + 1);
         }
-
-        double totalFitness = 0;
 
         for (Individual individual : population) {
             String structureString = stripValues(individual.toTotalJSONObject(), individual.getResponseObject().getResponseObject()).toString();
@@ -56,16 +55,11 @@ public class ResponseStructureFitness2 extends Fitness {
             double explorationFitness = (inputComplexity + outputComplexity);
 
             double fitness = exploitationFitness * explorationFitness;
-            totalFitness += fitness;
             individual.setFitness(fitness);
 
-//            ARCHIVE_THRESHOLD = Math.min((100 / structureFrequencyTable.size()), ARCHIVE_THRESHOLD); // if structure is relatively rare, add to archive.
             // decide whether to add individual to the archive
-            if (individual.getResponseObject().getResponseCode() > 499) {
-                getCollector().addToArchive(individual.getResponseObject().getResponseObject().toString(), individual);
-            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD) {
-                getCollector().addToArchive(individual.getResponseObject().getResponseObject().toString(), individual);
-            }
+            getCollector().addToArchive(individual.getResponseObject().getResponseObject().toString(), individual);
+
         }
     }
 

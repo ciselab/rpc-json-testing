@@ -87,26 +87,17 @@ public class ResponseFitnessClustering2 extends Fitness {
             // Fitness is between 0 and 1.
             double fitness = 1.0 / (1 + cost);
 
-            // TODO not use this hack for worst output
-            if (individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("random") ||
-                individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("server_info") ||
-                individual.getDna().get(individual.getDna().size() - 1).getApiMethod().equals("server_state")) {
-                fitness = 0;
-            }
-
             individual.setFitness(fitness);
 
             // decide whether to add individual to the archive
-            if (individual.getResponseObject().getResponseCode() > 499) {
-                getCollector().addToArchive(stripped.toString(), individual);
-            } else if (fitness >= Configuration.ARCHIVE_THRESHOLD) {
-                getCollector().addToArchive(stripped.toString(), individual);
-            }
+            getCollector().addToArchive(stripped.toString(), individual);
+
         }
         if (generationCount % Configuration.NEW_CLUSTERS_AFTER_GEN == 0) {
             for (String method : allFeatureVectors.keySet()) {
                 for (String responseStructure : allFeatureVectors.get(method).keySet()) {
-                    clusteringPerResponseStructure.get(method).get(responseStructure).cluster(allFeatureVectors.get(method).get(responseStructure));
+                    clusteringPerResponseStructure.get(method).get(responseStructure)
+                            .cluster(allFeatureVectors.get(method).get(responseStructure));
                 }
             }
         }

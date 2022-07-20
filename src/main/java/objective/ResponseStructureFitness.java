@@ -29,7 +29,6 @@ public class ResponseStructureFitness extends Fitness {
         super();
         this.structureFrequencyTable = new HashMap<>();
         this.generationCount = 0;
-
     }
 
     @Override
@@ -46,7 +45,8 @@ public class ResponseStructureFitness extends Fitness {
 
             // Evaluate individual compared to the map
             // Fitness is between 0 and 1.
-            double fitness = (double) 1 / structureFrequencyTable.get(stripValues(individual.toTotalJSONObject(), individual.getResponseObject().getResponseObject()).toString());
+            double fitness = (double) 1 / structureFrequencyTable.get(stripValues(individual.toTotalJSONObject(),
+                    individual.getResponseObject().getResponseObject()).toString());
             individual.setFitness(fitness);
 
             // decide whether to add individual to the archive
