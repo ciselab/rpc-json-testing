@@ -14,7 +14,7 @@ public class SimilarityMetric {
         Double distance = 0.0;
         for (List<Object> featureVectorA : a) {
             for (List<Object> featureVectorB : b) {
-                distance += calculateFeatureVectorDistance(featureVectorA, featureVectorB, weightVector);
+                distance += calculateFeatureVectorManhattanDistance(featureVectorA, featureVectorB, weightVector);
             }
         }
 
@@ -30,20 +30,19 @@ public class SimilarityMetric {
      * @return the average Euclidean similarity
      */
     public double calculateSimilaritySingle(List<Object> a, List<Object> b, List<Integer> weightVector) {
-        Double distance = calculateFeatureVectorDistance(a, b, weightVector);
+        Double distance = calculateFeatureVectorEuclideanDistance(a, b, weightVector);
 
         return 1.0 / (1.0 + distance);
     }
 
     /**
-     * Calculates euclidean distance of 2 feature vectors
+     * Calculates Euclidean distance of 2 feature vectors.
      * @param a
      * @param b
-     * @return
+     * @return double Euclidean distance between the two vectors
      */
-    private double calculateFeatureVectorDistance(List<Object> a, List<Object> b, List<Integer> weightVector) {
+    private double calculateFeatureVectorEuclideanDistance(List<Object> a, List<Object> b, List<Integer> weightVector) {
         double distance = 0;
-        int differentFeatures = 0;
 
         for (int i = 0; i < a.size(); i++) {
             Object objectA = a.get(i);
@@ -56,30 +55,54 @@ public class SimilarityMetric {
                 double maxStringDistance = 20;
                 double tempDistance = Math.pow(Math.min(stringDistance((String) objectA, (String) objectB), maxStringDistance), 2) * (1.0 / (double) weightVector.get(i));
                 distance += tempDistance;
-                if (tempDistance != 0) {
-                    differentFeatures += 1;
-                }
 
             } else if (objectA instanceof Boolean) {
                 double tempDistance = Math.pow(boolDistance((Boolean) objectA, (Boolean) objectB), 2) * (1.0 / (double) weightVector.get(i));
                 distance += tempDistance;
-                if (tempDistance != 0) {
-                    differentFeatures += 1;
-                }
+
             } else if (objectA instanceof Number) {
                 double tempDistance = Math.pow(numberDistance(((Number) objectA).doubleValue(), ((Number) objectB).doubleValue()), 2) * (1.0 / (double) weightVector.get(i));
                 distance += tempDistance;
-                if (tempDistance != 0) {
-                    differentFeatures += 1;
-                }
+
             }
         }
-        // TODO
-        // If half of the features in the vector are not different, two vectors are not different enough and distance should be 0.
-//        if (differentFeatures / a.size() < Configuration.getTHRESHOLD_DIFFERENT_FEATURES()) {
-//            return 0;
-//        }
+
         return Math.sqrt(distance);
+    }
+
+    /**
+     * Calculates Manhattan distance of 2 feature vectors.
+     * @param a
+     * @param b
+     * @return double Manhattan distance between the two vectors
+     */
+    private double calculateFeatureVectorManhattanDistance(List<Object> a, List<Object> b, List<Integer> weightVector) {
+        double distance = 0;
+
+        for (int i = 0; i < a.size(); i++) {
+            Object objectA = a.get(i);
+            Object objectB = b.get(i);
+            if (!objectA.getClass().equals(objectB.getClass()) && !(objectA instanceof Number && objectB instanceof Number)) {
+                throw new IllegalArgumentException("Comparing different classes is not possible\n" + a + "\n" + b);
+            }
+
+            if (objectA instanceof String) {
+                double maxStringDistance = 20;
+                double tempDistance = Math.min(stringDistance((String) objectA, (String) objectB), maxStringDistance) * (1.0 / (double) weightVector.get(i));
+                distance += tempDistance;
+
+            } else if (objectA instanceof Boolean) {
+                double tempDistance = boolDistance((Boolean) objectA, (Boolean) objectB) * (1.0 / (double) weightVector.get(i));
+                distance += tempDistance;
+
+            } else if (objectA instanceof Number) {
+                double tempDistance = numberDistance(((Number) objectA).doubleValue(), ((Number) objectB).doubleValue()) * (1.0 / (double) weightVector.get(i));
+                distance += tempDistance;
+
+            }
+        }
+
+        return distance;
     }
 
     public static double boolDistance(Boolean a, Boolean b) {
@@ -98,7 +121,6 @@ public class SimilarityMetric {
      * @return
      */
     public static double stringDistance(String a, String b) {
-        // TODO seems to be incorrect somehow
         double[][] distance = new double[a.length() + 1][b.length() + 1];
 
         for (int i = 1; i <= a.length(); i++) {
