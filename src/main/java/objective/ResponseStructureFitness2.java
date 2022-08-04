@@ -52,7 +52,7 @@ public class ResponseStructureFitness2 extends Fitness {
 
             double exploitationFitness = 1.0 / (1.0 + (double) structureFrequencyTable.get(structureString));
             // every key should be mutated at least once
-            double explorationFitness = (inputComplexity + outputComplexity);
+            double explorationFitness = (inputComplexity);
 
             double fitness = exploitationFitness * explorationFitness;
             individual.setFitness(fitness);

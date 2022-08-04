@@ -32,7 +32,7 @@ COPY ./.nycrc ./ganache-cli/.nycrc
 RUN cd ganache-cli && sed -i 's/"start": "node cli.js",/"start": "nyc --no-clean node cli.js --nycrc-path=.nycrc", \n    "start_clean": "nyc node cli.js --nycrc-path=.nycrc",/' package.json
 
 # Pull tool repo and compile it
-RUN git clone https://lisv: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@github.com/SERG-Delft/blockchain-testing.git && cd blockchain-testing && \
+RUN git clone https://lisv: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@github.com/SERG-Delft/blockchain-testing.git && cd blockchain-testing && \
 	git pull && \
 	mvn clean install -DskipTests && \
 	cp src/main/resources/ethereum-openrpc.json target/
@@ -43,4 +43,4 @@ RUN cd blockchain-testing/scripts/ganache && chmod +x startGanache.sh
 RUN cd blockchain-testing/scripts/ganache && chmod +x coverageGanache.sh
 
 ENTRYPOINT ["blockchain-testing/scripts/ganache/script.sh"]
-CMD ["1", "100", "gens", "g", "50", "0", "0.25", "3"]
+CMD ["1", "100", "gens", "g", "50", "0.8", "0.5", "3"]
