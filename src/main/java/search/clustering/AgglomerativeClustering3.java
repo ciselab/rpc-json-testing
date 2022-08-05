@@ -39,7 +39,7 @@ public class AgglomerativeClustering3 {
     private List<List<Object>> getValuesToCluster() {
         List<List<Object>> values = new ArrayList<>(nonBelongers);
 
-        // Add the mean of every cluster to the list of individuals that did not belong to an existing cluster.
+        // Add the median of every cluster to the list of individuals that did not belong to an existing cluster.
         for (Cluster c : clusters) {
             values.add(c.getRepresentative());
         }
@@ -59,7 +59,7 @@ public class AgglomerativeClustering3 {
 
         List<List<List<Object>>> clusters = new ArrayList<>();
 
-        // List of states of clusters (each cycle of agglomerative clustering clusters change)
+        // List of states of clusters (each cycle of agglomerative clustering, clusters are merged, we keep track of each stage)
         List<List<List<List<Object>>>> inBetweenClusters = new ArrayList<>();
 
         // Create a cluster for each feature vector (corresponding to an individual).
@@ -71,6 +71,7 @@ public class AgglomerativeClustering3 {
 
         similarityMatrix = new ArrayList<>();
 
+        // Fill in similarity matrix.
         for (int i = 0; i < clusters.size(); i++) {
             similarityMatrix.add(new ArrayList<>());
             for (int j = i + 1; j < clusters.size(); j++) {
@@ -81,12 +82,14 @@ public class AgglomerativeClustering3 {
 
         List<Double> similarityJumps = new ArrayList<>();
 
+        // Perform agglomerative clustering.
         while(true) {
             inBetweenClusters.add(deepCopy(clusters));
             int index1 = -1;
             int index2 = -1;
             double maxSimilarity = 0;
 
+            // Find two most similar clusters.
             for (int i = 0; i < clusters.size(); i++) {
                 for (int j = i + 1; j < clusters.size(); j++) {
                     double similarity = similarityMatrix.get(i).get(j - (i + 1));
@@ -95,6 +98,7 @@ public class AgglomerativeClustering3 {
                         maxSimilarity = similarity;
                         index1 = i;
                         index2 = j;
+                        System.out.println("similarity" + similarity);
                     }
                 }
             }
@@ -102,15 +106,14 @@ public class AgglomerativeClustering3 {
             similarityJumps.add(maxSimilarity);
 
             if (index1 == -1) {
-                // nothing to merge
+                // Nothing (left) to merge
                 break;
             }
-
             assert index2 > index1;
 
-            // remove similarity columns
+            // Remove similarity columns.
             for (int i = 0; i < clusters.size(); i++) {
-                // handle symmetry matrix
+                // Handle symmetry matrix.
                 int index2ToRemove = index2 - (i + 1);
                 int index1ToRemove = index1 - (i + 1);
 
@@ -122,19 +125,19 @@ public class AgglomerativeClustering3 {
                     similarityMatrix.get(i).remove(index1ToRemove);
                 }
             }
-
             similarityMatrix.remove(index2);
             similarityMatrix.remove(index1);
 
-            // remove clusters
+            // Remove clusters (they will be merged).
             List<List<Object>> cluster1 = clusters.remove(index2);
             List<List<Object>> cluster2 = clusters.remove(index1);
 
-            // merge cluster at index1 and index2
+            // Merge cluster at index1 and index2.
             cluster1.addAll(cluster2);
-
+            // Add merged clusters to the list of clusters as one.
             clusters.add(cluster1);
 
+            // Update similarity matrix.
             for (int i = 0; i < clusters.size() - 1; i++) {
                 double similarity = this.metric.calculateSimilarity(cluster1, clusters.get(i), weightVector);
                 similarityMatrix.get(i).add(similarity);
@@ -148,6 +151,7 @@ public class AgglomerativeClustering3 {
         boolean allSame = true;
 
         for (int i = 0; i < similarityJumps.size() - 1; i++) {
+            // Check whether clusters are different.
             if (similarityJumps.get(0).equals(similarityJumps.get(i + 1))) {
                 allSame = false;
             }
@@ -162,6 +166,8 @@ public class AgglomerativeClustering3 {
             }
         }
 
+        // Pick clustering version where the distance jump is maximal
+        // Average linkage (the average distance between each point in one cluster to every point in the other cluster)
         clusters = inBetweenClusters.get(maxJumpIndex);
 
         if (allSame) {
@@ -181,7 +187,7 @@ public class AgglomerativeClustering3 {
     /**
      * Create a copy of all the clusters.
      * @param toCopy
-     * @return
+     * @return copy of the clusters
      */
     private List<List<List<Object>>> deepCopy(List<List<List<Object>>> toCopy) {
         List<List<List<Object>>> copy = new ArrayList<>();
@@ -202,14 +208,13 @@ public class AgglomerativeClustering3 {
      * Called for each individual to retrieve fitness value.
      * Individual is added to be clustered later if distance is large enough.
      * @param value a feature vector
-     * @return fitness value
+     * @return cost
      */
     public double addOne(List<Object> value) {
         for (Cluster cluster : clusters) {
             Pair<Boolean, Double> result = cluster.isWithin(value);
             // Assumes that values cannot belong to two clusters
             if (result.getKey()) {
-                // TODO what should this return (should be low fitness value since it is within other cluster (maybe something with the number of members, then we also update the number of members))
                 return result.getValue();
             }
         }

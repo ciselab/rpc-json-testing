@@ -1,14 +1,16 @@
 package search.clustering;
 
+import util.config.Configuration;
+
 import java.util.List;
 
 public class SimilarityMetric {
 
     /**
-     * Gives the average Euclidean similarity of the clusters
+     * Gives the average similarity of the clusters.
      * @param a cluster a
      * @param b cluster b
-     * @return the average Euclidean similarity
+     * @return the average similarity
      */
     public double calculateSimilarity(List<List<Object>> a, List<List<Object>> b, List<Integer> weightVector) {
         Double distance = 0.0;
@@ -52,8 +54,7 @@ public class SimilarityMetric {
             }
 
             if (objectA instanceof String) {
-                double maxStringDistance = 20;
-                double tempDistance = Math.pow(Math.min(stringDistance((String) objectA, (String) objectB), maxStringDistance), 2) * (1.0 / (double) weightVector.get(i));
+                double tempDistance = Math.pow(Math.min(stringDistance((String) objectA, (String) objectB), Configuration.MAX_STRING_DISTANCE), 2) * (1.0 / (double) weightVector.get(i));
                 distance += tempDistance;
 
             } else if (objectA instanceof Boolean) {
@@ -87,8 +88,7 @@ public class SimilarityMetric {
             }
 
             if (objectA instanceof String) {
-                double maxStringDistance = 20;
-                double tempDistance = Math.min(stringDistance((String) objectA, (String) objectB), maxStringDistance) * (1.0 / (double) weightVector.get(i));
+                double tempDistance = Math.min(stringDistance((String) objectA, (String) objectB), Configuration.MAX_STRING_DISTANCE) * (1.0 / (double) weightVector.get(i));
                 distance += tempDistance;
 
             } else if (objectA instanceof Boolean) {
@@ -121,6 +121,13 @@ public class SimilarityMetric {
      * @return
      */
     public static double stringDistance(String a, String b) {
+        // The order to compare strings matters so make sure we start with shortest string.
+        if (a.length() < b.length()) {
+            String temp = new String(a);
+            a = new String(b);
+            b = new String(temp);
+        }
+
         double[][] distance = new double[a.length() + 1][b.length() + 1];
 
         for (int i = 1; i <= a.length(); i++) {
@@ -144,9 +151,6 @@ public class SimilarityMetric {
             }
         }
 
-//        for (int i = 0; i < distance.length; i++) {
-//            System.out.println(Arrays.toString(distance[i]));
-//        }
         double dist = distance[a.length()][b.length()];
 
         return dist;
