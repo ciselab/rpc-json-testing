@@ -14,18 +14,15 @@ import static util.IO.writeFile;
 import static util.ObjectStripper.stripValues;
 
 /**
- * This ResponseStructureFitness uses the stripValues function from Fitness.
+ * This ResponseSkeletonFitness uses the stripValues function.
  */
-public class ResponseStructureFitness extends Fitness {
-    private static String STANDARD_STRING = "";
-    private static Boolean STANDARD_BOOLEAN = true;
-    private static Integer STANDARD_NUMBER = 0;
+public class ResponseSkeletonFitness extends Fitness {
 
     private Map<String, Integer> structureFrequencyTable;
     // Count the number of generations
     private int generationCount;
 
-    public ResponseStructureFitness() {
+    public ResponseSkeletonFitness() {
         super();
         this.structureFrequencyTable = new HashMap<>();
         this.generationCount = 0;

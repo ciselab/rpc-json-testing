@@ -16,7 +16,7 @@ import static statistics.Collector.getCollector;
 import static util.ObjectStripper.stripValues;
 
 /**
- * Cluster once every X generations.
+ * Cluster once every X generations. Fitness is the minimum distance to any other individual in the cluster.
  */
 public class ResponseFitnessClustering2 extends Fitness {
 
@@ -188,7 +188,6 @@ public class ResponseFitnessClustering2 extends Fitness {
                     JSONArray strippedArray = ((JSONArray) strippedSmallerObject);
 
                     if (array.length() == 0) {
-                        // TODO maybe add something here (empty array) (maybe add the length of the array as a value?)
                         continue;
                     }
 
@@ -199,7 +198,7 @@ public class ResponseFitnessClustering2 extends Fitness {
                     Object arrayObject = array.get(0);
                     Object strippedArrayObject = strippedArray.get(0);
 
-                    // TODO currently we assume there are no arrays in arrays
+                    // we assume there are no arrays in arrays
                     // use first object of array
                     if (arrayObject instanceof JSONObject) {
                         queue.add(new Triple<>((JSONObject) arrayObject, depth+1, (JSONObject) strippedArrayObject));

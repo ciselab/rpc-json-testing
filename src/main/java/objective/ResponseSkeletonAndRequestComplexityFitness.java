@@ -20,14 +20,14 @@ import static util.ObjectStripper.stripValues;
 /**
  * Use complexity of the request and response object (layers of JSON object) in the fitness calculation.
  */
-public class ResponseStructureFitness2 extends Fitness {
+public class ResponseSkeletonAndRequestComplexityFitness extends Fitness {
     private static String STANDARD_STRING = "";
     private static Boolean STANDARD_BOOLEAN = true;
     private static Integer STANDARD_NUMBER = 0;
 
     private Map<String, Integer> structureFrequencyTable;
 
-    public ResponseStructureFitness2() {
+    public ResponseSkeletonAndRequestComplexityFitness() {
         super();
         this.structureFrequencyTable = new HashMap<>();
     }

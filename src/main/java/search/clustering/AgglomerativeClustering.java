@@ -3,6 +3,10 @@ package search.clustering;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Agglomerative clustering for every new individual. Stores all clusters.
+ * Used in ResponseFitnessClustering2.
+ */
 public class AgglomerativeClustering {
 
     private SimilarityMetric metric;
@@ -10,6 +14,7 @@ public class AgglomerativeClustering {
     // Each value in the feature vector has a certain weight/importance
     private List<Integer> weightVector;
 
+    // List of all the clusters (each cluster in the list has one or more items in its cluster (items are featureVector (of different types)).
     // clusters, cluster, featureVector (of different types)
     private List<List<List<Object>>> clusters;
     private List<List<Double>> similarityMatrix;
@@ -25,6 +30,7 @@ public class AgglomerativeClustering {
     }
 
     /**
+     * Cluster individual.
      * Computes the cost of the newValue.
      * @param newValue feature vector of an individual
      * @return minimum distance to any cluster of an individual
@@ -43,7 +49,7 @@ public class AgglomerativeClustering {
 
             // if the value is already found skip it
             if (metric.calculateSimilarity(c1, c2, weightVector) == 1.0) {
-                return 1000000; // TODO
+                return 1000000;
             }
         }
 
@@ -152,12 +158,12 @@ public class AgglomerativeClustering {
 
         // check if number of clusters stayed the same (i.e. no new input vector)
         if (this.clusters.size() == oldNumberOfClusters) {
-            return 100000; // tODO
+            return 100000; // no new cluster (individual is not different enough)
         }
 
         // check if a cluster was removed
         if (this.clusters.size() < oldNumberOfClusters) {
-            return 0; // tODO
+            return 0;
         }
 
         // a cluster was added!

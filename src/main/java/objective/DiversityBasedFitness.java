@@ -21,7 +21,7 @@ import static util.IO.writeFile;
 import static util.ObjectStripper.stripValues;
 
 /**
- * Cluster once every X generations.
+ * Cluster once every X generations. Fitness of an individual is the minimum distance to the median of the closest cluster.
  */
 public class DiversityBasedFitness extends Fitness {
 

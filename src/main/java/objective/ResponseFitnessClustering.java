@@ -16,7 +16,7 @@ import static statistics.Collector.getCollector;
 import static util.ObjectStripper.stripValues;
 
 /**
- * Cluster every individual.
+ * Cluster all individuals again for every new individual. Fitness is the minimum distance to any other (ever occurred) individual.
  */
 public class ResponseFitnessClustering extends Fitness {
 
@@ -136,7 +136,7 @@ public class ResponseFitnessClustering extends Fitness {
 
                 // Skip this key if the value is null or if it does not exist in the stripped JSONObject
                 if (object.isNull(key)) {
-                    // TODO should we do this? It  can occur that an error_message is null for example.
+                    // It  can occur that an error_message is null.
                     if (stripped.has(key)) {
                         featureVector.add("null");
                         weightVector.add(depth + 1);
@@ -158,19 +158,17 @@ public class ResponseFitnessClustering extends Fitness {
 
 
                     if (array.length() == 0) {
-                        // TODO maybe add something here (empty array) (maybe add the length of the array as a value)
                         continue;
                     }
 
                     if (array.isNull(0)) {
-                        // TODO maybe add this
                         featureVector.add("null");
                     }
 
                     Object arrayObject = array.get(0);
                     Object strippedArrayObject = strippedArray.get(0);
 
-                    // TODO assumes no arrays in arrays
+                    // assumes no arrays in arrays
                     // just take first object of array
                     if (arrayObject instanceof JSONObject) {
                         queue.add(new Triple<>((JSONObject) arrayObject, depth + 1, (JSONObject) strippedArrayObject));

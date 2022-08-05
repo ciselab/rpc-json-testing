@@ -3,6 +3,10 @@ package search.clustering;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Agglomerative clustering every few generations. Stores clusters for that generation until next to be clustered generation.
+ * Used in ResponseFitnessClustering2.
+ */
 public class AgglomerativeClustering2 {
 
     private SimilarityMetric metric;
@@ -11,6 +15,7 @@ public class AgglomerativeClustering2 {
     private List<Integer> weightVector;
 
     // List of all the clusters (each cluster in the list has one or more items in its cluster (items are featureVector (of different types)).
+    // clusters, cluster, featureVector (of different types)
     private List<List<List<Object>>> clusters;
     private List<List<Double>> similarityMatrix;
 
@@ -22,7 +27,7 @@ public class AgglomerativeClustering2 {
     }
 
     /**
-     * Clusters individuals.
+     * Clusters (generation of) individuals.
      * @param values feature vectors of the current population
      */
     public void cluster(List<List<Object>> values) {
