@@ -188,28 +188,28 @@ public class Main {
                 heuristic = new BasicEA(generator, testDriver, fitness);
                 break;
             case 3:
-                System.out.println("Using 3: ResponseFitnessPredefinedTypes");
-                fitness = new ResponseFitnessPredefinedTypes();
+                System.out.println("Using 3: ResponseSkeletonFitness");
+                fitness = new ResponseSkeletonFitness();
                 heuristic = new BasicEA(generator, testDriver, fitness);
                 break;
             case 4:
-                System.out.println("Using 4: ResponseFitnessClustering");
-                fitness = new ResponseFitnessClustering();
+                System.out.println("Using 4: ResponseSkeletonAndRequestComplexityFitness");
+                fitness = new ResponseSkeletonAndRequestComplexityFitness();
                 heuristic = new BasicEA(generator, testDriver, fitness);
                 break;
             case 5:
-                System.out.println("Using 5: ResponseFitnessClustering2");
-                fitness = new ResponseFitnessClustering2();
+                System.out.println("Using 5: ResponseFitnessPredefinedTypes");
+                fitness = new ResponseFitnessPredefinedTypes();
                 heuristic = new BasicEA(generator, testDriver, fitness);
                 break;
             case 6:
-                System.out.println("Using 6: ResponseStructureFitness");
-                fitness = new ResponseStructureFitness();
+                System.out.println("Using 6: ResponseFitnessClustering");
+                fitness = new ResponseFitnessClustering();
                 heuristic = new BasicEA(generator, testDriver, fitness);
                 break;
             case 7:
-                System.out.println("Using 7: ResponseStructureFitness2");
-                fitness = new ResponseStructureFitness2();
+                System.out.println("Using 7: ResponseFitnessClustering2");
+                fitness = new ResponseFitnessClustering2();
                 heuristic = new BasicEA(generator, testDriver, fitness);
                 break;
             case 8:
