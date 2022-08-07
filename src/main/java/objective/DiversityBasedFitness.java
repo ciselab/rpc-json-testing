@@ -88,10 +88,10 @@ public class DiversityBasedFitness extends Fitness {
             AgglomerativeClustering3 clustering = clusteringPerResponseStructure.get(method).get(strippedString);
 
             // calculate the minimum distance of the individual to the clusters
-            double cost = clustering.addOne(featureAndWeightVector.getKey());
+            double maxSimilarity = clustering.addOne(featureAndWeightVector.getKey());
 
             // Fitness is between 0 and 1.
-            double fitness = 1.0 / (1 + cost);
+            double fitness = 1.0 / (1 + maxSimilarity);
 
             individual.setFitness(fitness);
             getCollector().collect(method, responseObject.getResponseCode(), strippedString, String.valueOf(featureAndWeightVector.getKey()));

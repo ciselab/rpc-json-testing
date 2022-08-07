@@ -205,10 +205,10 @@ public class AgglomerativeClustering3 {
     }
 
     /**
-     * Called for each individual to retrieve fitness value.
+     * Called for each individual to retrieve similarity.
      * Individual is added to be clustered later if distance is large enough.
      * @param value a feature vector
-     * @return cost
+     * @return similarity
      */
     public double addOne(List<Object> value) {
         for (Cluster cluster : clusters) {
